@@ -7,7 +7,7 @@ import CustomTimePicker from './CustomTimePicker';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { AlertCircle, CalculatorIcon, Bed, Clock } from 'lucide-react';
-import { addMinutes, format, set } from 'date-fns'; // Import set
+import { addMinutes, format, set } from 'date-fns'; 
 
 const TIME_TO_FALL_ASLEEP = 15; // minutes
 const SLEEP_CYCLE_DURATION = 90; // minutes
@@ -28,7 +28,7 @@ interface SleepCalculatorFormProps {
 }
 
 export default function SleepCalculatorForm({ onCalculate }: SleepCalculatorFormProps) {
-  const [selectedTime, setSelectedTime] = useState('07:00'); // Default to "07:00" (HH:mm)
+  const [selectedTime, setSelectedTime] = useState('07:00'); 
   const [timeError, setTimeError] = useState<string | null>(null);
   const [showGoToBedNowResults, setShowGoToBedNowResults] = useState(false);
   const [currentTimeForBedNow, setCurrentTimeForBedNow] = useState(format(new Date(), 'hh:mm a'));
@@ -93,9 +93,7 @@ export default function SleepCalculatorForm({ onCalculate }: SleepCalculatorForm
         return;
       }
       
-      // Use a fixed date (e.g., Jan 1, 2000) to avoid DST or other date-specific issues
-      // when we only care about the time for calculations.
-      const referenceDateForCalc = new Date(2000, 0, 1); // Month is 0-indexed
+      const referenceDateForCalc = new Date(2000, 0, 1); 
       const parsedWakeUpTime = set(referenceDateForCalc, { hours, minutes, seconds: 0, milliseconds: 0 });
 
       if (isNaN(parsedWakeUpTime.getTime())) {
@@ -118,22 +116,21 @@ export default function SleepCalculatorForm({ onCalculate }: SleepCalculatorForm
   };
   
   return (
-    <Card className="w-full bg-transparent border-0 shadow-none">
-      <CardHeader className="pb-6 pt-2 text-center">
-        <CardTitle className="text-2xl sm:text-3xl font-bold text-foreground flex items-center justify-center gap-2">
-          <Bed className="h-7 w-7 sm:h-8 sm:w-8 text-primary" />
-          Sleep Calculator
-        </CardTitle>
-        <CardDescription className="text-sm text-muted-foreground pt-1">
+    // The parent <section> in page.tsx has glassmorphic and padding, so this Card can be simpler.
+    <div className="w-full"> 
+      <div className="text-center mb-6">
+        <h2 className="text-xl sm:text-2xl font-semibold text-foreground mb-1">Sleep Cycle Calculator</h2>
+        <p className="text-sm text-muted-foreground">
           Calculates optimal sleep times based on 90-minute sleep cycles.
           Assumes 15 minutes to fall asleep.
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-8">
+        </p>
+      </div>
+      
+      <div className="space-y-8">
         {/* Section 1: Calculate Bedtime */}
-        <div className="space-y-4">
-          <Label htmlFor="wakeUpTimePicker" className="block text-lg font-medium text-center text-foreground/90 mb-3">
-            What time do you want to wake up?
+        <div className="space-y-3">
+          <Label htmlFor="wakeUpTimePicker" className="block text-lg font-medium text-center text-foreground/90">
+            I want to wake up at...
           </Label>
           <CustomTimePicker
             value={selectedTime}
@@ -144,13 +141,13 @@ export default function SleepCalculatorForm({ onCalculate }: SleepCalculatorForm
             }}
           />
           {timeError && !showGoToBedNowResults && (
-            <p className="text-sm text-destructive flex items-center gap-1 pt-2 justify-center">
+            <p className="text-sm text-destructive flex items-center gap-1 pt-1 justify-center">
               <AlertCircle className="h-4 w-4" /> {timeError}
             </p>
           )}
           <Button 
             onClick={handleCalculateBedtime} 
-            className="w-full bg-primary hover:bg-primary/90 text-primary-foreground text-base py-6 rounded-lg shadow-md hover:shadow-lg transition-shadow mt-4"
+            className="w-full bg-primary hover:bg-primary/90 text-primary-foreground text-base py-5 rounded-lg shadow-md hover:shadow-lg transition-shadow"
             size="lg"
           >
             <CalculatorIcon className="mr-2 h-5 w-5" /> Calculate Bedtime
@@ -158,9 +155,9 @@ export default function SleepCalculatorForm({ onCalculate }: SleepCalculatorForm
         </div>
 
         {/* Section 2: Calculate Wake-up Time (If I go to bed now) */}
-        <div className="space-y-4 pt-6 border-t border-border/30">
-          <Label className="block text-lg font-medium text-center text-foreground/90 mb-3">
-            If you want to go to bed now...
+        <div className="space-y-3 pt-6 border-t border-border/30">
+          <Label className="block text-lg font-medium text-center text-foreground/90">
+            If I go to bed now...
           </Label>
           <p className="text-sm text-muted-foreground text-center">
             Current time: {currentTimeForBedNow}
@@ -168,18 +165,18 @@ export default function SleepCalculatorForm({ onCalculate }: SleepCalculatorForm
           <Button 
             onClick={handleCalculateWakeUpNow} 
             variant="outline"
-            className="w-full border-primary/70 hover:bg-primary/10 text-primary text-base py-6 rounded-lg shadow-md hover:shadow-lg transition-shadow"
+            className="w-full border-primary/60 hover:bg-primary/10 text-primary text-base py-5 rounded-lg shadow-md hover:shadow-lg transition-shadow hover:border-primary"
             size="lg"
           >
             <Clock className="mr-2 h-5 w-5" /> Calculate Wake-up Times
           </Button>
            {timeError && showGoToBedNowResults && ( 
-            <p className="text-sm text-destructive flex items-center gap-1 pt-2 justify-center">
+            <p className="text-sm text-destructive flex items-center gap-1 pt-1 justify-center">
               <AlertCircle className="h-4 w-4" /> {timeError}
             </p>
           )}
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }

@@ -12,7 +12,7 @@ interface CustomTimePickerProps {
 }
 
 const hoursArray = Array.from({ length: 12 }, (_, i) => i + 1); // 1-12
-const minutesArray = Array.from({ length: 60 }, (_, i) => i); // 0-59
+const minutesArray = Array.from({ length: 60 }, (_, i) => String(i).padStart(2, '0')); // 00-59, as strings
 const periodsArray = ['AM', 'PM'] as const;
 
 type Period = typeof periodsArray[number];
@@ -49,14 +49,14 @@ const ScrollableColumn: React.FC<{
   onSelect: (value: string | number) => void;
   itemHeight?: number;
   columnId: string;
-}> = ({ values, selectedValue, onSelect, itemHeight = 40, columnId }) => {
+  className?: string;
+}> = ({ values, selectedValue, onSelect, itemHeight = 48, columnId, className }) => { // Increased itemHeight
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (scrollRef.current) {
       const selectedIndex = values.findIndex(v => String(v) === String(selectedValue));
       if (selectedIndex !== -1) {
-        // Center the selected item
         const targetScrollTop = (selectedIndex * itemHeight) - (scrollRef.current.clientHeight / 2) + (itemHeight / 2);
         scrollRef.current.scrollTop = targetScrollTop;
       }
@@ -68,24 +68,31 @@ const ScrollableColumn: React.FC<{
   };
 
   return (
-    <div className="h-40 w-20 overflow-y-scroll custom-time-picker-no-scrollbar relative" ref={scrollRef}>
-      {/* Invisible padding items for centering */}
-      <div style={{ height: `calc(50% - ${itemHeight / 2}px)` }}></div>
+    <div 
+      className={cn(
+        "h-48 w-20 overflow-y-scroll custom-time-picker-no-scrollbar relative snap-y snap-mandatory", // Increased height, added snap
+         className
+      )} 
+      ref={scrollRef}
+    >
+      <div style={{ height: `calc(50% - ${itemHeight / 2}px)` }} className="snap-center"></div> {/* Helper for centering */}
       {values.map((val, index) => (
         <div
           key={`${columnId}-${index}`}
           id={`${columnId}-item-${index}`}
           onClick={() => handleItemClick(val)}
           className={cn(
-            'flex items-center justify-center text-3xl cursor-pointer transition-all duration-150 ease-in-out',
-            String(val) === String(selectedValue) ? 'text-white font-semibold scale-110' : 'text-gray-400 opacity-60 scale-90',
+            'flex items-center justify-center text-4xl cursor-pointer transition-all duration-200 ease-out snap-center', // Increased text size
+            String(val) === String(selectedValue) 
+              ? 'text-foreground font-semibold scale-100 opacity-100' 
+              : 'text-muted-foreground opacity-40 scale-90',
           )}
           style={{ height: `${itemHeight}px` }}
         >
-          {typeof val === 'number' ? String(val).padStart(columnId === 'minutes' ? 2 : 0, '0') : val}
+          {val}
         </div>
       ))}
-      <div style={{ height: `calc(50% - ${itemHeight / 2}px)` }}></div>
+      <div style={{ height: `calc(50% - ${itemHeight / 2}px)` }} className="snap-center"></div> {/* Helper for centering */}
     </div>
   );
 };
@@ -94,7 +101,7 @@ const ScrollableColumn: React.FC<{
 export default function CustomTimePicker({ value, onChange }: CustomTimePickerProps) {
   const initialParts = from24HourFormat(value);
   const [displayHour, setDisplayHour] = useState<number>(initialParts.hour);
-  const [displayMinute, setDisplayMinute] = useState<number>(initialParts.minute);
+  const [displayMinute, setDisplayMinute] = useState<number>(initialParts.minute); // Store as number
   const [displayPeriod, setDisplayPeriod] = useState<Period>(initialParts.period);
 
   useEffect(() => {
@@ -109,35 +116,40 @@ export default function CustomTimePicker({ value, onChange }: CustomTimePickerPr
     if (new24HourTime !== value) {
       onChange(new24HourTime);
     }
-  }, [displayHour, displayMinute, displayPeriod, onChange, value]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [displayHour, displayMinute, displayPeriod, onChange]); // value removed to prevent loop with parent
 
   return (
-    <div className="bg-[#191E3D] p-3 rounded-xl border border-[#B0A06B]/50 shadow-lg w-fit mx-auto relative">
+    <div className="bg-background p-3 rounded-xl border border-primary/30 shadow-xl w-fit mx-auto relative my-4">
       {/* Horizontal selection indicator lines */}
-      <div className="absolute top-1/2 left-0 right-0 h-10 -translate-y-1/2 pointer-events-none">
-        <div className="h-full w-full border-y border-[#B0A06B]/70"></div>
+      <div className="absolute top-1/2 left-3 right-3 h-[50px] -translate-y-1/2 pointer-events-none z-0"> {/* Increased height of indicator */}
+        <div className="h-full w-full border-y-2 border-primary/70 rounded-sm"></div>
       </div>
-      <div className="flex justify-center items-center space-x-2 relative z-10">
+      <div className="flex justify-center items-center space-x-1 sm:space-x-2 relative z-10">
         <ScrollableColumn
           columnId="hours"
           values={hoursArray}
           selectedValue={displayHour}
           onSelect={(val) => setDisplayHour(Number(val))}
+          className="w-20 sm:w-24"
         />
-        <div className="text-3xl text-gray-400 pb-1 select-none">:</div>
+        <div className="text-4xl text-muted-foreground select-none mt-[-2px]">:</div>
         <ScrollableColumn
           columnId="minutes"
-          values={minutesArray}
-          selectedValue={displayMinute}
+          values={minutesArray} // Pass string array
+          selectedValue={String(displayMinute).padStart(2, '0')} // Compare with string
           onSelect={(val) => setDisplayMinute(Number(val))}
+           className="w-20 sm:w-24"
         />
         <ScrollableColumn
           columnId="period"
-          values={periodsArray as unknown as string[]} // Cast to allow string[] for ScrollableColumn
+          values={periodsArray as unknown as string[]} 
           selectedValue={displayPeriod}
           onSelect={(val) => setDisplayPeriod(val as Period)}
+          className="w-24 sm:w-28"
         />
       </div>
     </div>
   );
 }
+

@@ -9,87 +9,86 @@ body {
 
 @layer base {
   :root {
-    /* Dark Theme - Deep Navy, Gold/Cream Accents */
-    --background: 225 30% 9%;    /* #11141F Deep Navy Blue */
-    --foreground: 225 15% 90%;   /* #DCE0E6 Light Grey/Off-white for text */
+    /* Dark Theme - Deep Navy, Gold/Cream Accents - Refined for "Sleep" */
+    --background: 225 40% 6%;    /* #0A0C1E Even Darker Navy Blue */
+    --foreground: 225 15% 92%;   /* #E1E3E7 Slightly brighter Off-white for text */
 
-    --card: 225 25% 13%;       /* #1A1F33 Slightly lighter Navy for cards */
-    --card-foreground: 225 15% 85%; /* #CCD1D9 */
+    --card: 225 30% 10%;       /* #111423 Darker Navy for cards */
+    --card-foreground: 225 15% 88%; /* #D7DBE3 */
 
-    --popover: 225 28% 11%;    /* #15192A Darker for popovers */
+    --popover: 225 28% 9%;    /* #0F1222 Darker for popovers */
     --popover-foreground: 225 15% 90%;
 
-    --primary: 45 70% 65%;     /* #E6C67C Soft Gold/Cream for buttons/primary actions */
-    --primary-foreground: 225 30% 10%; /* #121623 Dark text for contrast on primary */
+    --primary: 45 70% 70%;     /* #EBD99A Softer Gold/Cream for buttons/primary actions */
+    --primary-foreground: 225 30% 8%; /* #0D101C Very dark text for contrast on primary */
     
-    --secondary: 225 20% 20%;  /* #292E40 Darker secondary elements */
-    --secondary-foreground: 225 15% 75%; /* #B2B8C2 */
+    --secondary: 225 25% 18%;  /* #24293C Darker secondary elements */
+    --secondary-foreground: 225 15% 78%; /* #BCC1CA */
 
-    --muted: 225 20% 16%;      /* #1E2333 Muted dark navy */
-    --muted-foreground: 225 10% 60%; /* #8C93A2 */
+    --muted: 225 25% 14%;      /* #1B1F30 Muted dark navy */
+    --muted-foreground: 225 10% 55%; /* #7F8699 Slightly desaturated for less contrast */
 
-    --accent: 35 80% 70%;      /* #F2D6A2 Lighter Cream/Beige for accents if needed */
+    --accent: 35 80% 75%;      /* #F5DAB0 Lighter Cream/Beige for accents if needed */
     --accent-foreground: 225 30% 10%;
 
-    --destructive: 0 60% 50%; /* #CC3333 A standard red for destructive actions */
+    --destructive: 0 60% 55%; /* #D64545 A standard red for destructive actions */
     --destructive-foreground: 0 0% 100%; /* White text on destructive */
 
-    --border: 225 20% 25%;     /* #333950 Border color, can be subtle */
-    --input: 225 25% 15%;      /* #1C2238 Input background for dark theme */
-    --ring: 45 70% 70%;        /* #EBD99A Ring color based on primary/accent for focus */
+    --border: 225 20% 22%;     /* #2E3347 Border color, can be subtle */
+    --input: 225 25% 12%;      /* #161A2B Input background for dark theme */
+    --ring: 45 70% 75%;        /* #EFDFB0 Ring color based on primary/accent for focus */
 
-    --chart-1: 45 70% 60%; 
-    --chart-2: 35 80% 65%;
-    --chart-3: 45 60% 70%;
-    --chart-4: 35 70% 75%; 
-    --chart-5: 45 50% 55%;
+    --chart-1: 45 70% 65%; 
+    --chart-2: 35 80% 70%;
+    --chart-3: 45 60% 75%;
+    --chart-4: 35 70% 80%; 
+    --chart-5: 45 50% 60%;
 
     --radius: 0.75rem; /* Slightly more rounded */
 
     /* Sidebar values - adjust if sidebar is used */
-    --sidebar-background: 225 25% 11%; /* #15192A */
+    --sidebar-background: 225 25% 9%; /* #0F1222 */
     --sidebar-foreground: 225 15% 88%; /* #D7DBE3 */
     --sidebar-primary: var(--primary);
     --sidebar-primary-foreground: var(--primary-foreground);
     --sidebar-accent: var(--accent);
     --sidebar-accent-foreground: var(--accent-foreground);
-    --sidebar-border: 225 20% 20%;   /* #292E40 */
+    --sidebar-border: 225 20% 18%;   /* #24293C */
     --sidebar-ring: var(--ring);
   }
 
-  .dark { /* Values are already for a dark theme, so .dark might not be strictly necessary unless you plan a light variant */
-    /* Using the same dark theme values for .dark, assuming dark is default */
-    --background: 225 30% 9%;    
-    --foreground: 225 15% 90%;   
-    --card: 225 25% 13%;       
-    --card-foreground: 225 15% 85%; 
-    --popover: 225 28% 11%;    
+  .dark { 
+    --background: 225 40% 6%;    
+    --foreground: 225 15% 92%;   
+    --card: 225 30% 10%;       
+    --card-foreground: 225 15% 88%; 
+    --popover: 225 28% 9%;    
     --popover-foreground: 225 15% 90%;
-    --primary: 45 70% 65%;     
-    --primary-foreground: 225 30% 10%; 
-    --secondary: 225 20% 20%;  
-    --secondary-foreground: 225 15% 75%; 
-    --muted: 225 20% 16%;      
-    --muted-foreground: 225 10% 60%; 
-    --accent: 35 80% 70%;      
+    --primary: 45 70% 70%;     
+    --primary-foreground: 225 30% 8%; 
+    --secondary: 225 25% 18%;  
+    --secondary-foreground: 225 15% 78%; 
+    --muted: 225 25% 14%;      
+    --muted-foreground: 225 10% 55%; 
+    --accent: 35 80% 75%;      
     --accent-foreground: 225 30% 10%;
-    --destructive: 0 60% 50%; 
+    --destructive: 0 60% 55%; 
     --destructive-foreground: 0 0% 100%;
-    --border: 225 20% 25%;     
-    --input: 225 25% 15%;      
-    --ring: 45 70% 70%;       
-    --chart-1: 45 70% 60%; 
-    --chart-2: 35 80% 65%;
-    --chart-3: 45 60% 70%;
-    --chart-4: 35 70% 75%; 
-    --chart-5: 45 50% 55%;
-    --sidebar-background: 225 25% 11%;
+    --border: 225 20% 22%;     
+    --input: 225 25% 12%;      
+    --ring: 45 70% 75%;       
+    --chart-1: 45 70% 65%; 
+    --chart-2: 35 80% 70%;
+    --chart-3: 45 60% 75%;
+    --chart-4: 35 70% 80%; 
+    --chart-5: 45 50% 60%;
+    --sidebar-background: 225 25% 9%;
     --sidebar-foreground: 225 15% 88%;
     --sidebar-primary: var(--primary);
     --sidebar-primary-foreground: var(--primary-foreground);
     --sidebar-accent: var(--accent);
     --sidebar-accent-foreground: var(--accent-foreground);
-    --sidebar-border: 225 20% 20%;
+    --sidebar-border: 225 20% 18%;
     --sidebar-ring: var(--ring);
   }
 }
@@ -107,39 +106,33 @@ body {
   main {
     flex-grow: 1;
   }
-  /* Ensure dark mode is applied by default if preferred */
   html.dark body {
      @apply bg-background text-foreground;
   }
 }
 
-/* Glassmorphism utility - adjusted for the new dark theme */
 .glassmorphic {
-  /* Dark mode glass */
-  @apply bg-card/60 backdrop-blur-lg border-white/10 shadow-xl;
+  @apply bg-card/50 backdrop-blur-lg border-white/5 shadow-xl; /* Reduced opacity for deeper bg visibility */
 }
-/* Remove light mode specific glassmorphic if not needed, or define one if you add a light theme */
 
-/* Custom scrollbar styling for Webkit browsers (Chrome, Safari) */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px; /* Slimmer scrollbar */
+  height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: hsl(var(--background) / 0.5);
+  background: hsl(var(--background) / 0.3); /* More transparent track */
   border-radius: 10px;
 }
 ::-webkit-scrollbar-thumb {
-  background: hsl(var(--muted)); 
+  background: hsl(var(--muted) / 0.8); /* Slightly more visible thumb */
   border-radius: 10px;
-  border: 2px solid transparent; /* Creates padding around thumb */
+  border: 1px solid transparent; 
   background-clip: content-box; 
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: hsl(var(--secondary-foreground));
+  background: hsl(var(--secondary-foreground) / 0.9);
 }
-/* For Firefox */
 * {
   scrollbar-width: thin;
-  scrollbar-color: hsl(var(--muted)) hsl(var(--background) / 0.5);
+  scrollbar-color: hsl(var(--muted) / 0.8) hsl(var(--background) / 0.3);
 }

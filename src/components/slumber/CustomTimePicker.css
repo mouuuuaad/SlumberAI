@@ -8,16 +8,14 @@
   -webkit-overflow-scrolling: touch; /* Enables momentum scrolling on iOS */
 }
 
-/* Optional: Style for the scroll track and thumb if not completely hidden, for better UX on desktop if needed */
-/*
-.custom-time-picker-no-scrollbar::-webkit-scrollbar-track {
-  background: transparent;
+/* Enhanced focus and active states for picker items if needed */
+.custom-time-picker-no-scrollbar > div:focus-visible {
+  outline: 2px solid hsl(var(--ring));
+  outline-offset: 2px;
+  border-radius: var(--radius);
 }
-.custom-time-picker-no-scrollbar::-webkit-scrollbar-thumb {
-  background: #555;
-  border-radius: 5px;
+
+/* Ensure smooth scrolling for touch devices if not already handled by snap */
+.custom-time-picker-no-scrollbar {
+  scroll-behavior: smooth;
 }
-.custom-time-picker-no-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: #777;
-}
-*/
