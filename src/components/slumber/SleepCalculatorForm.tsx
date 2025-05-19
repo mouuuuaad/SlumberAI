@@ -3,10 +3,8 @@
 
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-// import { Input } from '@/components/ui/input'; // No longer using standard input for time
-import CustomTimePicker from './CustomTimePicker'; // Import the new custom time picker
+import CustomTimePicker from './CustomTimePicker';
 import { Label } from '@/components/ui/label';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { AlertCircle, CalculatorIcon, Bed, Clock } from 'lucide-react';
 import { addMinutes, format, parse, set } from 'date-fns';
@@ -30,24 +28,18 @@ interface SleepCalculatorFormProps {
 }
 
 export default function SleepCalculatorForm({ onCalculate }: SleepCalculatorFormProps) {
-  const [calculationMode, setCalculationMode] = useState<'wakeUpAt' | 'goToBedAt'>('wakeUpAt');
-  const [selectedTime, setSelectedTime] = useState(''); // Stored as "HH:mm" (24-hour)
+  // Initialize selectedTime to a valid default (e.g., 07:00 AM for "wakeUpAt" mode)
+  const [selectedTime, setSelectedTime] = useState(format(set(new Date(), { hours: 7, minutes: 0 }), 'HH:mm'));
   const [timeError, setTimeError] = useState<string | null>(null);
   const [showGoToBedNowResults, setShowGoToBedNowResults] = useState(false);
+  const [currentTimeForBedNow, setCurrentTimeForBedNow] = useState(format(new Date(), 'hh:mm a'));
 
-  // Effect to set default time when component mounts or calculationMode changes
   useEffect(() => {
-    let defaultTimeDate = new Date();
-    if (calculationMode === 'wakeUpAt') {
-      defaultTimeDate = set(defaultTimeDate, { hours: 7, minutes: 0 });
-    } else {
-      // For "goToBedAt", use current time, but CustomTimePicker will show it
-      // No need to explicitly set current time for selectedTime here if picker manages its display
-    }
-    setSelectedTime(format(defaultTimeDate, 'HH:mm'));
-    setShowGoToBedNowResults(false); // Reset this when mode changes
-  }, [calculationMode]);
-
+    const timer = setInterval(() => {
+      setCurrentTimeForBedNow(format(new Date(), 'hh:mm a'));
+    }, 60000); // Update every minute
+    return () => clearInterval(timer);
+  }, []);
 
   const calculateBedtimes = (wakeUpDateTime: Date) => {
     const suggestions: CalculationResult['suggestions'] = [];
@@ -96,11 +88,15 @@ export default function SleepCalculatorForm({ onCalculate }: SleepCalculatorForm
     try {
       const baseDate = '2000-01-01'; 
       const parsedWakeUpTime = parse(`${baseDate}T${selectedTime}`, `${baseDate}THH:mm`, new Date());
-      if (isNaN(parsedWakeUpTime.getTime())) throw new Error("Invalid time");
+      if (isNaN(parsedWakeUpTime.getTime())) {
+        setTimeError('Invalid time format selected. Please adjust the picker.');
+        console.error("Error parsing wake-up time from CustomTimePicker:", selectedTime);
+        return;
+      }
       calculateBedtimes(parsedWakeUpTime);
     } catch (error) {
-      setTimeError('Invalid time format.');
-      console.error("Error parsing time:", error);
+      setTimeError('Could not calculate bedtime due to a time parsing error.');
+      console.error("Error in handleCalculateBedtime:", error);
     }
   };
 
@@ -108,21 +104,9 @@ export default function SleepCalculatorForm({ onCalculate }: SleepCalculatorForm
     setTimeError(null);
     const now = new Date();
     calculateWakeTimes(now);
-    setShowGoToBedNowResults(true); // Indicate that "go to bed now" results are showing
+    setShowGoToBedNowResults(true); 
   };
   
-  // Initialize selectedTime for the CustomTimePicker if it's empty
-  // This effect ensures that the CustomTimePicker has a valid initial value.
-  useEffect(() => {
-    if (!selectedTime) {
-      const defaultTime = calculationMode === 'wakeUpAt' 
-        ? set(new Date(), { hours: 7, minutes: 0 }) 
-        : new Date();
-      setSelectedTime(format(defaultTime, 'HH:mm'));
-    }
-  }, [selectedTime, calculationMode]);
-
-
   return (
     <Card className="w-full bg-transparent border-0 shadow-none">
       <CardHeader className="pb-6 pt-2 text-center">
@@ -137,28 +121,26 @@ export default function SleepCalculatorForm({ onCalculate }: SleepCalculatorForm
       </CardHeader>
       <CardContent className="space-y-8">
         {/* Section 1: Calculate Bedtime */}
-        <div className="space-y-4 p-6 rounded-xl bg-card/30 backdrop-blur-sm shadow-lg">
+        <div className="space-y-4">
           <Label htmlFor="wakeUpTimePicker" className="block text-lg font-medium text-center text-foreground/90 mb-3">
             What time do you want to wake up?
           </Label>
-          {selectedTime && ( // Ensure selectedTime is initialized before rendering CustomTimePicker
-            <CustomTimePicker
-              value={selectedTime}
-              onChange={(newTime) => {
-                setSelectedTime(newTime);
-                if (timeError) setTimeError(null);
-                setShowGoToBedNowResults(false); // Clear "bed now" results if time is changed
-              }}
-            />
-          )}
-          {timeError && calculationMode === 'wakeUpAt' && !showGoToBedNowResults && (
-            <p className="text-sm text-destructive flex items-center gap-1 pt-1 justify-center">
+          <CustomTimePicker
+            value={selectedTime}
+            onChange={(newTime) => {
+              setSelectedTime(newTime);
+              if (timeError) setTimeError(null);
+              setShowGoToBedNowResults(false); 
+            }}
+          />
+          {timeError && !showGoToBedNowResults && (
+            <p className="text-sm text-destructive flex items-center gap-1 pt-2 justify-center">
               <AlertCircle className="h-4 w-4" /> {timeError}
             </p>
           )}
           <Button 
             onClick={handleCalculateBedtime} 
-            className="w-full bg-primary hover:bg-primary/90 text-primary-foreground text-base py-6 rounded-lg shadow-md hover:shadow-lg transition-shadow"
+            className="w-full bg-primary hover:bg-primary/90 text-primary-foreground text-base py-6 rounded-lg shadow-md hover:shadow-lg transition-shadow mt-4"
             size="lg"
           >
             <CalculatorIcon className="mr-2 h-5 w-5" /> Calculate Bedtime
@@ -166,12 +148,12 @@ export default function SleepCalculatorForm({ onCalculate }: SleepCalculatorForm
         </div>
 
         {/* Section 2: Calculate Wake-up Time (If I go to bed now) */}
-        <div className="space-y-4 p-6 rounded-xl bg-card/30 backdrop-blur-sm shadow-lg">
+        <div className="space-y-4 pt-6 border-t border-border/30">
           <Label className="block text-lg font-medium text-center text-foreground/90 mb-3">
             If you want to go to bed now...
           </Label>
           <p className="text-sm text-muted-foreground text-center">
-            Current time: {format(new Date(), 'hh:mm a')}
+            Current time: {currentTimeForBedNow}
           </p>
           <Button 
             onClick={handleCalculateWakeUpNow} 
@@ -181,8 +163,8 @@ export default function SleepCalculatorForm({ onCalculate }: SleepCalculatorForm
           >
             <Clock className="mr-2 h-5 w-5" /> Calculate Wake-up Times
           </Button>
-           {timeError && showGoToBedNowResults && ( // Only show error if relevant to this section
-            <p className="text-sm text-destructive flex items-center gap-1 pt-1 justify-center">
+           {timeError && showGoToBedNowResults && ( 
+            <p className="text-sm text-destructive flex items-center gap-1 pt-2 justify-center">
               <AlertCircle className="h-4 w-4" /> {timeError}
             </p>
           )}

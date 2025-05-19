@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useRef, useEffect, type FormEvent } from 'react';
@@ -23,9 +24,13 @@ export default function ChatAssistant() {
 
   const scrollToBottom = () => {
     if (scrollAreaRef.current) {
+      // Radix ScrollArea viewport is the direct child div
       const scrollViewport = scrollAreaRef.current.querySelector('div[data-radix-scroll-area-viewport]');
       if (scrollViewport) {
         scrollViewport.scrollTop = scrollViewport.scrollHeight;
+      } else {
+        // Fallback for simple div structure if Radix structure isn't found (should not happen with ShadCN)
+         scrollAreaRef.current.scrollTop = scrollAreaRef.current.scrollHeight;
       }
     }
   };
@@ -49,11 +54,10 @@ export default function ChatAssistant() {
 
     try {
       const input: ChatWithSleepAssistantInput = { query: userMessage.content };
-      // Ensure you have error handling for the AI call itself if needed
       const result: ChatWithSleepAssistantOutput = await chatWithSleepAssistant(input);
       
       const assistantMessage: Message = {
-        id: (Date.now() + 1).toString(), // Ensure unique ID
+        id: (Date.now() + 1).toString(), 
         role: 'assistant',
         content: result.response,
       };
@@ -63,7 +67,7 @@ export default function ChatAssistant() {
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        content: 'Sorry, I had trouble connecting to my brain. Please try again in a moment.',
+        content: 'Sorry, I had trouble connecting. Please try again in a moment.',
       };
       setMessages((prev) => [...prev, errorMessage]);
     } finally {
@@ -72,7 +76,6 @@ export default function ChatAssistant() {
   };
 
   return (
-    // Card itself is not glassmorphic as it's inside a glassmorphic container on page.tsx
     <Card className="w-full h-[600px] flex flex-col bg-transparent border-0 shadow-none"> 
       <CardHeader className="pb-4">
         <CardTitle className="flex items-center gap-2 text-xl sm:text-2xl text-foreground">
@@ -93,7 +96,7 @@ export default function ChatAssistant() {
                   'flex items-start gap-3 p-3 rounded-lg max-w-[85%] shadow-sm',
                   message.role === 'user' 
                     ? 'ml-auto bg-primary text-primary-foreground' 
-                    : 'bg-card text-card-foreground border' // Assistant messages use card bg with border
+                    : 'bg-card text-card-foreground border'
                 )}
               >
                 {message.role === 'assistant' && <Bot className="h-5 w-5 sm:h-6 sm:w-6 text-accent flex-shrink-0 mt-0.5" />}
@@ -108,9 +111,9 @@ export default function ChatAssistant() {
               </div>
             )}
              {messages.length === 0 && !isLoading && (
-              <div className="text-center py-10">
-                <MessageSquare className="h-12 w-12 mx-auto text-muted-foreground/50 mb-2" />
-                <p className="text-muted-foreground">No messages yet. Ask something!</p>
+              <div className="flex flex-col items-center justify-center text-center py-10 h-full">
+                <MessageSquare className="h-12 w-12 mx-auto text-muted-foreground/50 mb-3" />
+                <p className="text-muted-foreground">No messages yet. Start the conversation!</p>
               </div>
             )}
           </div>

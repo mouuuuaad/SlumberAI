@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -23,13 +24,14 @@ export default function NapCalculator() {
   const [timeError, setTimeError] = useState<string | null>(null);
   
   useEffect(() => {
+    // Initialize with current time in HH:mm format
     setStartTime(format(new Date(), 'HH:mm'));
   }, []);
 
 
   const handleCalculateNap = () => {
     if (!startTime) {
-      setTimeError('Please select a start time for your nap.');
+      setTimeError('Please enter a start time for your nap.');
       setNapResult(null);
       return;
     }
@@ -37,11 +39,12 @@ export default function NapCalculator() {
     setNapResult(null);
 
     try {
-      const baseDate = '2000-01-01'; 
-      const parsedStartTime = parse(`${baseDate}T${startTime}`, `${baseDate}THH:mm`, new Date());
+      // Using a fixed date for parsing time avoids DST issues if only time is relevant
+      const baseDateForParsing = new Date(2000, 0, 1); // Jan 1, 2000
+      const parsedStartTime = parse(startTime, 'HH:mm', baseDateForParsing);
 
       if (isNaN(parsedStartTime.getTime())) {
-        setTimeError('Invalid time format. Please use HH:MM.');
+        setTimeError('Invalid time format. Please use HH:MM (24-hour).');
         return;
       }
 
@@ -53,7 +56,7 @@ export default function NapCalculator() {
         `For a ${napInfo?.name || `${napDuration} min nap`} starting at ${format(parsedStartTime, 'hh:mm a')}, you should wake up at ${format(wakeUpTime, 'hh:mm a')}.`
       );
     } catch (error) {
-      setTimeError('Could not parse the time. Please ensure it is valid.');
+      setTimeError('Could not parse the time. Please ensure it is a valid HH:MM format.');
       console.error("Error calculating nap time:", error);
     }
   };
@@ -61,7 +64,6 @@ export default function NapCalculator() {
   const selectedNapDetails = napTypes.find(n => n.duration.toString() === selectedNapType);
 
   return (
-    // Card itself is not glassmorphic as it's inside a glassmorphic container on page.tsx
     <Card className="w-full bg-transparent border-0 shadow-none"> 
       <CardHeader className="pb-4">
         <CardTitle className="flex items-center gap-2 text-xl sm:text-2xl text-foreground">
@@ -77,7 +79,7 @@ export default function NapCalculator() {
           <Label htmlFor="napType" className="text-foreground/90">Nap Type:</Label>
           <Select value={selectedNapType} onValueChange={(value) => {
             setSelectedNapType(value);
-            setNapResult(null); // Clear result on change
+            setNapResult(null); 
           }}>
             <SelectTrigger id="napType" className="w-full md:w-[280px] bg-input text-foreground focus:bg-input focus:ring-primary">
               <SelectValue placeholder="Select nap type" />
@@ -94,10 +96,10 @@ export default function NapCalculator() {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="startTime" className="text-foreground/90">Nap Start Time:</Label>
+          <Label htmlFor="startTime" className="text-foreground/90">Nap Start Time (HH:MM):</Label>
           <Input
             id="startTime"
-            type="time"
+            type="time" // HTML5 time input
             value={startTime}
             onChange={(e) => {
               setStartTime(e.target.value)
@@ -105,9 +107,10 @@ export default function NapCalculator() {
               if(napResult) setNapResult(null);
             }}
             className="w-full md:w-1/2 bg-input text-foreground focus:ring-primary"
+            pattern="[0-2][0-9]:[0-5][0-9]" // Helps with some browser validation but not foolproof
           />
           {timeError && (
-            <p className="text-sm text-destructive flex items-center gap-1">
+            <p className="text-sm text-destructive flex items-center gap-1 pt-1">
               <AlertCircle className="h-4 w-4" /> {timeError}
             </p>
           )}
@@ -118,7 +121,7 @@ export default function NapCalculator() {
         </Button>
 
         {napResult && (
-          <Card className="mt-4 bg-primary/10 border-primary/30"> {/* Softer emphasis for result */}
+          <Card className="mt-4 bg-primary/10 border-primary/30">
             <CardContent className="p-4 sm:p-6">
               <p className="text-center font-medium text-primary flex items-center justify-center gap-2">
                 <Clock className="h-5 w-5"/> {napResult}

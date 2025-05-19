@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -5,20 +6,17 @@ import Header from '@/components/slumber/Header';
 import SleepCalculationResults from '@/components/slumber/SleepCalculationResults';
 import NapCalculator from '@/components/slumber/NapCalculator';
 import ChatAssistant from '@/components/slumber/ChatAssistant';
-import SleepCalculatorForm from '@/components/slumber/SleepCalculatorForm'; // Using the consolidated form
+import SleepCalculatorForm from '@/components/slumber/SleepCalculatorForm';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Calculator, Coffee, MessageSquare } from 'lucide-react';
 
-// CalculationResult type is now defined within SleepCalculatorForm and handled there
-// It's still useful for SleepCalculationResults props if not directly managed here.
 export type { CalculationResult } from '@/components/slumber/SleepCalculatorForm';
 
 
 export default function HomePage() {
   const [sleepResults, setSleepResults] = useState<CalculationResult | null>(null);
-  const [activeTab, setActiveTab] = useState('calculator'); // Default to calculator tab
+  const [activeTab, setActiveTab] = useState('calculator');
 
-  // Callback for SleepCalculatorForm
   const handleSleepCalculation = (results: CalculationResult) => {
     setSleepResults(results);
   };
@@ -42,20 +40,20 @@ export default function HomePage() {
           </TabsList>
 
           <TabsContent value="calculator">
-            <section className="w-full glassmorphic rounded-xl shadow-lg p-1">
+            <section className="w-full glassmorphic rounded-xl shadow-lg p-6 md:p-8">
               <SleepCalculatorForm onCalculate={handleSleepCalculation} />
               {sleepResults && <SleepCalculationResults results={sleepResults} />}
             </section>
           </TabsContent>
 
           <TabsContent value="nap">
-            <section className="w-full glassmorphic rounded-xl shadow-lg p-1">
+            <section className="w-full glassmorphic rounded-xl shadow-lg p-6 md:p-8">
               <NapCalculator />
             </section>
           </TabsContent>
 
           <TabsContent value="assistant">
-            <section className="w-full glassmorphic rounded-xl shadow-lg p-1">
+            <section className="w-full glassmorphic rounded-xl shadow-lg p-6 md:p-8">
              <ChatAssistant />
             </section>
           </TabsContent>
@@ -63,7 +61,7 @@ export default function HomePage() {
 
       </main>
       <footer className="py-8 text-center text-xs sm:text-sm text-muted-foreground border-t border-border/30">
-        <p>&copy; {new Date().getFullYear()} SlumberAI. All rights reserved.</p>
+        <p>&copy; {new Date().getFullYear()} SlumberAI. All rights reserved. Crafted with 💜</p>
       </footer>
     </div>
   );
