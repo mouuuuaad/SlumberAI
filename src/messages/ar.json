@@ -1,6 +1,7 @@
 {
   "Header": {
-    "title": "SlumberAI"
+    "title": "SlumberAI",
+    "toggleTheme": "تبديل السمة"
   },
   "HomePage": {
     "sleepCyclesTab": "دورات النوم",

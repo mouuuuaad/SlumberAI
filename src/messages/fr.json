@@ -1,6 +1,7 @@
 {
   "Header": {
-    "title": "SlumberAI"
+    "title": "SlumberAI",
+    "toggleTheme": "Changer de thème"
   },
   "HomePage": {
     "sleepCyclesTab": "Cycles de sommeil",
