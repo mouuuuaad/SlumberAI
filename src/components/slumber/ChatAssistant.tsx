@@ -105,7 +105,7 @@ export default function ChatAssistant() {
           AI Sleep Coach
         </CardTitle>
         <CardDescription className="text-sm text-muted-foreground">
-          Provide some details below and ask for personalized sleep advice.
+          Chat with your AI Sleep Coach for personalized advice. Tell me how you're feeling about your sleep or ask any questions you have.
         </CardDescription>
       </CardHeader>
       <CardContent className="flex-grow flex flex-col p-0 overflow-hidden">
@@ -201,8 +201,8 @@ export default function ChatAssistant() {
              {messages.length === 0 && !isLoading && (
               <div className="flex flex-col items-center justify-center text-center py-10 h-full">
                 <Sparkles className="h-12 w-12 mx-auto text-muted-foreground/50 mb-3" />
-                <p className="text-muted-foreground">Enter your details above (optional) and ask anything!</p>
-                <p className="text-xs text-muted-foreground/70 mt-1">e.g., "I often wake up tired" or "How can I stop snoozing?"</p>
+                <p className="text-muted-foreground">How are you feeling about your sleep?</p>
+                <p className="text-xs text-muted-foreground/70 mt-1">e.g., "I feel tired today" or "How can I stop snoozing?"</p>
               </div>
             )}
           </div>
@@ -226,4 +226,3 @@ export default function ChatAssistant() {
     </Card>
   );
 }
-
