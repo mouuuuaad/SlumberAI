@@ -7,10 +7,11 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { BookOpen, Feather, Loader2, Sparkles, Download } from 'lucide-react'; // Added Download icon
+import { BookOpen, Feather, Loader2, Sparkles, Download } from 'lucide-react';
 import { analyzeDreamSentiment, type AnalyzeDreamSentimentInput, type AnalyzeDreamSentimentOutput } from '@/ai/flows/analyze-dream-sentiment-flow';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
+import jsPDF from 'jspdf';
 
 interface DreamEntry {
   id: string;
@@ -100,26 +101,63 @@ export default function DreamJournal() {
     }
   };
 
-  const handleExportToJson = () => {
-    if (loggedDreams.length === 0) {
-      // Optionally, show a toast or alert if there are no dreams to export
-      console.log("No dreams to export.");
+  const handleExportToPdf = () => {
+    if (loggedDreams.length === 0 || !isClient) {
+      console.log("No dreams to export or client not ready.");
       return;
     }
-    // Prepare data for export (remove transient state like isAnalyzing if needed, though current structure is fine)
-    const dreamsToExport = loggedDreams.map(({ isAnalyzing, sentimentColor, ...dream }) => dream);
 
-    const jsonString = JSON.stringify(dreamsToExport, null, 2); // null, 2 for pretty printing
-    const blob = new Blob([jsonString], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
+    const doc = new jsPDF();
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const margin = 15;
+    const maxLineWidth = pageWidth - margin * 2;
+    let yPos = 20;
+
+    doc.setFontSize(18);
+    doc.text('SlumberAI - Dream Journal Report', pageWidth / 2, yPos, { align: 'center' });
+    yPos += 10;
+
+    doc.setFontSize(10);
+    doc.text(`Report Generated: ${format(new Date(), 'MMM d, yyyy HH:mm')}`, margin, yPos);
+    yPos += 15;
+
+    loggedDreams.forEach((dream, index) => {
+      if (yPos > doc.internal.pageSize.getHeight() - 30) { // Check for page break
+        doc.addPage();
+        yPos = 20;
+      }
+
+      doc.setFontSize(12);
+      doc.setFont(undefined, 'bold');
+      doc.text(`Dream from: ${format(new Date(dream.date), 'MMM d, yyyy - hh:mm a')}`, margin, yPos);
+      yPos += 7;
+
+      doc.setFont(undefined, 'normal');
+      doc.setFontSize(11);
+      const dreamTextLines = doc.splitTextToSize(`Dream: ${dream.text}`, maxLineWidth);
+      doc.text(dreamTextLines, margin, yPos);
+      yPos += (dreamTextLines.length * 5) + 5; // Adjust spacing based on lines
+
+      if (dream.sentiment) {
+        doc.setFont(undefined, 'italic');
+        const sentimentLine = `AI Sentiment: ${dream.sentiment}`;
+        doc.text(sentimentLine, margin, yPos);
+        yPos += 5;
+      }
+      if (dream.analysis) {
+        const analysisLines = doc.splitTextToSize(`AI Analysis: ${dream.analysis}`, maxLineWidth);
+        doc.text(analysisLines, margin, yPos);
+        yPos += (analysisLines.length * 5) + 5;
+      }
+      
+      if (index < loggedDreams.length - 1) {
+        doc.line(margin, yPos, pageWidth - margin, yPos); // Separator line
+        yPos += 10;
+      }
+    });
+    
     const timestamp = format(new Date(), 'yyyyMMdd_HHmmss');
-    link.download = `slumberai_dreams_${timestamp}.json`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
+    doc.save(`slumberai_dreams_report_${timestamp}.pdf`);
   };
 
   return (
@@ -138,12 +176,12 @@ export default function DreamJournal() {
             <Button 
                 variant="outline" 
                 size="sm" 
-                onClick={handleExportToJson} 
+                onClick={handleExportToPdf} 
                 disabled={loggedDreams.length === 0 || !isClient}
                 className="mt-2 sm:mt-0 bg-card/70 hover:bg-card/90 border-border/50 text-foreground"
             >
                 <Download className="mr-2 h-4 w-4" />
-                Export to JSON
+                Export to PDF
             </Button>
         </div>
       </CardHeader>
