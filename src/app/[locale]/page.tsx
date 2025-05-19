@@ -1,3 +1,4 @@
+
 // This file was previously src/app/page.tsx and has been moved and updated for i18n
 'use client';
 
@@ -53,17 +54,15 @@ export default function HomePage() {
             <TabsTrigger value="dreamJournal" className="text-xs sm:text-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md">
               <BookOpen className="h-4 w-4 mr-1.5 sm:mr-2" /> {t('dreamJournalTab')}
             </TabsTrigger>
-            <IntlLink href="/sleep-science" passHref>
-              <TabsTrigger 
-                value="science" // This value won't make the tab active due to navigation
-                className="text-xs sm:text-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md"
-                // onClick logic can be removed if Link handles navigation directly
-                // For TabsTrigger to behave like a link, direct rendering of <a> or custom handling is needed.
-                // For now, IntlLink wrapping TabsTrigger should work for navigation.
-              >
+            <TabsTrigger 
+              value="science" 
+              asChild
+              className="text-xs sm:text-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md"
+            >
+              <IntlLink href="/sleep-science">
                 <Brain className="h-4 w-4 mr-1.5 sm:mr-2" /> {t('sleepScienceTab')}
-              </TabsTrigger>
-            </IntlLink>
+              </IntlLink>
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="calculator">
