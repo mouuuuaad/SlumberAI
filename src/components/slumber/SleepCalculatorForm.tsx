@@ -1,17 +1,17 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { AlertCircle, Calculator } from 'lucide-react';
-import { addMinutes, format, parse } from 'date-fns';
+import { addMinutes, format, parse, set } from 'date-fns';
 
 const TIME_TO_FALL_ASLEEP = 15; // minutes
 const SLEEP_CYCLE_DURATION = 90; // minutes
-const NUM_CYCLES_TO_SUGGEST = [4, 5, 6]; // Suggest 4, 5, or 6 cycles
+const NUM_CYCLES_TO_SUGGEST = [6, 5, 4]; 
 
 export type CalculationResult = {
   type: 'bedtime' | 'waketime';
@@ -32,6 +32,17 @@ export default function SleepCalculatorForm({ onCalculate }: SleepCalculatorForm
   const [selectedTime, setSelectedTime] = useState('');
   const [timeError, setTimeError] = useState<string | null>(null);
 
+  useEffect(() => {
+    // Client-side effect to set a default time.
+    if (calculationMode === 'wakeUpAt') {
+      const sevenAM = set(new Date(), { hours: 7, minutes: 0 });
+      setSelectedTime(format(sevenAM, 'HH:mm'));
+    } else {
+      setSelectedTime(format(new Date(), 'HH:mm'));
+    }
+  }, [calculationMode]);
+
+
   const handleCalculate = () => {
     if (!selectedTime) {
       setTimeError('Please select a time.');
@@ -40,7 +51,7 @@ export default function SleepCalculatorForm({ onCalculate }: SleepCalculatorForm
     setTimeError(null);
 
     try {
-      const baseDate = '2000-01-01'; // A fixed date for time parsing
+      const baseDate = '2000-01-01'; 
       const parsedTime = parse(`${baseDate}T${selectedTime}`, `${baseDate}THH:mm`, new Date());
 
       if (isNaN(parsedTime.getTime())) {
@@ -61,11 +72,9 @@ export default function SleepCalculatorForm({ onCalculate }: SleepCalculatorForm
           });
         });
         onCalculate({ type: 'bedtime', targetTime: format(parsedTime, 'hh:mm a'), suggestions });
-      } else { // goToBedAt
+      } else { 
         NUM_CYCLES_TO_SUGGEST.forEach(cycles => {
           const totalSleepObtained = cycles * SLEEP_CYCLE_DURATION;
-          // For "go to bed at", the 15 mins to fall asleep is part of the "in bed" time before cycles start.
-          // So, effective sleep starts 15 mins after stated bedtime.
           const effectiveBedTime = addMinutes(parsedTime, TIME_TO_FALL_ASLEEP);
           const wakeUpTime = addMinutes(effectiveBedTime, totalSleepObtained);
           suggestions.push({
@@ -83,7 +92,7 @@ export default function SleepCalculatorForm({ onCalculate }: SleepCalculatorForm
   };
 
   return (
-    <Card className="w-full glassmorphic">
+    <Card className="w-full bg-card/80"> {/* Adjusted background opacity */}
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-2xl">
           <Calculator className="h-6 w-6 text-primary" />
@@ -96,25 +105,35 @@ export default function SleepCalculatorForm({ onCalculate }: SleepCalculatorForm
       </CardHeader>
       <CardContent className="space-y-6">
         <div className="space-y-2">
-          <Label>I want to:</Label>
+          <Label className="text-foreground/90">I want to:</Label>
           <RadioGroup
-            defaultValue="wakeUpAt"
-            onValueChange={(value: 'wakeUpAt' | 'goToBedAt') => setCalculationMode(value)}
+            value={calculationMode}
+            onValueChange={(value: 'wakeUpAt' | 'goToBedAt') => {
+              setCalculationMode(value);
+              // Reset time when mode changes to a sensible default for that mode client-side
+              if (value === 'wakeUpAt') {
+                const sevenAM = set(new Date(), { hours: 7, minutes: 0 });
+                setSelectedTime(format(sevenAM, 'HH:mm'));
+              } else {
+                setSelectedTime(format(new Date(), 'HH:mm'));
+              }
+              setTimeError(null); // Clear previous errors
+            }}
             className="flex space-x-4"
           >
             <div className="flex items-center space-x-2">
               <RadioGroupItem value="wakeUpAt" id="wakeUpAt" />
-              <Label htmlFor="wakeUpAt">Wake up at</Label>
+              <Label htmlFor="wakeUpAt" className="font-normal text-foreground/90">Wake up at</Label>
             </div>
             <div className="flex items-center space-x-2">
               <RadioGroupItem value="goToBedAt" id="goToBedAt" />
-              <Label htmlFor="goToBedAt">Go to bed at</Label>
+              <Label htmlFor="goToBedAt" className="font-normal text-foreground/90">Go to bed at</Label>
             </div>
           </RadioGroup>
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="selectedTime">
+          <Label htmlFor="selectedTime" className="text-foreground/90">
             {calculationMode === 'wakeUpAt' ? 'Desired Wake-up Time:' : 'Desired Bedtime:'}
           </Label>
           <Input
@@ -125,10 +144,10 @@ export default function SleepCalculatorForm({ onCalculate }: SleepCalculatorForm
               setSelectedTime(e.target.value);
               if (timeError) setTimeError(null);
             }}
-            className="w-full md:w-1/2"
+            className="w-full md:w-1/2 bg-input text-foreground"
           />
            {timeError && (
-            <p className="text-sm text-destructive flex items-center gap-1">
+            <p className="text-sm text-destructive flex items-center gap-1 pt-1">
               <AlertCircle className="h-4 w-4" /> {timeError}
             </p>
           )}

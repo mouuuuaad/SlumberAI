@@ -6,17 +6,29 @@ import { useEffect, useState } from 'react';
 
 export default function Header() {
   const [mounted, setMounted] = useState(false);
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(true); // Default to dark mode based on image
 
   useEffect(() => {
     setMounted(true);
     const userPreference = localStorage.getItem('theme');
     if (userPreference === 'dark') {
       setIsDarkMode(true);
+      document.documentElement.classList.add('dark');
     } else if (userPreference === 'light') {
       setIsDarkMode(false);
+      document.documentElement.classList.remove('dark');
     } else {
-      setIsDarkMode(window.matchMedia('(prefers-color-scheme: dark)').matches);
+      // Default to dark if no preference and system is not light
+      const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      if (systemPrefersDark) {
+        setIsDarkMode(true);
+        document.documentElement.classList.add('dark');
+      } else {
+        // Check if we should default to dark anyway if the theme is more aligned with it
+        // For this request, we'll let system light override if no explicit dark preference
+        setIsDarkMode(false); 
+        document.documentElement.classList.remove('dark');
+      }
     }
   }, []);
   
@@ -37,35 +49,29 @@ export default function Header() {
     setIsDarkMode(!isDarkMode);
   };
 
-  if (!mounted) {
-    return ( // Render a placeholder or null during SSR/hydration mismatch phase
-      <header className="py-6 px-4 md:px-8 border-b border-border/50">
-        <div className="container mx-auto flex justify-between items-center">
-          <div className="flex items-center gap-2">
-            <BedDouble className="h-8 w-8 text-primary" />
-            <h1 className="text-3xl font-bold text-primary">SlumberAI</h1>
-          </div>
-          <Button variant="ghost" size="icon" disabled>
-             <Sun className="h-6 w-6 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-          </Button>
-        </div>
-      </header>
+  // Placeholder for SSR to avoid flash of unstyled content or incorrect theme icon
+  const renderIcon = () => {
+    if (!mounted) {
+      // Render a generic or no icon, or a sun if light is the ultimate fallback
+      return  <Sun className="h-5 w-5 transition-all" />;
+    }
+    return isDarkMode ? (
+      <Sun className="h-5 w-5 transition-all" />
+    ) : (
+      <Moon className="h-5 w-5 transition-all" />
     );
-  }
+  };
+
 
   return (
-    <header className="py-6 px-4 md:px-8 border-b border-border/50 shadow-sm">
+    <header className="py-4 sm:py-6 px-4 md:px-8 border-b border-border/30 shadow-sm bg-background">
       <div className="container mx-auto flex justify-between items-center">
-        <div className="flex items-center gap-3">
-          <BedDouble className="h-8 w-8 text-primary" />
-          <h1 className="text-3xl font-bold text-primary">SlumberAI</h1>
+        <div className="flex items-center gap-2 sm:gap-3">
+          <BedDouble className="h-7 w-7 sm:h-8 sm:w-8 text-primary" />
+          <h1 className="text-2xl sm:text-3xl font-bold text-primary">SlumberAI</h1>
         </div>
-        <Button variant="outline" size="icon" onClick={toggleTheme} aria-label="Toggle theme">
-          {isDarkMode ? (
-            <Sun className="h-5 w-5 transition-all" />
-          ) : (
-            <Moon className="h-5 w-5 transition-all" />
-          )}
+        <Button variant="outline" size="icon" onClick={toggleTheme} aria-label="Toggle theme" className="border-border/70">
+          {renderIcon()}
         </Button>
       </div>
     </header>

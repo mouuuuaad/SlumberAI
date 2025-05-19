@@ -9,27 +9,32 @@ const SLEEP_CYCLE_DURATION = 90; // minutes
 interface CycleTimelineChartProps {
   cycles: number;
   totalSleepDuration: number; // in minutes
-  isBedtimeSuggestion: boolean; // true if suggesting bedtimes, false if suggesting wake times
-  suggestedTime: string; // The actual bedtime or wake-up time being visualized
-  targetTime: string; // The user's desired wake-up or bedtime
+  isBedtimeSuggestion: boolean; 
+  suggestedTime: string; 
+  targetTime: string; 
 }
 
 interface ChartSegment {
   name: string;
   duration: number;
+  isFallAsleep?: boolean;
 }
 
 export default function CycleTimelineChart({ cycles, totalSleepDuration, isBedtimeSuggestion, suggestedTime, targetTime }: CycleTimelineChartProps) {
   const chartDataSegments: ChartSegment[] = [];
   
-  chartDataSegments.push({ name: 'Fall Asleep', duration: TIME_TO_FALL_ASLEEP });
+  if (isBedtimeSuggestion) {
+    chartDataSegments.push({ name: 'Fall Asleep', duration: TIME_TO_FALL_ASLEEP, isFallAsleep: true });
+  }
+  
   for (let i = 1; i <= cycles; i++) {
     chartDataSegments.push({ name: `Cycle ${i}`, duration: SLEEP_CYCLE_DURATION });
   }
 
-  // Data for Recharts BarChart (needs to be an array of objects)
-  // Each object will represent a "row" in the vertical bar chart. Here, just one row.
-  // The properties of the object are the segments of the stack.
+  // If calculating wake times, "time to fall asleep" is conceptually part of the first cycle's lead-in from user's perspective.
+  // The chart will show cycles directly. Total duration already accounts for this.
+
+
   const rechartsFormattedData = [
     chartDataSegments.reduce((acc, segment, index) => {
       acc[`segment${index}`] = segment.duration;
@@ -44,59 +49,63 @@ export default function CycleTimelineChart({ cycles, totalSleepDuration, isBedti
     'hsl(var(--chart-3))', 
     'hsl(var(--chart-4))', 
     'hsl(var(--chart-5))',
-    'hsl(var(--chart-1))' // Repeat for 6th cycle
+    'hsl(var(--chart-1))' 
   ];
-  const fallAsleepColor = 'hsl(var(--muted-foreground)/0.7)';
+  const fallAsleepColor = 'hsl(var(--muted-foreground)/0.6)';
 
-  const CustomTooltip = ({ active, payload, label }: any) => {
+  const CustomTooltip = ({ active, payload }: any) => {
     if (active && payload && payload.length) {
-      // Find which segment this is by dataKey
-      const dataKey = payload[0].dataKey; // e.g., "segment0", "segment1"
+      const dataKey = payload[0].dataKey; 
       const segmentIndex = parseInt(dataKey.replace('segment', ''), 10);
       const segmentInfo = chartDataSegments[segmentIndex];
       
       return (
-        <div className="p-2 bg-popover border rounded-md shadow-lg">
-          <p className="font-medium">{`${segmentInfo.name}: ${segmentInfo.duration} mins`}</p>
+        <div className="p-2 bg-popover border rounded-md shadow-lg text-popover-foreground">
+          <p className="font-medium text-sm">{`${segmentInfo.name}: ${segmentInfo.duration} mins`}</p>
         </div>
       );
     }
     return null;
   };
 
+  const displayedTotalSleepDuration = isBedtimeSuggestion ? totalSleepDuration + TIME_TO_FALL_ASLEEP : totalSleepDuration;
 
   return (
-    <Card className="mt-4 glassmorphic overflow-hidden">
-      <CardHeader>
-        <CardTitle className="text-lg">
-          {isBedtimeSuggestion ? `To wake up at ${targetTime}, go to bed at ${suggestedTime}` : `If you go to bed at ${targetTime}, wake up at ${suggestedTime}`}
+    <Card className="bg-transparent border-0 shadow-none rounded-none mt-0 first:mt-0 border-t first:border-t-0 border-border/30">
+      <CardHeader className="py-3 px-4 sm:px-5">
+        <CardTitle className="text-sm sm:text-base font-medium leading-tight">
+          {isBedtimeSuggestion ? 
+            `Go to bed: ${suggestedTime}` : 
+            `Wake up: ${suggestedTime}`
+          }
         </CardTitle>
-        <CardDescription>
-          This provides {Math.floor(totalSleepDuration / 60)}h {totalSleepDuration % 60}m of sleep ({cycles} cycles), including ~15 mins to fall asleep.
+        <CardDescription className="text-xs sm:text-xs">
+          {cycles} sleep cycles ({Math.floor(totalSleepDuration / 60)}h {totalSleepDuration % 60}m actual sleep).
+          {isBedtimeSuggestion && ` (+15m to fall asleep)`}
         </CardDescription>
       </CardHeader>
-      <CardContent>
-        <div className="h-20 w-full"> {/* Fixed height for the chart area */}
+      <CardContent className="pt-0 pb-3 px-4 sm:px-5">
+        <div className="h-12 w-full mb-2">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart
               layout="vertical"
               data={rechartsFormattedData}
-              margin={{ top: 5, right: 20, left: 0, bottom: 5 }}
-              barCategoryGap={0} // No gap between bars in a category (not relevant here)
-              barGap={0} // No gap between categories (not relevant here)
+              margin={{ top: 0, right: 0, left: 0, bottom: 0 }}
+              barCategoryGap={0}
+              barGap={0} 
             >
-              <XAxis type="number" hide domain={[0, 'dataMax + 30']} />
+              <XAxis type="number" hide domain={[0, 'dataMax']} />
               <YAxis type="category" dataKey="name" hide />
-              <Tooltip content={<CustomTooltip />} cursor={{fill: 'transparent'}}/>
+              <Tooltip content={<CustomTooltip />} cursor={{fill: 'hsl(var(--accent)/0.1)'}}/>
               {chartDataSegments.map((segment, index) => (
-                <Bar key={`segment-${index}`} dataKey={`segment${index}`} stackId="sleep" fill="transparent" radius={index === chartDataSegments.length -1 || index === 0 ? [5,5,5,5] : [0,0,0,0]}>
-                   {/* This Cell approach is needed to color segments of a stacked bar */}
-                   <Cell fill={segment.name === 'Fall Asleep' ? fallAsleepColor : cycleColors[ (index-1) % cycleColors.length]} 
+                <Bar key={`segment-${index}`} dataKey={`segment${index}`} stackId="sleep" fill="transparent">
+                   <Cell 
+                         fill={segment.isFallAsleep ? fallAsleepColor : cycleColors[isBedtimeSuggestion ? (index-1) % cycleColors.length : index % cycleColors.length]} 
                          radius={ 
-                           chartDataSegments.length === 1 ? [6,6,6,6] : // single segment
-                           index === 0 ? [6,0,0,6] : // first segment
-                           index === chartDataSegments.length - 1 ? [0,6,6,0] : // last segment
-                           [0,0,0,0] // middle segments
+                           chartDataSegments.length === 1 ? [3,3,3,3] :
+                           index === 0 ? [3,0,0,3] : 
+                           index === chartDataSegments.length - 1 ? [0,3,3,0] : 
+                           [0,0,0,0]
                          }
                    />
                 </Bar>
@@ -104,15 +113,17 @@ export default function CycleTimelineChart({ cycles, totalSleepDuration, isBedti
             </BarChart>
           </ResponsiveContainer>
         </div>
-        <div className="flex flex-wrap gap-x-4 gap-y-2 mt-3 text-xs">
-            <div className="flex items-center gap-1.5">
-                <span className="h-3 w-3 rounded-sm" style={{ backgroundColor: fallAsleepColor }} />
-                Fall Asleep (15 min)
-            </div>
+        <div className="flex flex-wrap gap-x-3 gap-y-1 text-xs text-muted-foreground">
+            {isBedtimeSuggestion && (
+              <div className="flex items-center gap-1">
+                  <span className="h-2.5 w-2.5 rounded-sm" style={{ backgroundColor: fallAsleepColor }} />
+                  Fall Asleep
+              </div>
+            )}
             {Array.from({ length: cycles }).map((_, i) => (
-                <div key={`legend-cycle-${i}`} className="flex items-center gap-1.5">
-                    <span className="h-3 w-3 rounded-sm" style={{ backgroundColor: cycleColors[i % cycleColors.length] }} />
-                    Cycle {i+1} (90 min)
+                <div key={`legend-cycle-${i}`} className="flex items-center gap-1">
+                    <span className="h-2.5 w-2.5 rounded-sm" style={{ backgroundColor: cycleColors[i % cycleColors.length] }} />
+                    Cycle {i+1}
                 </div>
             ))}
         </div>

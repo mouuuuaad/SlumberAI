@@ -23,7 +23,7 @@ export default function NapCalculator() {
   const [timeError, setTimeError] = useState<string | null>(null);
   
   useEffect(() => {
-    // Set default start time to current time when component mounts
+    // Set default start time to current time when component mounts, runs client-side
     setStartTime(format(new Date(), 'HH:mm'));
   }, []);
 
@@ -31,13 +31,14 @@ export default function NapCalculator() {
   const handleCalculateNap = () => {
     if (!startTime) {
       setTimeError('Please select a start time for your nap.');
+      setNapResult(null);
       return;
     }
     setTimeError(null);
     setNapResult(null);
 
     try {
-      const baseDate = '2000-01-01'; // A fixed date for time parsing
+      const baseDate = '2000-01-01'; 
       const parsedStartTime = parse(`${baseDate}T${startTime}`, `${baseDate}THH:mm`, new Date());
 
       if (isNaN(parsedStartTime.getTime())) {
@@ -61,7 +62,7 @@ export default function NapCalculator() {
   const selectedNapDetails = napTypes.find(n => n.duration.toString() === selectedNapType);
 
   return (
-    <Card className="w-full glassmorphic">
+    <Card className="w-full bg-card/80"> {/* Adjusted background opacity slightly */}
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-2xl">
           <Coffee className="h-6 w-6 text-primary" />
@@ -73,9 +74,9 @@ export default function NapCalculator() {
       </CardHeader>
       <CardContent className="space-y-6">
         <div className="space-y-2">
-          <Label htmlFor="napType">Nap Type:</Label>
+          <Label htmlFor="napType" className="text-foreground/90">Nap Type:</Label>
           <Select value={selectedNapType} onValueChange={setSelectedNapType}>
-            <SelectTrigger id="napType" className="w-full md:w-[280px]">
+            <SelectTrigger id="napType" className="w-full md:w-[280px] bg-input text-foreground focus:bg-input">
               <SelectValue placeholder="Select nap type" />
             </SelectTrigger>
             <SelectContent>
@@ -90,7 +91,7 @@ export default function NapCalculator() {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="startTime">Nap Start Time:</Label>
+          <Label htmlFor="startTime" className="text-foreground/90">Nap Start Time:</Label>
           <Input
             id="startTime"
             type="time"
@@ -100,7 +101,7 @@ export default function NapCalculator() {
               if(timeError) setTimeError(null);
               if(napResult) setNapResult(null);
             }}
-            className="w-full md:w-1/2"
+            className="w-full md:w-1/2 bg-input text-foreground"
           />
           {timeError && (
             <p className="text-sm text-destructive flex items-center gap-1">
@@ -114,7 +115,7 @@ export default function NapCalculator() {
         </Button>
 
         {napResult && (
-          <Card className="mt-4 bg-primary/10 border-primary/30">
+          <Card className="mt-4 bg-primary/20 border-primary/40"> {/* Use primary for result emphasis */}
             <CardContent className="pt-6">
               <p className="text-center font-medium text-primary-foreground flex items-center justify-center gap-2">
                 <Clock className="h-5 w-5"/> {napResult}
