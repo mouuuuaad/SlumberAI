@@ -8,98 +8,97 @@ body {
 
 @layer base {
   :root {
-    /* Light Theme - Standard contrast, not matching the dark image */
-    --background: 0 0% 100%; /* White */
-    --foreground: 240 10% 10%; /* Dark Blue/Black */
+    /* Light Theme - Lavender Based */
+    --background: 277 50% 95.3%; /* #F4EFF7 Light Desaturated Lavender */
+    --foreground: 277 20% 25%;   /* Darker lavender for text */
 
-    --card: 0 0% 97%; /* Light Gray */
-    --card-foreground: 240 10% 10%;
+    --card: 277 50% 98%;       /* Slightly Lighter Lavender for cards */
+    --card-foreground: 277 20% 25%;
 
-    --popover: 0 0% 97%;
-    --popover-foreground: 240 10% 10%;
+    --popover: 277 50% 97%;
+    --popover-foreground: 277 20% 25%;
 
-    --primary: 240 50% 50%; /* Standard Blue for light mode buttons */
-    --primary-foreground: 0 0% 98%; /* White text on blue buttons */
+    --primary: 279 40.4% 78.8%;  /* #D0B4DE Soft Lavender */
+    --primary-foreground: 279 30% 15%; /* Darker lavender for text on primary */
     
-    --secondary: 0 0% 92%; /* Light Gray */
-    --secondary-foreground: 240 10% 15%;
+    --secondary: 277 40% 90%;   /* Lighter Lavender */
+    --secondary-foreground: 277 20% 30%;
 
-    --muted: 0 0% 94%;
-    --muted-foreground: 240 10% 45%;
+    --muted: 277 30% 88%;      /* Muted Lavender */
+    --muted-foreground: 277 20% 45%;
 
-    --accent: 230 60% 60%; /* A lighter blue accent for light mode */
-    --accent-foreground: 0 0% 100%; 
+    --accent: 193.2 40.4% 73.9%; /* #A0CED9 Pale Blue */
+    --accent-foreground: 193 30% 15%; /* Darker blue for text on accent */
 
     --destructive: 0 72% 51%; 
     --destructive-foreground: 0 0% 98%;
 
-    --border: 0 0% 88%;
-    --input: 0 0% 95%;
-    --ring: 240 50% 55%; /* Ring color based on light primary */
+    --border: 277 30% 85%;
+    --input: 277 40% 92%;      /* Input background - slightly off-white lavender */
+    --ring: 279 40.4% 78.8%;   /* Ring color based on primary */
 
-    --chart-1: 240 50% 60%; 
-    --chart-2: 230 50% 65%;
-    --chart-3: 250 50% 70%;
-    --chart-4: 220 50% 60%; 
-    --chart-5: 210 50% 65%;
+    --chart-1: 279 40% 70%; 
+    --chart-2: 193 40% 70%;
+    --chart-3: 279 50% 80%;
+    --chart-4: 193 50% 80%; 
+    --chart-5: 279 30% 65%;
 
     --radius: 0.5rem;
 
-    --sidebar-background: 0 0% 95%;
-    --sidebar-foreground: 240 10% 10%;
+    /* Sidebar values can remain or be adjusted if a sidebar is added later */
+    --sidebar-background: 277 45% 92%;
+    --sidebar-foreground: 277 20% 25%;
     --sidebar-primary: var(--primary);
     --sidebar-primary-foreground: var(--primary-foreground);
     --sidebar-accent: var(--accent);
     --sidebar-accent-foreground: var(--accent-foreground);
-    --sidebar-border: 0 0% 85%;
+    --sidebar-border: 277 30% 80%;
     --sidebar-ring: var(--ring);
   }
 
   .dark {
-    /* Dark Theme - Styled to match the provided image */
-    --background: 235 60% 10%; /* Very Dark Blue/Purple */
-    --foreground: 0 0% 95%;    /* Off-white/Very Light Gray */
+    /* Dark Theme - Lavender Based */
+    --background: 277 20% 12%; /* Dark Lavender-ish Blue */
+    --foreground: 277 25% 90%;   /* Light Grayish Lavender */
 
-    --card: 236 49% 20%;       /* Slightly Lighter Dark Blue (for time input wrapper, result cards) */
-    --card-foreground: 0 0% 95%; 
+    --card: 277 25% 20%;       /* Darker card bg */
+    --card-foreground: 277 25% 90%; 
 
-    --popover: 236 49% 18%;    /* Darker for popovers */
-    --popover-foreground: 0 0% 95%;
+    --popover: 277 25% 18%;    /* Darker for popovers */
+    --popover-foreground: 277 25% 90%;
 
-    --primary: 40 50% 92%;     /* Light Beige/Cream for buttons */
-    --primary-foreground: 235 60% 12%; /* Dark Blue/Purple text on beige buttons */
+    --primary: 279 50% 75%;     /* #D0B4DE Soft Lavender - adjusted for dark */
+    --primary-foreground: 279 30% 10%; /* Darkest lavender for text on primary */
     
-    --secondary: 235 40% 25%;  /* A slightly lighter blue for other secondary elements */
-    --secondary-foreground: 0 0% 85%;
+    --secondary: 277 20% 25%;  /* Darker secondary elements */
+    --secondary-foreground: 277 25% 80%;
 
-    --muted: 235 30% 30%;      /* Muted dark blue */
-    --muted-foreground: 235 20% 70%; /* Lighter muted text (e.g., footer) */
+    --muted: 277 15% 30%;      /* Muted dark lavender */
+    --muted-foreground: 277 20% 70%; 
 
-    --accent: 40 60% 85%;      /* Accent could be a slightly more saturated beige/gold if needed */
-    --accent-foreground: 235 60% 10%;
+    --accent: 193.2 50% 70%;   /* #A0CED9 Pale Blue - adjusted for dark */
+    --accent-foreground: 193 30% 10%; /* Darkest blue for text on accent */
 
     --destructive: 0 63% 40%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 236 30% 35%;     /* Borders, slightly lighter than card for definition */
-    --input: 236 49% 20%;      /* Input background same as card (used by default Input component styling) */
-    /* Input text color will use --card-foreground or --foreground */
-    --ring: 40 50% 80%;        /* Ring based on beige accent */
+    --border: 277 20% 35%;     
+    --input: 277 25% 22%;      /* Input background for dark theme */
+    --ring: 279 50% 75%;       /* Ring based on dark primary */
 
-    --chart-1: 220 50% 70%; /* Adjusted for dark theme visibility */
-    --chart-2: 40 50% 70%;  /* Beige/Gold for contrast */
-    --chart-3: 200 50% 65%; /* Cyan/Blue */
-    --chart-4: 270 50% 75%; /* Purple */
-    --chart-5: 30 50% 70%;  /* Orange */
+    --chart-1: 279 50% 70%; 
+    --chart-2: 193 50% 70%;  
+    --chart-3: 279 60% 80%; 
+    --chart-4: 193 60% 80%; 
+    --chart-5: 279 40% 65%;
 
-    /* Sidebar specific (less relevant for the single page image, but kept for consistency) */
-    --sidebar-background: 235 55% 12%;
-    --sidebar-foreground: 0 0% 90%;
+    --sidebar-background: 277 20% 15%;
+    --sidebar-foreground: 277 25% 85%;
     --sidebar-primary: var(--primary);
     --sidebar-primary-foreground: var(--primary-foreground);
     --sidebar-accent: var(--accent);
     --sidebar-accent-foreground: var(--accent-foreground);
-    --sidebar-border: 235 40% 25%;
+    --sidebar-border: 277 15% 28%;
     --sidebar-ring: var(--ring);
   }
 }
@@ -119,10 +118,12 @@ body {
   }
 }
 
-/* Glassmorphism utility, can be applied to cards if desired, though image is more flat */
+/* Glassmorphism utility */
 .glassmorphic {
-  @apply bg-card/80 backdrop-blur-md border-white/10 shadow-xl; /* Adjusted alpha */
+  /* Light mode glass */
+  @apply bg-card/60 backdrop-blur-lg border-white/20 shadow-xl;
 }
 .dark .glassmorphic {
-  @apply bg-card/70 backdrop-blur-lg border-white/5 shadow-2xl; /* Adjusted alpha for dark */
+  /* Dark mode glass - adjust opacities and blurs as needed for the new theme */
+  @apply bg-card/50 backdrop-blur-xl border-white/10 shadow-2xl;
 }

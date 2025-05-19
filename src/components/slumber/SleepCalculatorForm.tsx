@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { AlertCircle, Calculator } from 'lucide-react';
+import { AlertCircle, CalculatorIcon } from 'lucide-react'; // Changed to CalculatorIcon
 import { addMinutes, format, parse, set } from 'date-fns';
 
 const TIME_TO_FALL_ASLEEP = 15; // minutes
@@ -92,13 +92,14 @@ export default function SleepCalculatorForm({ onCalculate }: SleepCalculatorForm
   };
 
   return (
-    <Card className="w-full bg-card/80"> {/* Adjusted background opacity */}
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-2xl">
-          <Calculator className="h-6 w-6 text-primary" />
+    // Card itself is not glassmorphic as it's inside a glassmorphic container on page.tsx
+    <Card className="w-full bg-transparent border-0 shadow-none"> 
+      <CardHeader className="pb-4">
+        <CardTitle className="flex items-center gap-2 text-xl sm:text-2xl text-foreground">
+          <CalculatorIcon className="h-6 w-6 text-primary" /> {/* Changed to CalculatorIcon */}
           Sleep Cycle Calculator
         </CardTitle>
-        <CardDescription>
+        <CardDescription className="text-sm text-muted-foreground">
           Determine the best times to sleep or wake up based on natural 90-minute sleep cycles.
           It typically takes about 15 minutes to fall asleep.
         </CardDescription>
@@ -110,16 +111,15 @@ export default function SleepCalculatorForm({ onCalculate }: SleepCalculatorForm
             value={calculationMode}
             onValueChange={(value: 'wakeUpAt' | 'goToBedAt') => {
               setCalculationMode(value);
-              // Reset time when mode changes to a sensible default for that mode client-side
               if (value === 'wakeUpAt') {
                 const sevenAM = set(new Date(), { hours: 7, minutes: 0 });
                 setSelectedTime(format(sevenAM, 'HH:mm'));
               } else {
                 setSelectedTime(format(new Date(), 'HH:mm'));
               }
-              setTimeError(null); // Clear previous errors
+              setTimeError(null);
             }}
-            className="flex space-x-4"
+            className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4"
           >
             <div className="flex items-center space-x-2">
               <RadioGroupItem value="wakeUpAt" id="wakeUpAt" />
@@ -144,7 +144,7 @@ export default function SleepCalculatorForm({ onCalculate }: SleepCalculatorForm
               setSelectedTime(e.target.value);
               if (timeError) setTimeError(null);
             }}
-            className="w-full md:w-1/2 bg-input text-foreground"
+            className="w-full md:w-1/2 bg-input text-foreground focus:ring-primary"
           />
            {timeError && (
             <p className="text-sm text-destructive flex items-center gap-1 pt-1">
@@ -153,7 +153,7 @@ export default function SleepCalculatorForm({ onCalculate }: SleepCalculatorForm
           )}
         </div>
 
-        <Button onClick={handleCalculate} className="w-full md:w-auto">
+        <Button onClick={handleCalculate} className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-primary-foreground">
           Calculate
         </Button>
       </CardContent>

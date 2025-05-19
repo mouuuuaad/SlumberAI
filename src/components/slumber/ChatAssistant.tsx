@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, type FormEvent } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -34,7 +34,7 @@ export default function ChatAssistant() {
     scrollToBottom();
   }, [messages]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (!inputValue.trim() || isLoading) return;
 
@@ -49,10 +49,11 @@ export default function ChatAssistant() {
 
     try {
       const input: ChatWithSleepAssistantInput = { query: userMessage.content };
+      // Ensure you have error handling for the AI call itself if needed
       const result: ChatWithSleepAssistantOutput = await chatWithSleepAssistant(input);
       
       const assistantMessage: Message = {
-        id: (Date.now() + 1).toString(),
+        id: (Date.now() + 1).toString(), // Ensure unique ID
         role: 'assistant',
         content: result.response,
       };
@@ -62,7 +63,7 @@ export default function ChatAssistant() {
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        content: 'Sorry, I encountered an error. Please try again.',
+        content: 'Sorry, I had trouble connecting to my brain. Please try again in a moment.',
       };
       setMessages((prev) => [...prev, errorMessage]);
     } finally {
@@ -71,13 +72,14 @@ export default function ChatAssistant() {
   };
 
   return (
-    <Card className="w-full h-[600px] flex flex-col bg-card/80"> {/* Adjusted background opacity */}
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-2xl">
+    // Card itself is not glassmorphic as it's inside a glassmorphic container on page.tsx
+    <Card className="w-full h-[600px] flex flex-col bg-transparent border-0 shadow-none"> 
+      <CardHeader className="pb-4">
+        <CardTitle className="flex items-center gap-2 text-xl sm:text-2xl text-foreground">
           <MessageSquare className="h-6 w-6 text-primary" />
           AI Sleep Assistant
         </CardTitle>
-        <CardDescription>
+        <CardDescription className="text-sm text-muted-foreground">
           Ask me anything about sleep! I can offer advice and recommendations.
         </CardDescription>
       </CardHeader>
@@ -88,35 +90,43 @@ export default function ChatAssistant() {
               <div
                 key={message.id}
                 className={cn(
-                  'flex items-start gap-3 p-3 rounded-lg max-w-[85%] shadow-sm', // Added shadow-sm
-                  message.role === 'user' ? 'ml-auto bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground' // User message uses primary, assistant uses muted
+                  'flex items-start gap-3 p-3 rounded-lg max-w-[85%] shadow-sm',
+                  message.role === 'user' 
+                    ? 'ml-auto bg-primary text-primary-foreground' 
+                    : 'bg-card text-card-foreground border' // Assistant messages use card bg with border
                 )}
               >
-                {message.role === 'assistant' && <Bot className="h-6 w-6 text-accent flex-shrink-0 mt-0.5" />} {/* Assistant icon with accent color */}
+                {message.role === 'assistant' && <Bot className="h-5 w-5 sm:h-6 sm:w-6 text-accent flex-shrink-0 mt-0.5" />}
                 <p className="text-sm whitespace-pre-wrap break-words">{message.content}</p>
-                {message.role === 'user' && <User className="h-6 w-6 text-primary-foreground flex-shrink-0 mt-0.5" />}
+                {message.role === 'user' && <User className="h-5 w-5 sm:h-6 sm:w-6 text-primary-foreground flex-shrink-0 mt-0.5" />}
               </div>
             ))}
             {isLoading && (
-              <div className="flex items-start gap-3 p-3 rounded-lg bg-muted max-w-[85%]">
-                <Bot className="h-6 w-6 text-accent flex-shrink-0 mt-0.5" />
-                <p className="text-sm animate-pulse text-muted-foreground">Thinking...</p>
+              <div className="flex items-start gap-3 p-3 rounded-lg bg-muted max-w-[85%] shadow-sm">
+                <Bot className="h-5 w-5 sm:h-6 sm:w-6 text-accent flex-shrink-0 mt-0.5" />
+                <p className="text-sm animate-pulse text-muted-foreground">SlumberAI is thinking...</p>
+              </div>
+            )}
+             {messages.length === 0 && !isLoading && (
+              <div className="text-center py-10">
+                <MessageSquare className="h-12 w-12 mx-auto text-muted-foreground/50 mb-2" />
+                <p className="text-muted-foreground">No messages yet. Ask something!</p>
               </div>
             )}
           </div>
         </ScrollArea>
-        <form onSubmit={handleSubmit} className="p-4 border-t border-border/50 bg-background/70"> {/* Input area slightly different bg */}
+        <form onSubmit={handleSubmit} className="p-4 border-t border-border/50 bg-background/70">
           <div className="flex items-center gap-2">
             <Input
               type="text"
-              placeholder="Ask about sleep..."
+              placeholder="E.g., How can I improve my sleep quality?"
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
               disabled={isLoading}
-              className="flex-grow bg-input text-foreground placeholder:text-muted-foreground"
+              className="flex-grow bg-input text-foreground placeholder:text-muted-foreground focus:ring-primary"
             />
-            <Button type="submit" disabled={isLoading || !inputValue.trim()} size="icon">
-              <Send className="h-5 w-5" />
+            <Button type="submit" disabled={isLoading || !inputValue.trim()} size="icon" className="bg-primary hover:bg-primary/90">
+              <Send className="h-5 w-5 text-primary-foreground" />
             </Button>
           </div>
         </form>
