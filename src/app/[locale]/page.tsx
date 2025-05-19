@@ -3,8 +3,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-// import Link from 'next/link'; // Using next-intl's Link
-import { Link as IntlLink } from 'next-intl';
+import { Link } from 'next-intl'; // Changed from: import { Link as IntlLink } from 'next-intl';
 import Header from '@/components/slumber/Header';
 import SleepCalculationResults from '@/components/slumber/SleepCalculationResults';
 import NapCalculator from '@/components/slumber/NapCalculator';
@@ -59,9 +58,9 @@ export default function HomePage() {
               asChild
               className="text-xs sm:text-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md"
             >
-              <IntlLink href="/sleep-science">
+              <Link href="/sleep-science"> {/* Changed from IntlLink */}
                 <Brain className="h-4 w-4 mr-1.5 sm:mr-2" /> {t('sleepScienceTab')}
-              </IntlLink>
+              </Link>
             </TabsTrigger>
           </TabsList>
 
