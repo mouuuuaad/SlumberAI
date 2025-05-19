@@ -3,7 +3,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Link as NextIntlLink } from 'next-intl'; // Changed import to use an alias
+import NextLink from 'next/link'; // Changed from next-intl's Link to next/link
 import Header from '@/components/slumber/Header';
 import SleepCalculationResults from '@/components/slumber/SleepCalculationResults';
 import NapCalculator from '@/components/slumber/NapCalculator';
@@ -58,9 +58,9 @@ export default function HomePage() {
               asChild
               className="text-xs sm:text-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md"
             >
-              <NextIntlLink href="/sleep-science"> {/* Used aliased import */}
+              <NextLink href="/sleep-science"> {/* Changed to NextLink from next/link */}
                 <Brain className="h-4 w-4 mr-1.5 sm:mr-2" /> {t('sleepScienceTab')}
-              </NextIntlLink>
+              </NextLink>
             </TabsTrigger>
           </TabsList>
 
