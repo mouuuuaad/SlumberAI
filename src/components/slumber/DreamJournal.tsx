@@ -7,7 +7,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { BookOpen, Feather, Loader2, Sparkles } from 'lucide-react';
+import { BookOpen, Feather, Loader2, Sparkles, Download } from 'lucide-react'; // Added Download icon
 import { analyzeDreamSentiment, type AnalyzeDreamSentimentInput, type AnalyzeDreamSentimentOutput } from '@/ai/flows/analyze-dream-sentiment-flow';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
@@ -100,19 +100,55 @@ export default function DreamJournal() {
     }
   };
 
+  const handleExportToJson = () => {
+    if (loggedDreams.length === 0) {
+      // Optionally, show a toast or alert if there are no dreams to export
+      console.log("No dreams to export.");
+      return;
+    }
+    // Prepare data for export (remove transient state like isAnalyzing if needed, though current structure is fine)
+    const dreamsToExport = loggedDreams.map(({ isAnalyzing, sentimentColor, ...dream }) => dream);
+
+    const jsonString = JSON.stringify(dreamsToExport, null, 2); // null, 2 for pretty printing
+    const blob = new Blob([jsonString], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    const timestamp = format(new Date(), 'yyyyMMdd_HHmmss');
+    link.download = `slumberai_dreams_${timestamp}.json`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <Card className="w-full h-auto md:h-[700px] flex flex-col bg-transparent border-0 shadow-none">
       <CardHeader className="pb-4">
-        <CardTitle className="flex items-center gap-2 text-xl sm:text-2xl text-foreground">
-          <BookOpen className="h-6 w-6 text-primary" />
-          Dream Journal
-        </CardTitle>
-        <CardDescription className="text-sm text-muted-foreground">
-          Log your dreams and get AI-powered sentiment analysis.
-        </CardDescription>
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+            <div>
+                <CardTitle className="flex items-center gap-2 text-xl sm:text-2xl text-foreground">
+                    <BookOpen className="h-6 w-6 text-primary" />
+                    Dream Journal
+                </CardTitle>
+                <CardDescription className="text-sm text-muted-foreground mt-1">
+                    Log your dreams and get AI-powered sentiment analysis.
+                </CardDescription>
+            </div>
+            <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={handleExportToJson} 
+                disabled={loggedDreams.length === 0 || !isClient}
+                className="mt-2 sm:mt-0 bg-card/70 hover:bg-card/90 border-border/50 text-foreground"
+            >
+                <Download className="mr-2 h-4 w-4" />
+                Export to JSON
+            </Button>
+        </div>
       </CardHeader>
       <CardContent className="flex-grow flex flex-col p-0 overflow-hidden">
-        <form onSubmit={handleSubmitDream} className="p-4 md:p-6 border-b border-border/30">
+        <form onSubmit={handleSubmitDream} className="p-4 md:px-6 md:pt-2 md:pb-4 border-b border-border/30">
           <div className="space-y-2 mb-4">
             <Label htmlFor="dreamText" className="text-foreground/90">What did you dream about?</Label>
             <Textarea
