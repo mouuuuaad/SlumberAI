@@ -12,7 +12,8 @@ const geistSans = Geist({
 export const metadata: Metadata = {
   title: 'SlumberAI - Optimize Your Sleep',
   description: 'Calculate optimal sleep times, get nap advice, and chat with an AI sleep assistant.',
-  manifest: '/manifest.json', // Added manifest link to metadata
+  manifest: '/manifest.json',
+  themeColor: '#D0B4DE', // Moved theme-color here
 };
 
 export default function RootLayout({
@@ -22,10 +23,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <head>
-        <meta name="theme-color" content="#D0B4DE" /> {/* Corresponds to primary color */}
-        {/* The manifest link is now handled by Next.js metadata object above */}
-      </head>
+      {/* Removed manual <head> block here. Next.js will generate it based on metadata. */}
       <body className={`${geistSans.variable} font-sans antialiased`} suppressHydrationWarning>
         <ThemeProvider>
           {children}
