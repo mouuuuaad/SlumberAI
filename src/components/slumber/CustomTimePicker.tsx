@@ -134,7 +134,7 @@ export default function CustomTimePicker({ value, onChange }: CustomTimePickerPr
         className="absolute top-1/2 left-3 right-3 -translate-y-1/2 pointer-events-none z-0"
         style={{ height: `${itemH}px` }} 
       >
-        <div className="h-full w-full border-y border-accent rounded-sm"></div>
+        <div className="h-full w-full border-y border-accent rounded-md"></div>
       </div>
       <div className="flex justify-center items-center space-x-1 sm:space-x-2 relative z-10">
         <ScrollableColumn
@@ -145,7 +145,7 @@ export default function CustomTimePicker({ value, onChange }: CustomTimePickerPr
           itemHeight={itemH}
           className="w-20" // Adjusted width
         />
-        <div className="text-5xl text-muted-foreground select-none font-bold mt-[-2px]">:</div>
+        <div className="text-5xl text-foreground select-none font-bold mt-[-2px]">:</div>
         <ScrollableColumn
           columnId="minutes"
           values={minutesArray} 
