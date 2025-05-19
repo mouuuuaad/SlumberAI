@@ -4,11 +4,14 @@
 import { useState, useRef, useEffect, type FormEvent } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Bot, User, Send, MessageSquare, Sparkles } from 'lucide-react'; // Added Sparkles for coach
+import { Bot, User, Send, Sparkles, Settings2 } from 'lucide-react';
 import { aiSleepCoach, type AiSleepCoachInput, type AiSleepCoachOutput } from '@/ai/flows/ai-sleep-coach';
 import { cn } from '@/lib/utils';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 
 interface Message {
   id: string;
@@ -22,6 +25,11 @@ export default function ChatAssistant() {
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
+
+  // User Profile State
+  const [age, setAge] = useState<string>('');
+  const [lifestyle, setLifestyle] = useState<string>('');
+  const [stressLevel, setStressLevel] = useState<string>(''); // e.g., 'low', 'medium', 'high'
 
   const scrollToBottom = () => {
     if (scrollAreaRef.current) {
@@ -40,13 +48,11 @@ export default function ChatAssistant() {
 
   const handleFollowUpClick = (question: string) => {
     setInputValue(question);
-    // Optionally, you could trigger a submit here automatically,
-    // or let the user edit/confirm by pressing send.
-    // For now, just populates input.
+    // handleSubmit will be triggered by user sending
   };
 
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async (e?: FormEvent) => {
+    if (e) e.preventDefault();
     if (!inputValue.trim() || isLoading) return;
 
     const userMessage: Message = {
@@ -60,12 +66,14 @@ export default function ChatAssistant() {
     setIsLoading(true);
 
     try {
-      // For now, we don't have sleepHistory or userProfile from the UI.
-      // The Genkit flow's schema makes these optional.
+      const userProfileInput: AiSleepCoachInput['userProfile'] = {};
+      if (age) userProfileInput.age = parseInt(age, 10);
+      if (lifestyle.trim()) userProfileInput.lifestyle = lifestyle.trim();
+      if (stressLevel) userProfileInput.stressLevel = stressLevel;
+
       const input: AiSleepCoachInput = { 
         currentQuery,
-        // sleepHistory: [], // Example if we had data
-        // userProfile: {},  // Example if we had data
+        userProfile: Object.keys(userProfileInput).length > 0 ? userProfileInput : undefined,
       };
       const result: AiSleepCoachOutput = await aiSleepCoach(input);
       
@@ -90,17 +98,67 @@ export default function ChatAssistant() {
   };
 
   return (
-    <Card className="w-full h-[600px] flex flex-col bg-transparent border-0 shadow-none"> 
-      <CardHeader className="pb-4">
+    <Card className="w-full h-[700px] md:h-[650px] flex flex-col bg-transparent border-0 shadow-none"> 
+      <CardHeader className="pb-2">
         <CardTitle className="flex items-center gap-2 text-xl sm:text-2xl text-foreground">
-          <Sparkles className="h-6 w-6 text-primary" /> {/* Changed icon */}
+          <Sparkles className="h-6 w-6 text-primary" />
           AI Sleep Coach
         </CardTitle>
         <CardDescription className="text-sm text-muted-foreground">
-          Ask for personalized sleep advice. How are you feeling?
+          Provide some details below and ask for personalized sleep advice.
         </CardDescription>
       </CardHeader>
       <CardContent className="flex-grow flex flex-col p-0 overflow-hidden">
+        
+        <Accordion type="single" collapsible className="px-4 md:px-6 pt-2 pb-1 border-b border-border/30">
+          <AccordionItem value="profile" className="border-b-0">
+            <AccordionTrigger className="text-sm hover:no-underline text-foreground/90 py-2">
+              <div className="flex items-center gap-2">
+                <Settings2 className="h-4 w-4" />
+                Personalize Advice (Optional)
+              </div>
+            </AccordionTrigger>
+            <AccordionContent className="pt-3 pb-2 space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <Label htmlFor="age" className="text-xs">Age</Label>
+                  <Input 
+                    id="age" 
+                    type="number" 
+                    placeholder="e.g., 30" 
+                    value={age} 
+                    onChange={(e) => setAge(e.target.value)}
+                    className="bg-input/70 text-foreground placeholder:text-muted-foreground/70 h-9"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label htmlFor="stressLevel" className="text-xs">Stress Level</Label>
+                  <Select value={stressLevel} onValueChange={setStressLevel}>
+                    <SelectTrigger id="stressLevel" className="bg-input/70 text-foreground placeholder:text-muted-foreground/70 h-9">
+                      <SelectValue placeholder="Select stress level" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="low">Low</SelectItem>
+                      <SelectItem value="medium">Medium</SelectItem>
+                      <SelectItem value="high">High</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="lifestyle" className="text-xs">Lifestyle</Label>
+                <Input 
+                  id="lifestyle" 
+                  placeholder="e.g., Sedentary office worker, Active athlete, Student" 
+                  value={lifestyle} 
+                  onChange={(e) => setLifestyle(e.target.value)}
+                  className="bg-input/70 text-foreground placeholder:text-muted-foreground/70 h-9"
+                />
+              </div>
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
+
         <ScrollArea className="flex-grow p-4 md:p-6" ref={scrollAreaRef}>
           <div className="space-y-4">
             {messages.map((message) => (
@@ -143,7 +201,7 @@ export default function ChatAssistant() {
              {messages.length === 0 && !isLoading && (
               <div className="flex flex-col items-center justify-center text-center py-10 h-full">
                 <Sparkles className="h-12 w-12 mx-auto text-muted-foreground/50 mb-3" />
-                <p className="text-muted-foreground">Ready for some sleep coaching? Ask me anything!</p>
+                <p className="text-muted-foreground">Enter your details above (optional) and ask anything!</p>
                 <p className="text-xs text-muted-foreground/70 mt-1">e.g., "I often wake up tired" or "How can I stop snoozing?"</p>
               </div>
             )}
@@ -168,3 +226,4 @@ export default function ChatAssistant() {
     </Card>
   );
 }
+
