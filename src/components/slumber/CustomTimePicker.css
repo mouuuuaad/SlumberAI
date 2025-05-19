@@ -1,0 +1,23 @@
+
+.custom-time-picker-no-scrollbar::-webkit-scrollbar {
+  display: none; /* Safari and Chrome */
+}
+.custom-time-picker-no-scrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+  -webkit-overflow-scrolling: touch; /* Enables momentum scrolling on iOS */
+}
+
+/* Optional: Style for the scroll track and thumb if not completely hidden, for better UX on desktop if needed */
+/*
+.custom-time-picker-no-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-time-picker-no-scrollbar::-webkit-scrollbar-thumb {
+  background: #555;
+  border-radius: 5px;
+}
+.custom-time-picker-no-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #777;
+}
+*/
