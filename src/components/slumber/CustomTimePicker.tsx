@@ -50,15 +50,20 @@ const ScrollableColumn: React.FC<{
   itemHeight?: number;
   columnId: string;
   className?: string;
-}> = ({ values, selectedValue, onSelect, itemHeight = 48, columnId, className }) => { // Increased itemHeight
+}> = ({ values, selectedValue, onSelect, itemHeight = 64, columnId, className }) => { 
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (scrollRef.current) {
       const selectedIndex = values.findIndex(v => String(v) === String(selectedValue));
       if (selectedIndex !== -1) {
-        const targetScrollTop = (selectedIndex * itemHeight) - (scrollRef.current.clientHeight / 2) + (itemHeight / 2);
-        scrollRef.current.scrollTop = targetScrollTop;
+        // Ensure the scroll happens after the DOM update and potential resizes
+        requestAnimationFrame(() => {
+          if (scrollRef.current) {
+            const targetScrollTop = (selectedIndex * itemHeight) - (scrollRef.current.clientHeight / 2) + (itemHeight / 2);
+            scrollRef.current.scrollTop = targetScrollTop;
+          }
+        });
       }
     }
   }, [selectedValue, values, itemHeight]);
@@ -70,29 +75,30 @@ const ScrollableColumn: React.FC<{
   return (
     <div 
       className={cn(
-        "h-48 w-20 overflow-y-scroll custom-time-picker-no-scrollbar relative snap-y snap-mandatory", // Increased height, added snap
+        "h-48 w-24 overflow-y-scroll custom-time-picker-no-scrollbar relative snap-y snap-mandatory", // Fixed height, adjusted width
          className
       )} 
       ref={scrollRef}
     >
-      <div style={{ height: `calc(50% - ${itemHeight / 2}px)` }} className="snap-center"></div> {/* Helper for centering */}
+      {/* Padding divs for scroll snapping to center */}
+      <div style={{ height: `calc(50% - ${itemHeight / 2}px)` }} className="snap-center"></div>
       {values.map((val, index) => (
         <div
           key={`${columnId}-${index}`}
           id={`${columnId}-item-${index}`}
           onClick={() => handleItemClick(val)}
           className={cn(
-            'flex items-center justify-center text-4xl cursor-pointer transition-all duration-200 ease-out snap-center', // Increased text size
+            'flex items-center justify-center cursor-pointer transition-all duration-200 ease-out snap-center', 
             String(val) === String(selectedValue) 
-              ? 'text-foreground font-semibold scale-100 opacity-100' 
-              : 'text-muted-foreground opacity-40 scale-90',
+              ? 'text-foreground font-bold text-5xl' // Larger, bold, and brighter for selected
+              : 'text-muted-foreground text-3xl opacity-50 scale-90', // Smaller, dimmer for unselected
           )}
-          style={{ height: `${itemHeight}px` }}
+          style={{ height: `${itemHeight}px` }} // Explicit height for each item
         >
-          {val}
+          {String(val).padStart(columnId === 'minutes' ? 2 : 0, '0')}
         </div>
       ))}
-      <div style={{ height: `calc(50% - ${itemHeight / 2}px)` }} className="snap-center"></div> {/* Helper for centering */}
+      <div style={{ height: `calc(50% - ${itemHeight / 2}px)` }} className="snap-center"></div>
     </div>
   );
 };
@@ -101,7 +107,7 @@ const ScrollableColumn: React.FC<{
 export default function CustomTimePicker({ value, onChange }: CustomTimePickerProps) {
   const initialParts = from24HourFormat(value);
   const [displayHour, setDisplayHour] = useState<number>(initialParts.hour);
-  const [displayMinute, setDisplayMinute] = useState<number>(initialParts.minute); // Store as number
+  const [displayMinute, setDisplayMinute] = useState<number>(initialParts.minute); 
   const [displayPeriod, setDisplayPeriod] = useState<Period>(initialParts.period);
 
   useEffect(() => {
@@ -117,13 +123,18 @@ export default function CustomTimePicker({ value, onChange }: CustomTimePickerPr
       onChange(new24HourTime);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [displayHour, displayMinute, displayPeriod, onChange]); // value removed to prevent loop with parent
+  }, [displayHour, displayMinute, displayPeriod]); // onChange removed to avoid re-triggering on parent update, only internal changes trigger parent
+
+  const itemH = 64; // Corresponds to h-16 in Tailwind
 
   return (
-    <div className="bg-background p-3 rounded-xl border border-primary/30 shadow-xl w-fit mx-auto relative my-4">
+    <div className="bg-background p-3 rounded-lg border border-border/30 shadow-xl w-fit mx-auto relative my-4">
       {/* Horizontal selection indicator lines */}
-      <div className="absolute top-1/2 left-3 right-3 h-[50px] -translate-y-1/2 pointer-events-none z-0"> {/* Increased height of indicator */}
-        <div className="h-full w-full border-y-2 border-primary/70 rounded-sm"></div>
+      <div 
+        className="absolute top-1/2 left-3 right-3 -translate-y-1/2 pointer-events-none z-0"
+        style={{ height: `${itemH}px` }} 
+      >
+        <div className="h-full w-full border-y border-accent rounded-sm"></div>
       </div>
       <div className="flex justify-center items-center space-x-1 sm:space-x-2 relative z-10">
         <ScrollableColumn
@@ -131,22 +142,25 @@ export default function CustomTimePicker({ value, onChange }: CustomTimePickerPr
           values={hoursArray}
           selectedValue={displayHour}
           onSelect={(val) => setDisplayHour(Number(val))}
-          className="w-20 sm:w-24"
+          itemHeight={itemH}
+          className="w-20" // Adjusted width
         />
-        <div className="text-4xl text-muted-foreground select-none mt-[-2px]">:</div>
+        <div className="text-5xl text-muted-foreground select-none font-bold mt-[-2px]">:</div>
         <ScrollableColumn
           columnId="minutes"
-          values={minutesArray} // Pass string array
-          selectedValue={String(displayMinute).padStart(2, '0')} // Compare with string
+          values={minutesArray} 
+          selectedValue={String(displayMinute).padStart(2, '0')} 
           onSelect={(val) => setDisplayMinute(Number(val))}
-           className="w-20 sm:w-24"
+          itemHeight={itemH}
+          className="w-20" // Adjusted width
         />
         <ScrollableColumn
           columnId="period"
           values={periodsArray as unknown as string[]} 
           selectedValue={displayPeriod}
           onSelect={(val) => setDisplayPeriod(val as Period)}
-          className="w-24 sm:w-28"
+          itemHeight={itemH}
+          className="w-24" // Adjusted width
         />
       </div>
     </div>
