@@ -1,0 +1,13 @@
+{
+  "Header": {
+    "title": "SlumberAI"
+  },
+  "HomePage": {
+    "sleepCyclesTab": "دورات النوم",
+    "napOptimizerTab": "محسِّن القيلولة",
+    "aiCoachTab": "مدرب الذكاء الاصطناعي",
+    "dreamJournalTab": "مفكرة الأحلام",
+    "sleepScienceTab": "علوم النوم",
+    "footerCopyright": "© {year} SlumberAI. جميع الحقوق محفوظة. صنع بـ 💜"
+  }
+}

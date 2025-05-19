@@ -1,0 +1,13 @@
+{
+  "Header": {
+    "title": "SlumberAI"
+  },
+  "HomePage": {
+    "sleepCyclesTab": "Cycles de sommeil",
+    "napOptimizerTab": "Optimiseur de sieste",
+    "aiCoachTab": "Coach IA",
+    "dreamJournalTab": "Journal des rêves",
+    "sleepScienceTab": "Science du sommeil",
+    "footerCopyright": "© {year} SlumberAI. Tous droits réservés. Conçu avec 💜"
+  }
+}
