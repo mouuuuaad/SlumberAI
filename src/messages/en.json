@@ -1,14 +1,19 @@
+
 {
   "Header": {
     "title": "SlumberAI",
-    "toggleTheme": "Toggle theme"
+    "toggleTheme": "Toggle theme",
+    "languageSelectorLabel": "Select language"
   },
   "HomePage": {
-    "sleepCyclesTab": "Sleep Cycles",
-    "napOptimizerTab": "Nap Optimizer",
-    "aiCoachTab": "AI Coach",
-    "dreamJournalTab": "Dream Journal",
-    "sleepScienceTab": "Sleep Science",
+    "heroTitle": "Unlock Restful Nights & Energized Days",
+    "heroSubtitle": "Your personal guide to understanding and improving your sleep patterns for a healthier, more vibrant life.",
+    "sleepCycleCalculatorTitle": "Sleep Cycle Calculator",
+    "napOptimizerTitle": "Nap Optimizer",
+    "aiCoachTitle": "AI Sleep Coach",
+    "dreamJournalTitle": "Dream Journal",
+    "sleepScienceTitle": "Explore the Science of Sleep",
+    "sleepScienceLinkText": "Dive into Sleep Science",
     "footerCopyright": "© {year} SlumberAI. All rights reserved. Crafted with 💜"
   }
 }

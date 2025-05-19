@@ -1,20 +1,24 @@
+
 'use client';
 
-import { Moon, Sun, BedDouble } from 'lucide-react';
+import { Moon, Sun, BedDouble, Languages } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useEffect, useState } from 'react';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
+import { useRouter, usePathname } from 'next-intl/navigation';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 export default function Header() {
   const t = useTranslations('Header');
+  const currentLocale = useLocale();
+  const router = useRouter();
+  const pathname = usePathname();
+
   const [mounted, setMounted] = useState(false);
-  // This state is for the icon. It will be synced with the actual theme.
-  const [isDark, setIsDark] = useState(false); // Initial value, will be updated in useEffect.
+  const [isDark, setIsDark] = useState(false);
 
   useEffect(() => {
     setMounted(true);
-    // Sync with the actual theme class on the <html> element,
-    // which ThemeProvider.tsx is responsible for setting on initial load.
     setIsDark(document.documentElement.classList.contains('dark'));
   }, []);
 
@@ -27,11 +31,13 @@ export default function Header() {
       document.documentElement.classList.remove('dark');
       localStorage.setItem('theme', 'light');
     }
-    setIsDark(newIsDark); // Update icon state
+    setIsDark(newIsDark);
   };
 
-  // Icon logic: Show Sun icon if current theme is Dark (to switch to Light)
-  // Show Moon icon if current theme is Light (to switch to Dark)
+  const handleLocaleChange = (newLocale: string) => {
+    router.push(pathname, { locale: newLocale });
+  };
+
   const ThemeIcon = isDark ? Sun : Moon;
 
   return (
@@ -41,17 +47,40 @@ export default function Header() {
           <BedDouble className="h-7 w-7 sm:h-8 sm:w-8 text-primary" />
           <h1 className="text-2xl sm:text-3xl font-bold text-primary">{t('title')}</h1>
         </div>
-        {mounted ? (
-          <Button variant="outline" size="icon" onClick={toggleTheme} aria-label={t('toggleTheme')} className="border-border/70">
-            <ThemeIcon className="h-5 w-5 transition-all" />
-          </Button>
-        ) : (
-          // Render a placeholder or a button with a default icon to avoid layout shift
-          // and hydration mismatch for the button itself.
-          <Button variant="outline" size="icon" aria-label={t('toggleTheme')} className="border-border/70" disabled>
-            <Sun className="h-5 w-5 transition-all" /> {/* Default icon for SSR/pre-mount */}
-          </Button>
-        )}
+        <div className="flex items-center gap-2 sm:gap-3">
+          {mounted ? (
+            <Select value={currentLocale} onValueChange={handleLocaleChange}>
+              <SelectTrigger 
+                className="w-auto sm:w-[130px] h-9 text-xs sm:text-sm border-border/70 bg-background hover:bg-accent/50 focus:ring-ring"
+                aria-label={t('languageSelectorLabel')}
+              >
+                <div className="flex items-center gap-1.5">
+                  <Languages className="h-4 w-4 sm:hidden" />
+                  <div className="hidden sm:block">
+                    <SelectValue placeholder={t('languageSelectorLabel')} />
+                  </div>
+                </div>
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="en">English</SelectItem>
+                <SelectItem value="ar">العربية</SelectItem>
+                <SelectItem value="fr">Français</SelectItem>
+              </SelectContent>
+            </Select>
+          ) : (
+            <div className="w-auto sm:w-[130px] h-9 bg-muted rounded-md animate-pulse" /> // Placeholder
+          )}
+
+          {mounted ? (
+            <Button variant="outline" size="icon" onClick={toggleTheme} aria-label={t('toggleTheme')} className="border-border/70 bg-background hover:bg-accent/50">
+              <ThemeIcon className="h-5 w-5 transition-all" />
+            </Button>
+          ) : (
+            <Button variant="outline" size="icon" aria-label={t('toggleTheme')} className="border-border/70" disabled>
+              <Sun className="h-5 w-5 transition-all" />
+            </Button>
+          )}
+        </div>
       </div>
     </header>
   );

@@ -1,14 +1,19 @@
+
 {
   "Header": {
     "title": "SlumberAI",
-    "toggleTheme": "Changer de thème"
+    "toggleTheme": "Changer de thème",
+    "languageSelectorLabel": "Sélectionner la langue"
   },
   "HomePage": {
-    "sleepCyclesTab": "Cycles de sommeil",
-    "napOptimizerTab": "Optimiseur de sieste",
-    "aiCoachTab": "Coach IA",
-    "dreamJournalTab": "Journal des rêves",
-    "sleepScienceTab": "Science du sommeil",
+    "heroTitle": "Débloquez des nuits reposantes et des journées pleines d'énergie",
+    "heroSubtitle": "Votre guide personnel pour comprendre et améliorer vos habitudes de sommeil pour une vie plus saine et dynamique.",
+    "sleepCycleCalculatorTitle": "Calculateur de cycle de sommeil",
+    "napOptimizerTitle": "Optimiseur de sieste",
+    "aiCoachTitle": "Coach IA du sommeil",
+    "dreamJournalTitle": "Journal des rêves",
+    "sleepScienceTitle": "Explorez la science du sommeil",
+    "sleepScienceLinkText": "Plongez dans la science du sommeil",
     "footerCopyright": "© {year} SlumberAI. Tous droits réservés. Conçu avec 💜"
   }
 }
