@@ -6,14 +6,15 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Bot, User, Send, MessageSquare } from 'lucide-react';
-import { chatWithSleepAssistant, type ChatWithSleepAssistantInput, type ChatWithSleepAssistantOutput } from '@/ai/flows/chat-based-sleep-assistant';
+import { Bot, User, Send, MessageSquare, Sparkles } from 'lucide-react'; // Added Sparkles for coach
+import { aiSleepCoach, type AiSleepCoachInput, type AiSleepCoachOutput } from '@/ai/flows/ai-sleep-coach';
 import { cn } from '@/lib/utils';
 
 interface Message {
   id: string;
   role: 'user' | 'assistant';
   content: string;
+  followUpQuestions?: string[];
 }
 
 export default function ChatAssistant() {
@@ -24,12 +25,10 @@ export default function ChatAssistant() {
 
   const scrollToBottom = () => {
     if (scrollAreaRef.current) {
-      // Radix ScrollArea viewport is the direct child div
       const scrollViewport = scrollAreaRef.current.querySelector('div[data-radix-scroll-area-viewport]');
       if (scrollViewport) {
         scrollViewport.scrollTop = scrollViewport.scrollHeight;
       } else {
-        // Fallback for simple div structure if Radix structure isn't found (should not happen with ShadCN)
          scrollAreaRef.current.scrollTop = scrollAreaRef.current.scrollHeight;
       }
     }
@@ -38,6 +37,13 @@ export default function ChatAssistant() {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  const handleFollowUpClick = (question: string) => {
+    setInputValue(question);
+    // Optionally, you could trigger a submit here automatically,
+    // or let the user edit/confirm by pressing send.
+    // For now, just populates input.
+  };
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -49,25 +55,33 @@ export default function ChatAssistant() {
       content: inputValue.trim(),
     };
     setMessages((prev) => [...prev, userMessage]);
+    const currentQuery = inputValue.trim();
     setInputValue('');
     setIsLoading(true);
 
     try {
-      const input: ChatWithSleepAssistantInput = { query: userMessage.content };
-      const result: ChatWithSleepAssistantOutput = await chatWithSleepAssistant(input);
+      // For now, we don't have sleepHistory or userProfile from the UI.
+      // The Genkit flow's schema makes these optional.
+      const input: AiSleepCoachInput = { 
+        currentQuery,
+        // sleepHistory: [], // Example if we had data
+        // userProfile: {},  // Example if we had data
+      };
+      const result: AiSleepCoachOutput = await aiSleepCoach(input);
       
       const assistantMessage: Message = {
         id: (Date.now() + 1).toString(), 
         role: 'assistant',
-        content: result.response,
+        content: result.advice,
+        followUpQuestions: result.followUpQuestions,
       };
       setMessages((prev) => [...prev, assistantMessage]);
     } catch (error) {
-      console.error('Error calling AI assistant:', error);
+      console.error('Error calling AI Sleep Coach:', error);
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        content: 'Sorry, I had trouble connecting. Please try again in a moment.',
+        content: 'Sorry, I had a little trouble connecting to my coaching knowledge. Please try again in a moment.',
       };
       setMessages((prev) => [...prev, errorMessage]);
     } finally {
@@ -79,41 +93,58 @@ export default function ChatAssistant() {
     <Card className="w-full h-[600px] flex flex-col bg-transparent border-0 shadow-none"> 
       <CardHeader className="pb-4">
         <CardTitle className="flex items-center gap-2 text-xl sm:text-2xl text-foreground">
-          <MessageSquare className="h-6 w-6 text-primary" />
-          AI Sleep Assistant
+          <Sparkles className="h-6 w-6 text-primary" /> {/* Changed icon */}
+          AI Sleep Coach
         </CardTitle>
         <CardDescription className="text-sm text-muted-foreground">
-          Ask me anything about sleep! I can offer advice and recommendations.
+          Ask for personalized sleep advice. How are you feeling?
         </CardDescription>
       </CardHeader>
       <CardContent className="flex-grow flex flex-col p-0 overflow-hidden">
         <ScrollArea className="flex-grow p-4 md:p-6" ref={scrollAreaRef}>
           <div className="space-y-4">
             {messages.map((message) => (
-              <div
-                key={message.id}
-                className={cn(
-                  'flex items-start gap-3 p-3 rounded-lg max-w-[85%] shadow-sm',
-                  message.role === 'user' 
-                    ? 'ml-auto bg-primary text-primary-foreground' 
-                    : 'bg-card text-card-foreground border'
+              <div key={message.id} className="flex flex-col">
+                <div
+                  className={cn(
+                    'flex items-start gap-3 p-3 rounded-lg max-w-[85%] shadow-sm',
+                    message.role === 'user' 
+                      ? 'ml-auto bg-primary text-primary-foreground' 
+                      : 'bg-card text-card-foreground border'
+                  )}
+                >
+                  {message.role === 'assistant' && <Bot className="h-5 w-5 sm:h-6 sm:w-6 text-accent flex-shrink-0 mt-0.5" />}
+                  <p className="text-sm whitespace-pre-wrap break-words">{message.content}</p>
+                  {message.role === 'user' && <User className="h-5 w-5 sm:h-6 sm:w-6 text-primary-foreground flex-shrink-0 mt-0.5" />}
+                </div>
+                {message.role === 'assistant' && message.followUpQuestions && message.followUpQuestions.length > 0 && (
+                  <div className="mt-2 flex flex-wrap gap-2 max-w-[85%]">
+                    {message.followUpQuestions.map((q, index) => (
+                      <Button
+                        key={index}
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleFollowUpClick(q)}
+                        className="text-xs bg-card/50 hover:bg-card/80 border-border/50 text-foreground"
+                      >
+                        {q}
+                      </Button>
+                    ))}
+                  </div>
                 )}
-              >
-                {message.role === 'assistant' && <Bot className="h-5 w-5 sm:h-6 sm:w-6 text-accent flex-shrink-0 mt-0.5" />}
-                <p className="text-sm whitespace-pre-wrap break-words">{message.content}</p>
-                {message.role === 'user' && <User className="h-5 w-5 sm:h-6 sm:w-6 text-primary-foreground flex-shrink-0 mt-0.5" />}
               </div>
             ))}
             {isLoading && (
               <div className="flex items-start gap-3 p-3 rounded-lg bg-muted max-w-[85%] shadow-sm">
                 <Bot className="h-5 w-5 sm:h-6 sm:w-6 text-accent flex-shrink-0 mt-0.5" />
-                <p className="text-sm animate-pulse text-muted-foreground">SlumberAI is thinking...</p>
+                <p className="text-sm animate-pulse text-muted-foreground">Your AI Coach is preparing advice...</p>
               </div>
             )}
              {messages.length === 0 && !isLoading && (
               <div className="flex flex-col items-center justify-center text-center py-10 h-full">
-                <MessageSquare className="h-12 w-12 mx-auto text-muted-foreground/50 mb-3" />
-                <p className="text-muted-foreground">No messages yet. Start the conversation!</p>
+                <Sparkles className="h-12 w-12 mx-auto text-muted-foreground/50 mb-3" />
+                <p className="text-muted-foreground">Ready for some sleep coaching? Ask me anything!</p>
+                <p className="text-xs text-muted-foreground/70 mt-1">e.g., "I often wake up tired" or "How can I stop snoozing?"</p>
               </div>
             )}
           </div>
@@ -122,7 +153,7 @@ export default function ChatAssistant() {
           <div className="flex items-center gap-2">
             <Input
               type="text"
-              placeholder="E.g., How can I improve my sleep quality?"
+              placeholder="Chat with your AI Sleep Coach..."
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
               disabled={isLoading}
