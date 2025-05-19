@@ -7,7 +7,7 @@ import CustomTimePicker from './CustomTimePicker';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { AlertCircle, CalculatorIcon, Bed, Clock } from 'lucide-react';
-import { addMinutes, format, parse, set } from 'date-fns';
+import { addMinutes, format, set } from 'date-fns'; // Import set
 
 const TIME_TO_FALL_ASLEEP = 15; // minutes
 const SLEEP_CYCLE_DURATION = 90; // minutes
@@ -28,8 +28,7 @@ interface SleepCalculatorFormProps {
 }
 
 export default function SleepCalculatorForm({ onCalculate }: SleepCalculatorFormProps) {
-  // Initialize selectedTime to a valid default (e.g., 07:00 AM for "wakeUpAt" mode)
-  const [selectedTime, setSelectedTime] = useState(format(set(new Date(), { hours: 7, minutes: 0 }), 'HH:mm'));
+  const [selectedTime, setSelectedTime] = useState('07:00'); // Default to "07:00" (HH:mm)
   const [timeError, setTimeError] = useState<string | null>(null);
   const [showGoToBedNowResults, setShowGoToBedNowResults] = useState(false);
   const [currentTimeForBedNow, setCurrentTimeForBedNow] = useState(format(new Date(), 'hh:mm a'));
@@ -37,7 +36,7 @@ export default function SleepCalculatorForm({ onCalculate }: SleepCalculatorForm
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentTimeForBedNow(format(new Date(), 'hh:mm a'));
-    }, 60000); // Update every minute
+    }, 60000); 
     return () => clearInterval(timer);
   }, []);
 
@@ -86,16 +85,27 @@ export default function SleepCalculatorForm({ onCalculate }: SleepCalculatorForm
     }
     setTimeError(null);
     try {
-      const baseDate = '2000-01-01'; 
-      const parsedWakeUpTime = parse(`${baseDate}T${selectedTime}`, `${baseDate}THH:mm`, new Date());
+      const [hours, minutes] = selectedTime.split(':').map(Number);
+
+      if (isNaN(hours) || isNaN(minutes) || hours < 0 || hours > 23 || minutes < 0 || minutes > 59) {
+        setTimeError('Invalid time format from picker. Please re-select.');
+        console.error("Invalid time components from selectedTime:", selectedTime);
+        return;
+      }
+      
+      // Use a fixed date (e.g., Jan 1, 2000) to avoid DST or other date-specific issues
+      // when we only care about the time for calculations.
+      const referenceDateForCalc = new Date(2000, 0, 1); // Month is 0-indexed
+      const parsedWakeUpTime = set(referenceDateForCalc, { hours, minutes, seconds: 0, milliseconds: 0 });
+
       if (isNaN(parsedWakeUpTime.getTime())) {
         setTimeError('Invalid time format selected. Please adjust the picker.');
-        console.error("Error parsing wake-up time from CustomTimePicker:", selectedTime);
+        console.error("Error creating date object from time:", selectedTime, hours, minutes);
         return;
       }
       calculateBedtimes(parsedWakeUpTime);
     } catch (error) {
-      setTimeError('Could not calculate bedtime due to a time parsing error.');
+      setTimeError('Could not calculate bedtime due to a time processing error.');
       console.error("Error in handleCalculateBedtime:", error);
     }
   };

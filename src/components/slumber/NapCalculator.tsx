@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Coffee, AlertCircle, Clock } from 'lucide-react';
-import { addMinutes, format, parse } from 'date-fns';
+import { addMinutes, format, set } from 'date-fns'; // Import set
 
 const napTypes = [
   { name: 'Power Nap', duration: 20, description: 'Boosts alertness and energy.' },
@@ -24,7 +24,6 @@ export default function NapCalculator() {
   const [timeError, setTimeError] = useState<string | null>(null);
   
   useEffect(() => {
-    // Initialize with current time in HH:mm format
     setStartTime(format(new Date(), 'HH:mm'));
   }, []);
 
@@ -39,9 +38,15 @@ export default function NapCalculator() {
     setNapResult(null);
 
     try {
-      // Using a fixed date for parsing time avoids DST issues if only time is relevant
-      const baseDateForParsing = new Date(2000, 0, 1); // Jan 1, 2000
-      const parsedStartTime = parse(startTime, 'HH:mm', baseDateForParsing);
+      const [hours, minutes] = startTime.split(':').map(Number);
+
+      if (isNaN(hours) || isNaN(minutes) || hours < 0 || hours > 23 || minutes < 0 || minutes > 59) {
+        setTimeError('Invalid time format. Please use HH:MM (24-hour).');
+        return;
+      }
+      
+      const baseDateForParsing = new Date(2000, 0, 1); // Month is 0-indexed
+      const parsedStartTime = set(baseDateForParsing, { hours, minutes, seconds: 0, milliseconds: 0 });
 
       if (isNaN(parsedStartTime.getTime())) {
         setTimeError('Invalid time format. Please use HH:MM (24-hour).');
@@ -56,7 +61,7 @@ export default function NapCalculator() {
         `For a ${napInfo?.name || `${napDuration} min nap`} starting at ${format(parsedStartTime, 'hh:mm a')}, you should wake up at ${format(wakeUpTime, 'hh:mm a')}.`
       );
     } catch (error) {
-      setTimeError('Could not parse the time. Please ensure it is a valid HH:MM format.');
+      setTimeError('Could not process the time. Please ensure it is a valid HH:MM format.');
       console.error("Error calculating nap time:", error);
     }
   };
@@ -99,7 +104,7 @@ export default function NapCalculator() {
           <Label htmlFor="startTime" className="text-foreground/90">Nap Start Time (HH:MM):</Label>
           <Input
             id="startTime"
-            type="time" // HTML5 time input
+            type="time" 
             value={startTime}
             onChange={(e) => {
               setStartTime(e.target.value)
@@ -107,7 +112,6 @@ export default function NapCalculator() {
               if(napResult) setNapResult(null);
             }}
             className="w-full md:w-1/2 bg-input text-foreground focus:ring-primary"
-            pattern="[0-2][0-9]:[0-5][0-9]" // Helps with some browser validation but not foolproof
           />
           {timeError && (
             <p className="text-sm text-destructive flex items-center gap-1 pt-1">
