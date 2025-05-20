@@ -27,7 +27,7 @@ export default function ScienceArticle({ title, icon, sections, defaultOpen = fa
   return (
     <Card className="w-full shadow-xl glassmorphic overflow-hidden">
       <CardHeader className="bg-card/70">
-        <CardTitle className="text-xl sm:text-2xl font-semibold text-foreground flex items-center gap-3">
+        <CardTitle className="text-xl sm:text-2xl font-semibold text-primary flex items-center gap-3"> {/* Changed text-foreground to text-primary */}
           {icon}
           {title}
         </CardTitle>
@@ -49,4 +49,3 @@ export default function ScienceArticle({ title, icon, sections, defaultOpen = fa
     </Card>
   );
 }
-
