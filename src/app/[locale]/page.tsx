@@ -3,7 +3,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import NextLink from 'next/link'; // Changed from next-intl's Link to next/link
+import NextLink from 'next/link'; // Using next/link as established
 import Header from '@/components/slumber/Header';
 import SleepCalculationResults from '@/components/slumber/SleepCalculationResults';
 import NapCalculator from '@/components/slumber/NapCalculator';
@@ -28,6 +28,10 @@ export default function HomePage() {
 
   const handleSleepCalculation = (results: CalculationResult) => {
     setSleepResults(results);
+    // Ensure results are displayed for the calculator tab
+    if (activeTab !== 'calculator') {
+      // setActiveTab('calculator'); // Optionally switch to calculator tab on new calculation
+    }
   };
   
   if (!isClient) {
@@ -58,7 +62,7 @@ export default function HomePage() {
               asChild
               className="text-xs sm:text-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md"
             >
-              <NextLink href="/sleep-science"> {/* Changed to NextLink from next/link */}
+              <NextLink href="/sleep-science">
                 <Brain className="h-4 w-4 mr-1.5 sm:mr-2" /> {t('sleepScienceTab')}
               </NextLink>
             </TabsTrigger>

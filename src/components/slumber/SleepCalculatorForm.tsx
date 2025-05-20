@@ -29,7 +29,7 @@ interface SleepCalculatorFormProps {
 
 export default function SleepCalculatorForm({ onCalculate }: SleepCalculatorFormProps) {
   const t = useTranslations('SleepCalculatorForm');
-  const [selectedTime, setSelectedTime] = useState('07:00');
+  const [selectedTime, setSelectedTime] = useState('07:00'); // Default to 07:00 for 24-hour format
   const [timeError, setTimeError] = useState<string | null>(null);
   const [showGoToBedNowResults, setShowGoToBedNowResults] = useState(false);
   const [currentTimeForBedNow, setCurrentTimeForBedNow] = useState('');
@@ -96,7 +96,7 @@ export default function SleepCalculatorForm({ onCalculate }: SleepCalculatorForm
         return;
       }
 
-      const referenceDateForCalc = new Date(2000, 0, 1);
+      const referenceDateForCalc = new Date(2000, 0, 1); // Use a fixed date for consistent time operations
       const parsedWakeUpTime = set(referenceDateForCalc, { hours, minutes, seconds: 0, milliseconds: 0 });
 
       if (isNaN(parsedWakeUpTime.getTime())) {
@@ -128,7 +128,7 @@ export default function SleepCalculatorForm({ onCalculate }: SleepCalculatorForm
       </div>
 
       <div className="space-y-8">
-        <div className="space-y-3">
+        <div className="space-y-4">
           <Label htmlFor="wakeUpTimePicker" className="block text-lg font-medium text-center text-foreground/90">
             {t('wakeUpAtLabel')}
           </Label>
@@ -147,14 +147,14 @@ export default function SleepCalculatorForm({ onCalculate }: SleepCalculatorForm
           )}
           <Button
             onClick={handleCalculateBedtime}
-            className="w-full bg-primary hover:bg-primary/90 text-primary-foreground text-base py-5 rounded-lg shadow-md hover:shadow-lg transition-shadow"
+            className="w-full bg-primary hover:bg-primary/90 text-primary-foreground text-base py-3 rounded-lg shadow-md hover:shadow-lg transition-shadow"
             size="lg"
           >
             <CalculatorIcon className="mr-2 h-5 w-5" /> {t('calculateBedtimeButton')}
           </Button>
         </div>
 
-        <div className="space-y-3 pt-6 border-t border-border/30">
+        <div className="space-y-4 pt-6 border-t border-border/30">
           <Label className="block text-lg font-medium text-center text-foreground/90">
             {t('goToBedNowLabel')}
           </Label>
@@ -166,7 +166,7 @@ export default function SleepCalculatorForm({ onCalculate }: SleepCalculatorForm
           <Button
             onClick={handleCalculateWakeUpNow}
             variant="outline"
-            className="w-full border-primary/60 hover:bg-primary/10 text-primary text-base py-5 rounded-lg shadow-md hover:shadow-lg transition-shadow hover:border-primary"
+            className="w-full border-primary/60 hover:bg-primary/10 text-primary text-base py-3 rounded-lg shadow-md hover:shadow-lg transition-shadow hover:border-primary"
             size="lg"
           >
             <Clock className="mr-2 h-5 w-5" /> {t('calculateWakeUpTimesButton')}
