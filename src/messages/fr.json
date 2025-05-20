@@ -22,7 +22,12 @@
     "sleepScienceTitle": "Explorez la science du sommeil",
     "sleepScienceSubtitle": "Découvrez comment fonctionne le sommeil et comment améliorer le vôtre.",
     "sleepScienceLinkText": "Plongez dans la science du sommeil",
-    "footerCopyright": "© {year} SlumberAI. Tous droits réservés. Conçu avec 💜"
+    "footerCopyright": "© {year} SlumberAI. Tous droits réservés. Conçu avec 💜",
+    "sleepCyclesTab": "Cycles de Sommeil",
+    "napOptimizerTab": "Optimiseur de Sieste",
+    "aiCoachTab": "Coach IA",
+    "dreamJournalTab": "Journal des Rêves",
+    "sleepScienceTab": "Science du Sommeil"
   },
   "SleepCalculatorForm": {
     "title": "Planifiez votre sommeil parfait",

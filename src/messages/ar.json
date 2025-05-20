@@ -22,7 +22,12 @@
     "sleepScienceTitle": "استكشف علم النوم",
     "sleepScienceSubtitle": "اكتشف رؤى حول كيفية عمل النوم وكيفية تحسينه.",
     "sleepScienceLinkText": "الغوص في علم النوم",
-    "footerCopyright": "© {year} SlumberAI. جميع الحقوق محفوظة. صنع بـ 💜"
+    "footerCopyright": "© {year} SlumberAI. جميع الحقوق محفوظة. صنع بـ 💜",
+    "sleepCyclesTab": "دورات النوم",
+    "napOptimizerTab": "محسن القيلولة",
+    "aiCoachTab": "مدرب AI",
+    "dreamJournalTab": "مفكرة الأحلام",
+    "sleepScienceTab": "علم النوم"
   },
   "SleepCalculatorForm": {
     "title": "خطط لنومك المثالي",

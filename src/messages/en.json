@@ -22,7 +22,12 @@
     "sleepScienceTitle": "Explore the Science of Sleep",
     "sleepScienceSubtitle": "Discover insights into how sleep works and how to improve yours.",
     "sleepScienceLinkText": "Dive into Sleep Science",
-    "footerCopyright": "© {year} SlumberAI. All rights reserved. Crafted with 💜"
+    "footerCopyright": "© {year} SlumberAI. All rights reserved. Crafted with 💜",
+    "sleepCyclesTab": "Sleep Cycles",
+    "napOptimizerTab": "Nap Optimizer",
+    "aiCoachTab": "AI Coach",
+    "dreamJournalTab": "Dream Journal",
+    "sleepScienceTab": "Sleep Science"
   },
   "SleepCalculatorForm": {
     "title": "Plan Your Perfect Sleep",
