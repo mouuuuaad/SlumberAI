@@ -56,9 +56,13 @@ export default function ChatAssistant() {
     if (scrollAreaRef.current) {
       const scrollViewport = scrollAreaRef.current.querySelector('div[data-radix-scroll-area-viewport]');
       if (scrollViewport) {
-        scrollViewport.scrollTop = scrollViewport.scrollHeight;
+        requestAnimationFrame(() => {
+          scrollViewport.scrollTop = scrollViewport.scrollHeight;
+        });
       } else {
-         scrollAreaRef.current.scrollTop = scrollAreaRef.current.scrollHeight;
+        requestAnimationFrame(() => {
+          scrollAreaRef.current.scrollTop = scrollAreaRef.current.scrollHeight;
+        });
       }
     }
   };
@@ -178,13 +182,13 @@ export default function ChatAssistant() {
           </AccordionItem>
         </Accordion>
 
-        <ScrollArea className="flex-grow min-h-0 p-4 md:p-6" ref={scrollAreaRef}> {/* Added min-h-0 */}
+        <ScrollArea className="flex-grow min-h-0 p-4 md:p-6" ref={scrollAreaRef}>
           <div className="space-y-4">
             {messages.map((message) => (
               <div key={message.id} className="flex flex-col">
                 <div
                   className={cn(
-                    'flex items-start gap-3 p-3 rounded-lg max-w-[85%] shadow-sm',
+                    'flex items-start gap-3 p-3 rounded-lg max-w-[85%] shadow-md', // Added shadow-md
                     message.role === 'user'
                       ? 'ml-auto bg-primary text-primary-foreground'
                       : 'bg-card text-card-foreground border'

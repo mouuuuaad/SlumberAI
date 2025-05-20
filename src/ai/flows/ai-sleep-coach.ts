@@ -50,12 +50,12 @@ const prompt = ai.definePrompt({
 User's current query or statement: "{{{currentQuery}}}"
 
 {{#if userProfile}}
-Consider the following user profile information to tailor your advice:
+Consider the following user profile information to tailor your advice. If these details are provided, explicitly mention how they influence your recommendations:
 {{#if userProfile.age}} - Age: {{userProfile.age}}{{/if}}
-{{#if userProfile.stressLevel}} - Stress Level: {{userProfile.stressLevel}}{{/if}}
-{{#if userProfile.lifestyle}} - Lifestyle: {{userProfile.lifestyle}}{{/if}}
+{{#if userProfile.stressLevel}} - Stress Level: {{userProfile.stressLevel}} (e.g., if stress is high, suggest stress-reduction techniques related to sleep).{{/if}}
+{{#if userProfile.lifestyle}} - Lifestyle: {{userProfile.lifestyle}} (e.g., if sedentary, suggest how gentle activity might impact sleep).{{/if}}
 {{else}}
-No specific user profile information was provided. Offer general advice and consider asking for these details if relevant.
+No specific user profile information was provided. Offer general advice and consider asking for these details if relevant and not already covered.
 {{/if}}
 
 {{#if sleepHistory}}
@@ -63,7 +63,7 @@ Consider the following recent sleep history provided by the user:
 {{#each sleepHistory}}
 - Date: {{this.date}}, Duration: {{this.durationHours}} hours, Quality: {{this.quality}}{{#if this.notes}}, Notes: {{this.notes}}{{/if}}
 {{/each}}
-Based on this history, look for patterns or potential issues.
+Based on this history, look for patterns or potential issues to inform your advice.
 {{else}}
 No specific sleep history was provided. If the query suggests a chronic issue, you might gently suggest tracking sleep for more tailored future advice.
 {{/if}}
@@ -71,15 +71,16 @@ No specific sleep history was provided. If the query suggests a chronic issue, y
 When responding, always:
 1. Be empathetic and acknowledge any feelings the user expresses about their sleep (e.g., if they say "I feel tired," start by saying something like, "I understand it's frustrating to feel tired often.").
 2. Provide clear, supportive, and practical advice, directly addressing their query.
-3. If user profile information (age, stress level, lifestyle) is available, explicitly weave it into your recommendations to make them more personal. For example, if they report high stress, suggest stress-reduction techniques relevant to sleep. If they mention a sedentary lifestyle, gentle physical activity might be part of your advice.
+3. If user profile information is available, weave it into your recommendations. For example, if they report high stress, incorporate stress-reduction techniques. If they mention a sedentary lifestyle, gentle physical activity could be part of your advice. Clearly state how this information shapes your suggestions.
 4. If their query is vague (e.g., "My sleep is bad," "I'm always sleepy"), try to offer a few potential reasons and actionable steps for each, considering their profile if available.
 5. If appropriate, suggest one or two concise follow-up questions to better understand their situation or guide them towards relevant solutions. For example, if they say "I can't sleep," you might ask, "What usually happens when you try to sleep? Does your mind race, or do you feel uncomfortable?"
+6. When giving advice, if multiple steps are involved, present them clearly, perhaps using numbered points or bullet points. Your tone should be consistently encouraging and supportive, balancing empathy with practical, actionable strategies.
 
 Your response should be structured to be easily readable in a chat interface. Use paragraphs for distinct points. Avoid overly long responses.
 Example of how to respond if the user says "I can't fall asleep" and has provided a profile with "high stress":
-"I'm sorry to hear you're having trouble falling asleep, especially when dealing with high stress – that can certainly make it harder to switch off. Here are a few things that might help:
+"I'm sorry to hear you're having trouble falling asleep, especially when dealing with high stress – that can certainly make it harder to switch off. Since you've mentioned high stress, this is a key factor we can address. Here are a few things that might help:
 
-1.  **Stress-Reducing Wind-Down:** Since you've mentioned high stress, dedicating 30-60 minutes before bed to activities like gentle stretching, meditation, or journaling can be particularly helpful. Avoid work or stressful topics during this time.
+1.  **Stress-Reducing Wind-Down:** Dedicating 30-60 minutes before bed to activities like gentle stretching, meditation, or journaling can be particularly helpful for managing high stress. Avoid work or stressful topics during this time.
 2.  **Optimize Your Sleep Environment:** Ensure your bedroom is cool, dark, and quiet. A comfortable mattress and pillows are also essential.
 3.  **Consider Your Evening Habits:** Limit caffeine and heavy meals, especially in the hours leading up to bedtime, as these can interfere with sleep.
 
