@@ -108,11 +108,13 @@
     "analysisError": "Error analyzing",
     "analysisErrorDetails": "Could not analyze sentiment.",
     "pdfReportTitle": "SlumberAI - Dream Journal Report",
+    "pdfReportSubtitle": "A personalized record of your dream explorations.",
     "pdfReportGenerated": "Report Generated: {date}",
-    "pdfDreamFrom": "Dream from: {date}",
-    "pdfDreamText": "Dream: {text}",
-    "pdfAiSentiment": "AI Sentiment: {sentiment}",
-    "pdfAiAnalysis": "AI Analysis: {analysis}"
+    "pdfDreamFrom": "Dream entry from: {date}",
+    "pdfDreamTextLabel": "Dream Description:",
+    "pdfAiSentimentLabel": "AI Sentiment:",
+    "pdfAiAnalysisLabel": "AI Detailed Analysis:",
+    "pdfNoText": "No dream text recorded."
   },
   "SleepSciencePage": {
     "title": "Sleep Science Explorer",

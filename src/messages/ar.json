@@ -108,11 +108,13 @@
     "analysisError": "خطأ في التحليل",
     "analysisErrorDetails": "لم يتمكن من تحليل المشاعر.",
     "pdfReportTitle": "SlumberAI - تقرير مفكرة الأحلام",
+    "pdfReportSubtitle": "سجل شخصي لاستكشافات أحلامك.",
     "pdfReportGenerated": "تم إنشاء التقرير: {date}",
-    "pdfDreamFrom": "حلم من: {date}",
-    "pdfDreamText": "الحلم: {text}",
-    "pdfAiSentiment": "مشاعر الذكاء الاصطناعي: {sentiment}",
-    "pdfAiAnalysis": "تحليل الذكاء الاصطناعي: {analysis}"
+    "pdfDreamFrom": "إدخال حلم من: {date}",
+    "pdfDreamTextLabel": "وصف الحلم:",
+    "pdfAiSentimentLabel": "مشاعر الذكاء الاصطناعي:",
+    "pdfAiAnalysisLabel": "تحليل الذكاء الاصطناعي المفصل:",
+    "pdfNoText": "لم يتم تسجيل نص للحلم."
   },
   "SleepSciencePage": {
     "title": "مستكشف علم النوم",

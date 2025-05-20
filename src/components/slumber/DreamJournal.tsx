@@ -19,8 +19,8 @@ interface DreamEntry {
   date: string; // ISO string
   text: string;
   sentiment?: AnalyzeDreamSentimentOutput['primarySentiment'];
-  analysis?: AnalyzeDreamSentimentOutput['briefAnalysis'];
-  sentimentColor?: string; // e.g., 'text-green-400', 'text-red-400'
+  analysis?: AnalyzeDreamSentimentOutput['detailedAnalysis']; // Changed from briefAnalysis
+  sentimentColor?: string;
   isAnalyzing?: boolean;
 }
 
@@ -82,7 +82,7 @@ export default function DreamJournal() {
             ? {
                 ...dream,
                 sentiment: sentimentResult.primarySentiment,
-                analysis: sentimentResult.briefAnalysis,
+                analysis: sentimentResult.detailedAnalysis, // Use detailedAnalysis
                 sentimentColor: getSentimentColor(sentimentResult.primarySentiment),
                 isAnalyzing: false,
               }
@@ -109,63 +109,102 @@ export default function DreamJournal() {
       return;
     }
 
-    const doc = new jsPDF();
+    const doc = new jsPDF({
+      orientation: 'portrait',
+      unit: 'pt', // Use points for finer control
+      format: 'a4'
+    });
+    
     const pageWidth = doc.internal.pageSize.getWidth();
-    const margin = 15;
-    const maxLineWidth = pageWidth - margin * 2;
-    let yPos = 20;
+    const pageHeight = doc.internal.pageSize.getHeight();
+    const margin = 40; // Points
+    const contentWidth = pageWidth - margin * 2;
+    let yPos = margin;
+    const lineSpacing = 7; // Points
 
-    doc.setFontSize(18);
-    doc.text(t('pdfReportTitle'), pageWidth / 2, yPos, { align: 'center' });
-    yPos += 10;
+    // --- Cover Page ---
+    doc.setFontSize(28);
+    doc.setFont(undefined, 'bold');
+    doc.text(t('pdfReportTitle'), pageWidth / 2, yPos + 20, { align: 'center' });
+    yPos += 60;
 
+    doc.setFontSize(12);
+    doc.setFont(undefined, 'normal');
+    doc.text(t('pdfReportGenerated', { date: format(new Date(), 'MMMM d, yyyy HH:mm') }), pageWidth / 2, yPos, { align: 'center' });
+    yPos += 30;
+    
     doc.setFontSize(10);
-    doc.text(t('pdfReportGenerated', { date: format(new Date(), 'MMM d, yyyy HH:mm') }), margin, yPos);
-    yPos += 15;
+    doc.setFont(undefined, 'italic');
+    doc.text(t('pdfReportSubtitle'), pageWidth / 2, yPos, { align: 'center' });
 
-    loggedDreams.forEach((dream, index) => {
-      if (yPos > doc.internal.pageSize.getHeight() - 30) { // Check for page break
+
+    // --- Dreams ---
+    loggedDreams.slice().reverse().forEach((dream, index) => { // Iterate in chronological order for the report
+      // Check if new page is needed before rendering the dream
+      // Estimate height (very rough): date + text lines + sentiment + analysis lines + padding
+      const minHeightForDream = 60 + (dream.text.length / 50 * (11 + lineSpacing)) + ((dream.analysis?.length ?? 0) / 50 * (10 + lineSpacing));
+      if (yPos + minHeightForDream > pageHeight - margin * 1.5) { // Add some bottom margin buffer
         doc.addPage();
-        yPos = 20;
-      }
-
-      doc.setFontSize(12);
-      doc.setFont(undefined, 'bold');
-      doc.text(t('pdfDreamFrom', { date: format(new Date(dream.date), 'MMM d, yyyy - hh:mm a') }), margin, yPos);
-      yPos += 7;
-
-      doc.setFont(undefined, 'normal');
-      doc.setFontSize(11);
-      const dreamTextLines = doc.splitTextToSize(t('pdfDreamText', { text: dream.text }), maxLineWidth);
-      doc.text(dreamTextLines, margin, yPos);
-      yPos += (dreamTextLines.length * 5) + 5; 
-
-      if (dream.sentiment) {
-        doc.setFont(undefined, 'italic');
-        const sentimentLine = t('pdfAiSentiment', { sentiment: dream.sentiment });
-        doc.text(sentimentLine, margin, yPos);
-        yPos += 5;
-      }
-      if (dream.analysis) {
-        const analysisLines = doc.splitTextToSize(t('pdfAiAnalysis', { analysis: dream.analysis }), maxLineWidth);
-        doc.text(analysisLines, margin, yPos);
-        yPos += (analysisLines.length * 5) + 5;
+        yPos = margin;
       }
       
-      if (index < loggedDreams.length - 1) {
-        doc.line(margin, yPos, pageWidth - margin, yPos); // Separator line
-        yPos += 10;
+      // Add a separator before each dream entry except the first on a new page
+      if (index > 0 || yPos !== margin) {
+          yPos += 20; // Space before separator
+          doc.setDrawColor(200, 200, 200); // Light gray line
+          doc.line(margin, yPos, pageWidth - margin, yPos);
+          yPos += 20; // Space after separator
+      }
+
+
+      // Date of the dream
+      doc.setFontSize(14);
+      doc.setFont(undefined, 'bold');
+      doc.setTextColor(50, 50, 50); // Dark gray
+      doc.text(t('pdfDreamFrom', { date: format(new Date(dream.date), 'MMMM d, yyyy - hh:mm a') }), margin, yPos);
+      yPos += 14 + lineSpacing + 5;
+
+      // Dream Text
+      doc.setFontSize(11);
+      doc.setFont(undefined, 'normal');
+      doc.setTextColor(0, 0, 0); // Black
+      doc.text(t('pdfDreamTextLabel'), margin, yPos);
+      yPos += 11 + lineSpacing /2;
+      const dreamTextLines = doc.splitTextToSize(dream.text || t('pdfNoText'), contentWidth);
+      doc.text(dreamTextLines, margin, yPos);
+      yPos += (dreamTextLines.length * (11 + lineSpacing)) + lineSpacing;
+
+      // AI Sentiment
+      if (dream.sentiment) {
+        doc.setFontSize(10);
+        doc.setFont(undefined, 'bold');
+        doc.setTextColor(80, 80, 80);
+        doc.text(t('pdfAiSentimentLabel'), margin, yPos);
+        doc.setFont(undefined, 'normal');
+        doc.text(dream.sentiment, margin + doc.getTextWidth(t('pdfAiSentimentLabel')) + 5, yPos);
+        yPos += 10 + lineSpacing;
+      }
+
+      // AI Analysis
+      if (dream.analysis) {
+        doc.setFontSize(10);
+        doc.setFont(undefined, 'bold');
+        doc.setTextColor(80, 80, 80);
+        doc.text(t('pdfAiAnalysisLabel'), margin, yPos);
+        yPos += 10 + lineSpacing/2;
+        doc.setFont(undefined, 'italic');
+        doc.setTextColor(50, 50, 50);
+        const analysisLines = doc.splitTextToSize(dream.analysis, contentWidth);
+        doc.text(analysisLines, margin, yPos);
+        yPos += (analysisLines.length * (10 + lineSpacing));
       }
     });
     
     const timestamp = format(new Date(), 'yyyyMMdd_HHmmss');
-    doc.save(`slumberai_dreams_report_${timestamp}.pdf`);
+    doc.save(`SlumberAI_Dream_Journal_${timestamp}.pdf`);
   };
 
   return (
-    // Removed Card wrapper, styling is now on parent AnimatedSection
-    // Removed CardHeader, title is on parent AnimatedSection
-    // Removed CardDescription, description is on parent AnimatedSection
     <div className="w-full h-auto md:h-[700px] flex flex-col overflow-hidden">
        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-4">
             <p className="text-sm text-muted-foreground text-center sm:text-left flex-grow">
@@ -234,7 +273,7 @@ export default function DreamJournal() {
                         <Sparkles className="h-3.5 w-3.5" />
                         {t('aiSentimentPrefix')} <span className="font-semibold">{dream.sentiment}</span>
                       </p>
-                      {dream.analysis && <p className="text-xs text-muted-foreground mt-1 italic">"{dream.analysis}"</p>}
+                      {dream.analysis && <p className="text-xs text-muted-foreground mt-1 italic whitespace-pre-wrap">"{dream.analysis}"</p>}
                     </div>
                   )}
                 </CardContent>
@@ -246,3 +285,4 @@ export default function DreamJournal() {
     </div>
   );
 }
+

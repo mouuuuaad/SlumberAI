@@ -108,11 +108,13 @@
     "analysisError": "Erreur d'analyse",
     "analysisErrorDetails": "Impossible d'analyser le sentiment.",
     "pdfReportTitle": "SlumberAI - Rapport du Journal des Rêves",
+    "pdfReportSubtitle": "Un enregistrement personnalisé de vos explorations oniriques.",
     "pdfReportGenerated": "Rapport Généré : {date}",
-    "pdfDreamFrom": "Rêve du : {date}",
-    "pdfDreamText": "Rêve : {text}",
-    "pdfAiSentiment": "Sentiment IA : {sentiment}",
-    "pdfAiAnalysis": "Analyse IA : {analysis}"
+    "pdfDreamFrom": "Entrée de rêve du : {date}",
+    "pdfDreamTextLabel": "Description du Rêve :",
+    "pdfAiSentimentLabel": "Sentiment IA :",
+    "pdfAiAnalysisLabel": "Analyse Détaillée IA :",
+    "pdfNoText": "Aucun texte de rêve enregistré."
   },
   "SleepSciencePage": {
     "title": "Explorateur de la Science du Sommeil",
