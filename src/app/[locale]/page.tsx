@@ -21,7 +21,7 @@ interface AnimatedSectionProps {
   icon?: React.ElementType;
   title: string;
   delay?: string;
-  id?: string; // Added id prop
+  id?: string;
 }
 
 const AnimatedSection: React.FC<AnimatedSectionProps> = ({ children, className, icon: Icon, title, delay = '0ms', id }) => {
@@ -56,9 +56,9 @@ const AnimatedSection: React.FC<AnimatedSectionProps> = ({ children, className, 
   return (
     <section
       ref={sectionRef}
-      id={id} // Apply id here
+      id={id}
       className={cn(
-        'w-full max-w-2xl lg:max-w-3xl glassmorphic rounded-xl shadow-2xl p-6 md:p-8 transition-all duration-700 ease-out transform opacity-0 translate-y-5 scale-95',
+        'w-full max-w-2xl lg:max-w-3xl glassmorphic rounded-xl shadow-2xl p-6 md:p-8 transition-all duration-700 ease-out transform opacity-0 translate-y-10 scale-90', // Enhanced initial animation state
         isVisible && 'opacity-100 translate-y-0 scale-100',
         className
       )}
