@@ -3,6 +3,7 @@
 // Content is not yet translated.
 import Header from '@/components/slumber/Header';
 import ScienceArticle, { type ArticleProps } from '@/components/slumber/ScienceArticle';
+import AnimatedSection from '@/components/slumber/AnimatedSection'; // Import AnimatedSection
 import { Brain } from 'lucide-react';
 import {useTranslations} from 'next-intl'; 
 import NextLink from 'next/link';
@@ -119,13 +120,18 @@ export default function SleepSciencePage() {
 
         <div className="space-y-8">
           {articlesData.map((article, index) => (
-            <ScienceArticle
-              key={index}
-              title={article.title} // These titles and contents are currently hardcoded in English
-              icon={article.icon}
-              sections={article.sections}
-              defaultOpen={index === 0}
-            />
+            <AnimatedSection 
+              key={index} 
+              delay={`${index * 100 + 100}ms`} // Stagger animation
+              tag="div" // Use div instead of section for list items
+            >
+              <ScienceArticle
+                title={article.title} 
+                icon={article.icon}
+                sections={article.sections}
+                defaultOpen={index === 0}
+              />
+            </AnimatedSection>
           ))}
         </div>
       </main>
