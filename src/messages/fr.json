@@ -14,6 +14,7 @@
     "aiCoachTitle": "Coach IA du sommeil",
     "dreamJournalTitle": "Journal des rêves",
     "sleepScienceTitle": "Explorez la science du sommeil",
+    "sleepScienceSubtitle": "Découvrez comment fonctionne le sommeil et comment améliorer le vôtre.",
     "sleepScienceLinkText": "Plongez dans la science du sommeil",
     "footerCopyright": "© {year} SlumberAI. Tous droits réservés. Conçu avec 💜",
     "sleepCyclesTab": "Cycles de Sommeil",
@@ -23,7 +24,7 @@
     "sleepScienceTab": "Science du Sommeil"
   },
   "SleepCalculatorForm": {
-    "title": "Calculateur de Cycle de Sommeil",
+    "title": "Planifiez votre sommeil parfait",
     "description": "Calcule les heures de sommeil optimales basées sur des cycles de sommeil de 90 minutes. Suppose 15 minutes pour s'endormir.",
     "wakeUpAtLabel": "Je veux me réveiller à...",
     "calculateBedtimeButton": "Calculer l'heure du coucher",
@@ -36,7 +37,7 @@
     "errorBedtimeCalculation": "Impossible de calculer l'heure du coucher en raison d'une erreur de traitement de l'heure."
   },
   "NapOptimizer": {
-    "title": "Optimiseur de Sieste",
+    "title": "Optimisez vos siestes",
     "description": "Calculez le meilleur moment pour vous réveiller de votre sieste pour un rafraîchissement optimal.",
     "napTypeLabel": "Type de Sieste :",
     "selectNapTypePlaceholder": "Sélectionner le type de sieste",
@@ -66,7 +67,7 @@
     }
   },
   "AiSleepCoach": {
-    "title": "Coach IA du Sommeil",
+    "title": "Votre coach personnel IA du sommeil",
     "description": "Discutez avec votre Coach IA du Sommeil pour des conseils personnalisés. Dites-moi comment vous vous sentez par rapport à votre sommeil ou posez toutes vos questions.",
     "personalizeAdviceLabel": "Personnaliser les conseils (Optionnel)",
     "ageLabel": "Âge",
@@ -87,7 +88,7 @@
     "inputPlaceholder": "Discuter avec votre Coach IA du Sommeil..."
   },
   "DreamJournal": {
-    "title": "Journal des Rêves",
+    "title": "Votre journal de rêves",
     "description": "Enregistrez vos rêves et obtenez une analyse des sentiments basée sur l'IA.",
     "exportToPdfButton": "Exporter en PDF",
     "dreamInputLabel": "De quoi avez-vous rêvé ?",
@@ -110,6 +111,6 @@
   "SleepSciencePage": {
     "title": "Explorateur de la Science du Sommeil",
     "subtitle": "Plongez dans la science fascinante du sommeil. Comprenez les besoins de votre corps et apprenez à optimiser votre repos pour une meilleure santé et un plus grand bien-être.",
-    "backToMainLink": "Retour aux calculateurs"
+    "backToMainLink": "Retour à la page principale"
   }
 }

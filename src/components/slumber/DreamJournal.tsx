@@ -163,32 +163,27 @@ export default function DreamJournal() {
   };
 
   return (
-    <Card className="w-full h-auto md:h-[700px] flex flex-col bg-transparent border-0 shadow-none">
-      <CardHeader className="pb-4">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
-            <div>
-                <CardTitle className="flex items-center gap-2 text-xl sm:text-2xl text-foreground">
-                    <BookOpen className="h-6 w-6 text-primary" />
-                    {t('title')}
-                </CardTitle>
-                <CardDescription className="text-sm text-muted-foreground mt-1">
-                    {t('description')}
-                </CardDescription>
-            </div>
+    // Removed Card wrapper, styling is now on parent AnimatedSection
+    // Removed CardHeader, title is on parent AnimatedSection
+    // Removed CardDescription, description is on parent AnimatedSection
+    <div className="w-full h-auto md:h-[700px] flex flex-col overflow-hidden">
+       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-4">
+            <p className="text-sm text-muted-foreground text-center sm:text-left flex-grow">
+                {t('description')}
+            </p>
             <Button 
                 variant="outline" 
                 size="sm" 
                 onClick={handleExportToPdf} 
                 disabled={loggedDreams.length === 0 || !isClient}
-                className="mt-2 sm:mt-0 bg-card/70 hover:bg-card/90 border-border/50 text-foreground"
+                className="bg-card/70 hover:bg-card/90 border-border/50 text-foreground w-full sm:w-auto"
             >
                 <Download className="mr-2 h-4 w-4" />
                 {t('exportToPdfButton')}
             </Button>
         </div>
-      </CardHeader>
-      <CardContent className="flex-grow flex flex-col p-0 overflow-hidden">
-        <form onSubmit={handleSubmitDream} className="p-4 md:px-6 md:pt-2 md:pb-4 border-b border-border/30">
+      <div className="flex-grow flex flex-col bg-card/80 border border-border/30 rounded-lg shadow-inner">
+        <form onSubmit={handleSubmitDream} className="p-4 md:px-6 md:pt-4 md:pb-4 border-b border-border/30">
           <div className="space-y-2 mb-4">
             <Label htmlFor="dreamText" className="text-foreground/90">{t('dreamInputLabel')}</Label>
             <Textarea
@@ -247,7 +242,7 @@ export default function DreamJournal() {
             ))}
           </div>
         </ScrollArea>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }

@@ -35,6 +35,7 @@ export default function SleepCalculatorForm({ onCalculate }: SleepCalculatorForm
   const [currentTimeForBedNow, setCurrentTimeForBedNow] = useState('');
 
   useEffect(() => {
+    // This effect runs only on the client, ensuring `new Date()` doesn't cause hydration mismatch
     const updateCurrentTime = () => {
       setCurrentTimeForBedNow(format(new Date(), 'hh:mm a'));
     };
@@ -119,64 +120,58 @@ export default function SleepCalculatorForm({ onCalculate }: SleepCalculatorForm
   };
 
   return (
-    <div className="w-full">
-      <div className="text-center mb-6">
-        <h2 className="text-xl sm:text-2xl font-semibold text-foreground mb-1">{t('title')}</h2>
-        <p className="text-sm text-muted-foreground px-2">
-          {t('description')}
-        </p>
+    <div className="w-full space-y-8">
+      {/* Removed redundant h2 title, now handled by AnimatedSection on parent page */}
+      {/* <p className="text-sm text-muted-foreground text-center px-2 mb-6">{t('description')}</p> */}
+      
+      <div className="space-y-4">
+        <Label htmlFor="wakeUpTimePicker" className="block text-lg font-medium text-center text-foreground/90">
+          {t('wakeUpAtLabel')}
+        </Label>
+        <CustomTimePicker
+          value={selectedTime}
+          onChange={(newTime) => {
+            setSelectedTime(newTime);
+            if (timeError) setTimeError(null);
+            setShowGoToBedNowResults(false);
+          }}
+        />
+        {timeError && !showGoToBedNowResults && (
+          <p className="text-sm text-destructive flex items-center gap-1 pt-1 justify-center">
+            <AlertCircle className="h-4 w-4" /> {timeError}
+          </p>
+        )}
+        <Button
+          onClick={handleCalculateBedtime}
+          className="w-full bg-primary hover:bg-primary/90 text-primary-foreground text-base py-3 rounded-lg shadow-md hover:shadow-lg transition-shadow"
+          size="lg"
+        >
+          <CalculatorIcon className="mr-2 h-5 w-5" /> {t('calculateBedtimeButton')}
+        </Button>
       </div>
 
-      <div className="space-y-8">
-        <div className="space-y-4">
-          <Label htmlFor="wakeUpTimePicker" className="block text-lg font-medium text-center text-foreground/90">
-            {t('wakeUpAtLabel')}
-          </Label>
-          <CustomTimePicker
-            value={selectedTime}
-            onChange={(newTime) => {
-              setSelectedTime(newTime);
-              if (timeError) setTimeError(null);
-              setShowGoToBedNowResults(false);
-            }}
-          />
-          {timeError && !showGoToBedNowResults && (
-            <p className="text-sm text-destructive flex items-center gap-1 pt-1 justify-center">
-              <AlertCircle className="h-4 w-4" /> {timeError}
-            </p>
-          )}
-          <Button
-            onClick={handleCalculateBedtime}
-            className="w-full bg-primary hover:bg-primary/90 text-primary-foreground text-base py-3 rounded-lg shadow-md hover:shadow-lg transition-shadow"
-            size="lg"
-          >
-            <CalculatorIcon className="mr-2 h-5 w-5" /> {t('calculateBedtimeButton')}
-          </Button>
-        </div>
-
-        <div className="space-y-4 pt-6 border-t border-border/30">
-          <Label className="block text-lg font-medium text-center text-foreground/90">
-            {t('goToBedNowLabel')}
-          </Label>
-          {currentTimeForBedNow && (
-            <p className="text-sm text-muted-foreground text-center">
-              {t('currentTimeLabel')} {currentTimeForBedNow}
-            </p>
-          )}
-          <Button
-            onClick={handleCalculateWakeUpNow}
-            variant="outline"
-            className="w-full border-primary/60 hover:bg-primary/10 text-primary text-base py-3 rounded-lg shadow-md hover:shadow-lg transition-shadow hover:border-primary"
-            size="lg"
-          >
-            <Clock className="mr-2 h-5 w-5" /> {t('calculateWakeUpTimesButton')}
-          </Button>
-           {timeError && showGoToBedNowResults && (
-            <p className="text-sm text-destructive flex items-center gap-1 pt-1 justify-center">
-              <AlertCircle className="h-4 w-4" /> {timeError}
-            </p>
-          )}
-        </div>
+      <div className="space-y-4 pt-6 border-t border-border/30">
+        <Label className="block text-lg font-medium text-center text-foreground/90">
+          {t('goToBedNowLabel')}
+        </Label>
+        {currentTimeForBedNow && (
+          <p className="text-sm text-muted-foreground text-center">
+            {t('currentTimeLabel')} {currentTimeForBedNow}
+          </p>
+        )}
+        <Button
+          onClick={handleCalculateWakeUpNow}
+          variant="outline"
+          className="w-full border-primary/60 hover:bg-primary/10 text-primary text-base py-3 rounded-lg shadow-md hover:shadow-lg transition-shadow hover:border-primary"
+          size="lg"
+        >
+          <Clock className="mr-2 h-5 w-5" /> {t('calculateWakeUpTimesButton')}
+        </Button>
+         {timeError && showGoToBedNowResults && (
+          <p className="text-sm text-destructive flex items-center gap-1 pt-1 justify-center">
+            <AlertCircle className="h-4 w-4" /> {timeError}
+          </p>
+        )}
       </div>
     </div>
   );

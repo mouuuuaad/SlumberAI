@@ -100,18 +100,14 @@ export default function ChatAssistant() {
   };
 
   return (
-    <Card className="w-full h-[700px] md:h-[650px] flex flex-col bg-transparent border-0 shadow-none">
-      <CardHeader className="pb-2">
-        <CardTitle className="flex items-center gap-2 text-xl sm:text-2xl text-foreground">
-          <Sparkles className="h-6 w-6 text-primary" />
-          {t('title')}
-        </CardTitle>
-        <CardDescription className="text-sm text-muted-foreground">
-          {t('description')}
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="flex-grow flex flex-col p-0 overflow-hidden">
-
+    // Removed Card wrapper, styling is now on parent AnimatedSection
+    // Removed CardHeader, title is on parent AnimatedSection
+    // Removed CardDescription, description is on parent AnimatedSection
+    <div className="w-full h-[700px] md:h-[650px] flex flex-col overflow-hidden">
+      <p className="text-sm text-muted-foreground mb-4 text-center">
+        {t('description')}
+      </p>
+      <div className="flex-grow flex flex-col bg-card/80 border border-border/30 rounded-lg shadow-inner">
         <Accordion type="single" collapsible className="px-4 md:px-6 pt-2 pb-1 border-b border-border/30">
           <AccordionItem value="profile" className="border-b-0">
             <AccordionTrigger className="text-sm hover:no-underline text-foreground/90 py-2">
@@ -170,7 +166,7 @@ export default function ChatAssistant() {
                     'flex items-start gap-3 p-3 rounded-lg max-w-[85%] shadow-sm',
                     message.role === 'user'
                       ? 'ml-auto bg-primary text-primary-foreground'
-                      : 'bg-card text-card-foreground border'
+                      : 'bg-card text-card-foreground border' // Changed from bg-muted to bg-card for better contrast
                   )}
                 >
                   {message.role === 'assistant' && <Bot className="h-5 w-5 sm:h-6 sm:w-6 text-accent flex-shrink-0 mt-0.5" />}
@@ -195,7 +191,7 @@ export default function ChatAssistant() {
               </div>
             ))}
             {isLoading && (
-              <div className="flex items-start gap-3 p-3 rounded-lg bg-muted max-w-[85%] shadow-sm">
+              <div className="flex items-start gap-3 p-3 rounded-lg bg-muted/70 max-w-[85%] shadow-sm">
                 <Bot className="h-5 w-5 sm:h-6 sm:w-6 text-accent flex-shrink-0 mt-0.5" />
                 <p className="text-sm animate-pulse text-muted-foreground">{t('loadingResponse')}</p>
               </div>
@@ -209,7 +205,7 @@ export default function ChatAssistant() {
             )}
           </div>
         </ScrollArea>
-        <form onSubmit={handleSubmit} className="p-4 border-t border-border/50 bg-background/70">
+        <form onSubmit={handleSubmit} className="p-4 border-t border-border/50 bg-card/70">
           <div className="flex items-center gap-2">
             <Input
               type="text"
@@ -224,7 +220,7 @@ export default function ChatAssistant() {
             </Button>
           </div>
         </form>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }

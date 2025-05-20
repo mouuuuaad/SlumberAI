@@ -45,6 +45,7 @@ export default function NapCalculator() {
   const [timeError, setTimeError] = useState<string | null>(null);
   
   useEffect(() => {
+    // This effect runs only on the client
     setStartTime(format(new Date(), 'HH:mm'));
   }, []);
 
@@ -94,71 +95,63 @@ export default function NapCalculator() {
   const selectedNapDetails = translatedNapTypes.find(n => n.duration.toString() === selectedNapDuration);
 
   return (
-    <Card className="w-full bg-transparent border-0 shadow-none"> 
-      <CardHeader className="pb-4">
-        <CardTitle className="flex items-center gap-2 text-xl sm:text-2xl text-foreground">
-          <Coffee className="h-6 w-6 text-primary" />
-          {t('title')}
-        </CardTitle>
-        <CardDescription className="text-sm text-muted-foreground">
-          {t('description')}
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-6">
-        <div className="space-y-2">
-          <Label htmlFor="napType" className="text-foreground/90">{t('napTypeLabel')}</Label>
-          <Select value={selectedNapDuration} onValueChange={(value) => {
-            setSelectedNapDuration(value);
-            setNapResult(null); 
-          }}>
-            <SelectTrigger id="napType" className="w-full md:w-[280px] bg-input text-foreground focus:bg-input focus:ring-primary">
-              <SelectValue placeholder={t('selectNapTypePlaceholder')} />
-            </SelectTrigger>
-            <SelectContent>
-              {translatedNapTypes.map((nap) => (
-                <SelectItem key={nap.duration} value={nap.duration.toString()}>
-                  {nap.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          {selectedNapDetails && <p className="text-sm text-muted-foreground pt-1">{selectedNapDetails.description}</p>}
-        </div>
+    // Removed Card wrapper, styling is now on parent AnimatedSection
+    // Removed CardHeader, title is on parent AnimatedSection
+    // Removed CardDescription, description is on parent AnimatedSection
+    <div className="space-y-6">
+      <div className="space-y-2">
+        <Label htmlFor="napType" className="text-foreground/90">{t('napTypeLabel')}</Label>
+        <Select value={selectedNapDuration} onValueChange={(value) => {
+          setSelectedNapDuration(value);
+          setNapResult(null); 
+        }}>
+          <SelectTrigger id="napType" className="w-full md:w-[280px] bg-input text-foreground focus:bg-input focus:ring-primary">
+            <SelectValue placeholder={t('selectNapTypePlaceholder')} />
+          </SelectTrigger>
+          <SelectContent>
+            {translatedNapTypes.map((nap) => (
+              <SelectItem key={nap.duration} value={nap.duration.toString()}>
+                {nap.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        {selectedNapDetails && <p className="text-sm text-muted-foreground pt-1">{selectedNapDetails.description}</p>}
+      </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="startTime" className="text-foreground/90">{t('startTimeLabel')}</Label>
-          <Input
-            id="startTime"
-            type="time" 
-            value={startTime}
-            onChange={(e) => {
-              setStartTime(e.target.value)
-              if(timeError) setTimeError(null);
-              if(napResult) setNapResult(null);
-            }}
-            className="w-full md:w-1/2 bg-input text-foreground focus:ring-primary"
-          />
-          {timeError && (
-            <p className="text-sm text-destructive flex items-center gap-1 pt-1">
-              <AlertCircle className="h-4 w-4" /> {timeError}
-            </p>
-          )}
-        </div>
-
-        <Button onClick={handleCalculateNap} className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-primary-foreground">
-          {t('calculateButton')}
-        </Button>
-
-        {napResult && (
-          <Card className="mt-4 bg-primary/10 border-primary/30">
-            <CardContent className="p-4 sm:p-6">
-              <p className="text-center font-medium text-primary flex items-center justify-center gap-2">
-                <Clock className="h-5 w-5"/> {napResult}
-              </p>
-            </CardContent>
-          </Card>
+      <div className="space-y-2">
+        <Label htmlFor="startTime" className="text-foreground/90">{t('startTimeLabel')}</Label>
+        <Input
+          id="startTime"
+          type="time" 
+          value={startTime}
+          onChange={(e) => {
+            setStartTime(e.target.value)
+            if(timeError) setTimeError(null);
+            if(napResult) setNapResult(null);
+          }}
+          className="w-full md:w-1/2 bg-input text-foreground focus:ring-primary"
+        />
+        {timeError && (
+          <p className="text-sm text-destructive flex items-center gap-1 pt-1">
+            <AlertCircle className="h-4 w-4" /> {timeError}
+          </p>
         )}
-      </CardContent>
-    </Card>
+      </div>
+
+      <Button onClick={handleCalculateNap} className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-primary-foreground">
+        {t('calculateButton')}
+      </Button>
+
+      {napResult && (
+        <Card className="mt-4 bg-primary/10 border-primary/30">
+          <CardContent className="p-4 sm:p-6">
+            <p className="text-center font-medium text-primary flex items-center justify-center gap-2">
+              <Clock className="h-5 w-5"/> {napResult}
+            </p>
+          </CardContent>
+        </Card>
+      )}
+    </div>
   );
 }

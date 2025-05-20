@@ -14,6 +14,7 @@
     "aiCoachTitle": "AI Sleep Coach",
     "dreamJournalTitle": "Dream Journal",
     "sleepScienceTitle": "Explore the Science of Sleep",
+    "sleepScienceSubtitle": "Discover insights into how sleep works and how to improve yours.",
     "sleepScienceLinkText": "Dive into Sleep Science",
     "footerCopyright": "© {year} SlumberAI. All rights reserved. Crafted with 💜",
     "sleepCyclesTab": "Sleep Cycles",
@@ -23,7 +24,7 @@
     "sleepScienceTab": "Sleep Science"
   },
   "SleepCalculatorForm": {
-    "title": "Sleep Cycle Calculator",
+    "title": "Plan Your Perfect Sleep",
     "description": "Calculates optimal sleep times based on 90-minute sleep cycles. Assumes 15 minutes to fall asleep.",
     "wakeUpAtLabel": "I want to wake up at...",
     "calculateBedtimeButton": "Calculate Bedtime",
@@ -36,7 +37,7 @@
     "errorBedtimeCalculation": "Could not calculate bedtime due to a time processing error."
   },
   "NapOptimizer": {
-    "title": "Nap Optimizer",
+    "title": "Optimize Your Naps",
     "description": "Calculate the best time to wake up from your nap for optimal refreshment.",
     "napTypeLabel": "Nap Type:",
     "selectNapTypePlaceholder": "Select nap type",
@@ -66,7 +67,7 @@
     }
   },
   "AiSleepCoach": {
-    "title": "AI Sleep Coach",
+    "title": "Your Personal AI Sleep Coach",
     "description": "Chat with your AI Sleep Coach for personalized advice. Tell me how you're feeling about your sleep or ask any questions you have.",
     "personalizeAdviceLabel": "Personalize Advice (Optional)",
     "ageLabel": "Age",
@@ -87,7 +88,7 @@
     "inputPlaceholder": "Chat with your AI Sleep Coach..."
   },
   "DreamJournal": {
-    "title": "Dream Journal",
+    "title": "Your Dream Journal",
     "description": "Log your dreams and get AI-powered sentiment analysis.",
     "exportToPdfButton": "Export to PDF",
     "dreamInputLabel": "What did you dream about?",
@@ -110,6 +111,6 @@
   "SleepSciencePage": {
     "title": "Sleep Science Explorer",
     "subtitle": "Dive into the fascinating science behind sleep. Understand your body's needs and learn how to optimize your rest for better health and well-being.",
-    "backToMainLink": "Back to Calculators"
+    "backToMainLink": "Back to Main Page"
   }
 }
