@@ -85,5 +85,31 @@
     "initialPromptQuestion": "Comment vous sentez-vous par rapport à votre sommeil ?",
     "initialPromptExample": "ex: \"Je me sens fatigué aujourd'hui\" ou \"Comment puis-je arrêter de repousser mon réveil ?\"",
     "inputPlaceholder": "Discuter avec votre Coach IA du Sommeil..."
+  },
+  "DreamJournal": {
+    "title": "Journal des Rêves",
+    "description": "Enregistrez vos rêves et obtenez une analyse des sentiments basée sur l'IA.",
+    "exportToPdfButton": "Exporter en PDF",
+    "dreamInputLabel": "De quoi avez-vous rêvé ?",
+    "dreamInputPlaceholder": "Décrivez votre rêve ici...",
+    "logDreamButton": "Enregistrer le Rêve & Analyser",
+    "analyzingButton": "Analyse en cours...",
+    "emptyStateMessage": "Vos rêves enregistrés apparaîtront ici.",
+    "emptyStateSubMessage": "Commencez par écrire votre premier rêve ci-dessus !",
+    "dreamEntryTitlePrefix": "Rêve du :",
+    "aiSentimentPrefix": "Sentiment IA :",
+    "analysisError": "Erreur d'analyse",
+    "analysisErrorDetails": "Impossible d'analyser le sentiment.",
+    "pdfReportTitle": "SlumberAI - Rapport du Journal des Rêves",
+    "pdfReportGenerated": "Rapport Généré : {date}",
+    "pdfDreamFrom": "Rêve du : {date}",
+    "pdfDreamText": "Rêve : {text}",
+    "pdfAiSentiment": "Sentiment IA : {sentiment}",
+    "pdfAiAnalysis": "Analyse IA : {analysis}"
+  },
+  "SleepSciencePage": {
+    "title": "Explorateur de la Science du Sommeil",
+    "subtitle": "Plongez dans la science fascinante du sommeil. Comprenez les besoins de votre corps et apprenez à optimiser votre repos pour une meilleure santé et un plus grand bien-être.",
+    "backToMainLink": "Retour aux calculateurs"
   }
 }

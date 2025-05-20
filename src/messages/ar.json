@@ -85,5 +85,31 @@
     "initialPromptQuestion": "كيف تشعر حيال نومك؟",
     "initialPromptExample": "مثال، \"أشعر بالتعب اليوم\" أو \"كيف يمكنني التوقف عن الغفوة؟\"",
     "inputPlaceholder": "تحدث مع مدرب النوم الخاص بك..."
+  },
+  "DreamJournal": {
+    "title": "مفكرة الأحلام",
+    "description": "سجل أحلامك واحصل على تحليل للمشاعر مدعوم بالذكاء الاصطناعي.",
+    "exportToPdfButton": "تصدير إلى PDF",
+    "dreamInputLabel": "عماذا حلمت؟",
+    "dreamInputPlaceholder": "صف حلمك هنا...",
+    "logDreamButton": "سجل الحلم وحلله",
+    "analyzingButton": "جار التحليل...",
+    "emptyStateMessage": "ستظهر أحلامك المسجلة هنا.",
+    "emptyStateSubMessage": "ابدأ بكتابة حلمك الأول أعلاه!",
+    "dreamEntryTitlePrefix": "حلم من:",
+    "aiSentimentPrefix": "مشاعر الذكاء الاصطناعي:",
+    "analysisError": "خطأ في التحليل",
+    "analysisErrorDetails": "لم يتمكن من تحليل المشاعر.",
+    "pdfReportTitle": "SlumberAI - تقرير مفكرة الأحلام",
+    "pdfReportGenerated": "تم إنشاء التقرير: {date}",
+    "pdfDreamFrom": "حلم من: {date}",
+    "pdfDreamText": "الحلم: {text}",
+    "pdfAiSentiment": "مشاعر الذكاء الاصطناعي: {sentiment}",
+    "pdfAiAnalysis": "تحليل الذكاء الاصطناعي: {analysis}"
+  },
+  "SleepSciencePage": {
+    "title": "مستكشف علم النوم",
+    "subtitle": "الغوص في علم النوم الرائع. فهم احتياجات جسمك وتعلم كيفية تحسين راحتك لصحة وحيوية أفضل.",
+    "backToMainLink": "العودة إلى الحاسبات"
   }
 }

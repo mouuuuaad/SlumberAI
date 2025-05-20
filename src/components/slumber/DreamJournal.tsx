@@ -12,6 +12,7 @@ import { analyzeDreamSentiment, type AnalyzeDreamSentimentInput, type AnalyzeDre
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import jsPDF from 'jspdf';
+import { useTranslations } from 'next-intl';
 
 interface DreamEntry {
   id: string;
@@ -35,6 +36,7 @@ const getSentimentColor = (sentiment?: string): string => {
 
 
 export default function DreamJournal() {
+  const t = useTranslations('DreamJournal');
   const [dreamInput, setDreamInput] = useState('');
   const [loggedDreams, setLoggedDreams] = useState<DreamEntry[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -92,7 +94,7 @@ export default function DreamJournal() {
       setLoggedDreams((prevDreams) =>
         prevDreams.map((dream) =>
           dream.id === newDreamId
-            ? { ...dream, sentiment: 'Error analyzing', analysis: 'Could not analyze sentiment.', sentimentColor: 'text-red-500', isAnalyzing: false }
+            ? { ...dream, sentiment: t('analysisError'), analysis: t('analysisErrorDetails'), sentimentColor: 'text-red-500', isAnalyzing: false }
             : dream
         )
       );
@@ -114,11 +116,11 @@ export default function DreamJournal() {
     let yPos = 20;
 
     doc.setFontSize(18);
-    doc.text('SlumberAI - Dream Journal Report', pageWidth / 2, yPos, { align: 'center' });
+    doc.text(t('pdfReportTitle'), pageWidth / 2, yPos, { align: 'center' });
     yPos += 10;
 
     doc.setFontSize(10);
-    doc.text(`Report Generated: ${format(new Date(), 'MMM d, yyyy HH:mm')}`, margin, yPos);
+    doc.text(t('pdfReportGenerated', { date: format(new Date(), 'MMM d, yyyy HH:mm') }), margin, yPos);
     yPos += 15;
 
     loggedDreams.forEach((dream, index) => {
@@ -129,23 +131,23 @@ export default function DreamJournal() {
 
       doc.setFontSize(12);
       doc.setFont(undefined, 'bold');
-      doc.text(`Dream from: ${format(new Date(dream.date), 'MMM d, yyyy - hh:mm a')}`, margin, yPos);
+      doc.text(t('pdfDreamFrom', { date: format(new Date(dream.date), 'MMM d, yyyy - hh:mm a') }), margin, yPos);
       yPos += 7;
 
       doc.setFont(undefined, 'normal');
       doc.setFontSize(11);
-      const dreamTextLines = doc.splitTextToSize(`Dream: ${dream.text}`, maxLineWidth);
+      const dreamTextLines = doc.splitTextToSize(t('pdfDreamText', { text: dream.text }), maxLineWidth);
       doc.text(dreamTextLines, margin, yPos);
-      yPos += (dreamTextLines.length * 5) + 5; // Adjust spacing based on lines
+      yPos += (dreamTextLines.length * 5) + 5; 
 
       if (dream.sentiment) {
         doc.setFont(undefined, 'italic');
-        const sentimentLine = `AI Sentiment: ${dream.sentiment}`;
+        const sentimentLine = t('pdfAiSentiment', { sentiment: dream.sentiment });
         doc.text(sentimentLine, margin, yPos);
         yPos += 5;
       }
       if (dream.analysis) {
-        const analysisLines = doc.splitTextToSize(`AI Analysis: ${dream.analysis}`, maxLineWidth);
+        const analysisLines = doc.splitTextToSize(t('pdfAiAnalysis', { analysis: dream.analysis }), maxLineWidth);
         doc.text(analysisLines, margin, yPos);
         yPos += (analysisLines.length * 5) + 5;
       }
@@ -167,10 +169,10 @@ export default function DreamJournal() {
             <div>
                 <CardTitle className="flex items-center gap-2 text-xl sm:text-2xl text-foreground">
                     <BookOpen className="h-6 w-6 text-primary" />
-                    Dream Journal
+                    {t('title')}
                 </CardTitle>
                 <CardDescription className="text-sm text-muted-foreground mt-1">
-                    Log your dreams and get AI-powered sentiment analysis.
+                    {t('description')}
                 </CardDescription>
             </div>
             <Button 
@@ -181,17 +183,17 @@ export default function DreamJournal() {
                 className="mt-2 sm:mt-0 bg-card/70 hover:bg-card/90 border-border/50 text-foreground"
             >
                 <Download className="mr-2 h-4 w-4" />
-                Export to PDF
+                {t('exportToPdfButton')}
             </Button>
         </div>
       </CardHeader>
       <CardContent className="flex-grow flex flex-col p-0 overflow-hidden">
         <form onSubmit={handleSubmitDream} className="p-4 md:px-6 md:pt-2 md:pb-4 border-b border-border/30">
           <div className="space-y-2 mb-4">
-            <Label htmlFor="dreamText" className="text-foreground/90">What did you dream about?</Label>
+            <Label htmlFor="dreamText" className="text-foreground/90">{t('dreamInputLabel')}</Label>
             <Textarea
               id="dreamText"
-              placeholder="Describe your dream here..."
+              placeholder={t('dreamInputPlaceholder')}
               value={dreamInput}
               onChange={(e) => setDreamInput(e.target.value)}
               rows={4}
@@ -202,11 +204,11 @@ export default function DreamJournal() {
           <Button type="submit" disabled={isLoading || !dreamInput.trim()} className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-primary-foreground">
             {isLoading ? (
               <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Analyzing...
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" /> {t('analyzingButton')}
               </>
             ) : (
               <>
-                <Feather className="mr-2 h-4 w-4" /> Log Dream & Analyze
+                <Feather className="mr-2 h-4 w-4" /> {t('logDreamButton')}
               </>
             )}
           </Button>
@@ -217,15 +219,15 @@ export default function DreamJournal() {
             {loggedDreams.length === 0 && !isLoading && (
               <div className="text-center py-10 text-muted-foreground">
                 <BookOpen className="h-12 w-12 mx-auto mb-3 opacity-50" />
-                <p>Your logged dreams will appear here.</p>
-                <p className="text-xs">Start by writing down your first dream above!</p>
+                <p>{t('emptyStateMessage')}</p>
+                <p className="text-xs">{t('emptyStateSubMessage')}</p>
               </div>
             )}
             {loggedDreams.map((dream) => (
               <Card key={dream.id} className="bg-card/80 border-border/50 shadow-sm">
                 <CardHeader className="pb-3 pt-4 px-4">
                   <CardTitle className="text-sm font-medium text-primary flex justify-between items-center">
-                    <span>Dream from: {format(new Date(dream.date), 'MMM d, yyyy - hh:mm a')}</span>
+                    <span>{t('dreamEntryTitlePrefix')} {format(new Date(dream.date), 'MMM d, yyyy - hh:mm a')}</span>
                     {dream.isAnalyzing && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
                   </CardTitle>
                 </CardHeader>
@@ -235,7 +237,7 @@ export default function DreamJournal() {
                     <div className="pt-2 border-t border-border/30">
                       <p className={cn("text-xs font-medium flex items-center gap-1.5", dream.sentimentColor)}>
                         <Sparkles className="h-3.5 w-3.5" />
-                        AI Sentiment: <span className="font-semibold">{dream.sentiment}</span>
+                        {t('aiSentimentPrefix')} <span className="font-semibold">{dream.sentiment}</span>
                       </p>
                       {dream.analysis && <p className="text-xs text-muted-foreground mt-1 italic">"{dream.analysis}"</p>}
                     </div>

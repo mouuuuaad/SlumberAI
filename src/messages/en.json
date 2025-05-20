@@ -85,5 +85,31 @@
     "initialPromptQuestion": "How are you feeling about your sleep?",
     "initialPromptExample": "e.g., \"I feel tired today\" or \"How can I stop snoozing?\"",
     "inputPlaceholder": "Chat with your AI Sleep Coach..."
+  },
+  "DreamJournal": {
+    "title": "Dream Journal",
+    "description": "Log your dreams and get AI-powered sentiment analysis.",
+    "exportToPdfButton": "Export to PDF",
+    "dreamInputLabel": "What did you dream about?",
+    "dreamInputPlaceholder": "Describe your dream here...",
+    "logDreamButton": "Log Dream & Analyze",
+    "analyzingButton": "Analyzing...",
+    "emptyStateMessage": "Your logged dreams will appear here.",
+    "emptyStateSubMessage": "Start by writing down your first dream above!",
+    "dreamEntryTitlePrefix": "Dream from:",
+    "aiSentimentPrefix": "AI Sentiment:",
+    "analysisError": "Error analyzing",
+    "analysisErrorDetails": "Could not analyze sentiment.",
+    "pdfReportTitle": "SlumberAI - Dream Journal Report",
+    "pdfReportGenerated": "Report Generated: {date}",
+    "pdfDreamFrom": "Dream from: {date}",
+    "pdfDreamText": "Dream: {text}",
+    "pdfAiSentiment": "AI Sentiment: {sentiment}",
+    "pdfAiAnalysis": "AI Analysis: {analysis}"
+  },
+  "SleepSciencePage": {
+    "title": "Sleep Science Explorer",
+    "subtitle": "Dive into the fascinating science behind sleep. Understand your body's needs and learn how to optimize your rest for better health and well-being.",
+    "backToMainLink": "Back to Calculators"
   }
 }

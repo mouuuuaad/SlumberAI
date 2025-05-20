@@ -1,11 +1,14 @@
+
 // This file was previously src/app/sleep-science/page.tsx and has been moved.
 // Content is not yet translated.
 import Header from '@/components/slumber/Header';
 import ScienceArticle, { type ArticleProps } from '@/components/slumber/ScienceArticle';
 import { Brain } from 'lucide-react';
-// import {useTranslations} from 'next-intl'; // For future translation
+import {useTranslations} from 'next-intl'; 
+import NextLink from 'next/link';
 
-const articlesData: ArticleProps[] = [ // Renamed to avoid conflict if 'articles' is used for translations
+
+const articlesData: ArticleProps[] = [ 
   {
     title: 'Understanding Sleep Cycles: REM vs. Deep Sleep',
     icon: <Brain className="h-6 w-6 text-primary" />,
@@ -99,18 +102,18 @@ const articlesData: ArticleProps[] = [ // Renamed to avoid conflict if 'articles
 ];
 
 export default function SleepSciencePage() {
-  // const t = useTranslations('SleepSciencePage'); // For future translation of title, etc.
+  const t = useTranslations('SleepSciencePage'); 
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground">
-      <Header /> {/* Header will use its own translations */}
+      <Header /> 
       <main className="flex-grow container mx-auto px-4 py-10 md:py-16">
         <div className="text-center mb-10 md:mb-12">
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-primary mb-3 flex items-center justify-center gap-3">
             <Brain className="h-8 w-8 sm:h-10 sm:w-10" />
-            Sleep Science Explorer {/* This title would be translated */}
+            {t('title')}
           </h1>
           <p className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto">
-            Dive into the fascinating science behind sleep. Understand your body's needs and learn how to optimize your rest for better health and well-being. {/* This text would be translated */}
+            {t('subtitle')}
           </p>
         </div>
 
@@ -127,12 +130,10 @@ export default function SleepSciencePage() {
         </div>
       </main>
       <footer className="py-8 text-center text-xs sm:text-sm text-muted-foreground border-t border-border/30">
-        {/* This copyright is now handled by the main layout's footer */}
-        <p> {/* This could be a translated 'Back to main app' link */}
-          <a href="/" className="hover:text-primary transition-colors">Back to Calculators</a>
+        <p>
+          <NextLink href="/" className="hover:text-primary transition-colors">{t('backToMainLink')}</NextLink>
         </p>
       </footer>
     </div>
   );
 }
-
