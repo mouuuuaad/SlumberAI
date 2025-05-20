@@ -10,8 +10,8 @@ import { useTranslations } from 'next-intl';
 import { Calculator } from 'lucide-react';
 
 export default function CalculatorPage() {
-  const t = useTranslations('HomePage'); // Assuming relevant titles are still in HomePage or a new section
-  const commonT = useTranslations('SleepCalculatorForm'); // For fallback title
+  const t = useTranslations('HomePage'); // For footer structure
+  const calcPageT = useTranslations('SleepCalculatorForm'); // For page title if needed
   const [sleepResults, setSleepResults] = useState<CalculationResult | null>(null);
   const [isClient, setIsClient] = useState(false);
 
@@ -24,7 +24,10 @@ export default function CalculatorPage() {
     // Scroll to results if needed, or ensure visibility
     const resultsElement = document.getElementById('sleep-results-display-calculator');
     if (resultsElement) {
-      resultsElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      // Delay scroll slightly to allow DOM update, especially with new chart
+      setTimeout(() => {
+         resultsElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 100);
     }
   };
 
@@ -52,7 +55,8 @@ export default function CalculatorPage() {
         >
           <div className="flex items-center mb-6">
             <Calculator className="h-7 w-7 text-primary mr-3" />
-            <h2 className="text-2xl md:text-3xl font-semibold text-foreground">{t('sleepCycleCalculatorTitle') || commonT('title')}</h2>
+            {/* Use HomePage.sleepCycleCalculatorTitle for consistency if already translated */}
+            <h2 className="text-2xl md:text-3xl font-semibold text-foreground">{t('sleepCycleCalculatorTitle') || calcPageT('title')}</h2>
           </div>
           <SleepCalculatorForm onCalculate={handleSleepCalculation} />
         </AnimatedSection>
