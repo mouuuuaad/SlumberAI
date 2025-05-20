@@ -22,15 +22,10 @@
     "sleepScienceTitle": "Explorez la science du sommeil",
     "sleepScienceSubtitle": "Découvrez comment fonctionne le sommeil et comment améliorer le vôtre.",
     "sleepScienceLinkText": "Plongez dans la science du sommeil",
-    "footerCopyright": "© {year} SlumberAI. Tous droits réservés. Conçu avec 💜",
-    "sleepCyclesTab": "Cycles de Sommeil",
-    "napOptimizerTab": "Optimiseur de Sieste",
-    "aiCoachTab": "Coach IA",
-    "dreamJournalTab": "Journal des Rêves",
-    "sleepScienceTab": "Science du Sommeil"
+    "footerCopyright": "© {year} SlumberAI. Tous droits réservés. Conçu avec 💜"
   },
   "SleepCalculatorForm": {
-    "title": "Planifiez votre sommeil parfait",
+    "title": "Calculateur de Cycle de Sommeil",
     "description": "Calcule les heures de sommeil optimales basées sur des cycles de sommeil de 90 minutes. Suppose 15 minutes pour s'endormir.",
     "wakeUpAtLabel": "Je veux me réveiller à...",
     "calculateBedtimeButton": "Calculer l'heure du coucher",
@@ -43,7 +38,7 @@
     "errorBedtimeCalculation": "Impossible de calculer l'heure du coucher en raison d'une erreur de traitement de l'heure."
   },
   "NapOptimizer": {
-    "title": "Optimisez vos siestes",
+    "title": "Optimiseur de sieste",
     "description": "Calculez le meilleur moment pour vous réveiller de votre sieste pour un rafraîchissement optimal.",
     "napTypeLabel": "Type de Sieste :",
     "selectNapTypePlaceholder": "Sélectionner le type de sieste",
@@ -93,7 +88,7 @@
     "inputPlaceholder": "Posez une question sur votre sommeil..."
   },
   "DreamJournal": {
-    "title": "Votre journal de rêves",
+    "title": "Journal des rêves",
     "description": "Enregistrez vos rêves et obtenez une analyse des sentiments basée sur l'IA.",
     "exportToPdfButton": "Exporter en PDF",
     "dreamInputLabel": "De quoi avez-vous rêvé ?",

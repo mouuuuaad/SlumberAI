@@ -29,18 +29,17 @@ interface SleepCalculatorFormProps {
 
 export default function SleepCalculatorForm({ onCalculate }: SleepCalculatorFormProps) {
   const t = useTranslations('SleepCalculatorForm');
-  const [selectedTime, setSelectedTime] = useState('07:00'); // Default to 07:00 for 24-hour format
+  const [selectedTime, setSelectedTime] = useState('07:00'); 
   const [timeError, setTimeError] = useState<string | null>(null);
   const [showGoToBedNowResults, setShowGoToBedNowResults] = useState(false);
   const [currentTimeForBedNow, setCurrentTimeForBedNow] = useState('');
 
   useEffect(() => {
-    // This effect runs only on the client, ensuring `new Date()` doesn't cause hydration mismatch
     const updateCurrentTime = () => {
       setCurrentTimeForBedNow(format(new Date(), 'hh:mm a'));
     };
-    updateCurrentTime(); // Set immediately
-    const timer = setInterval(updateCurrentTime, 60000); // Update every minute
+    updateCurrentTime(); 
+    const timer = setInterval(updateCurrentTime, 60000); 
     return () => clearInterval(timer);
   }, []);
 
@@ -97,7 +96,7 @@ export default function SleepCalculatorForm({ onCalculate }: SleepCalculatorForm
         return;
       }
 
-      const referenceDateForCalc = new Date(2000, 0, 1); // Use a fixed date for consistent time operations
+      const referenceDateForCalc = new Date(2000, 0, 1); 
       const parsedWakeUpTime = set(referenceDateForCalc, { hours, minutes, seconds: 0, milliseconds: 0 });
 
       if (isNaN(parsedWakeUpTime.getTime())) {
@@ -121,11 +120,8 @@ export default function SleepCalculatorForm({ onCalculate }: SleepCalculatorForm
 
   return (
     <div className="w-full space-y-8">
-      {/* Removed redundant h2 title, now handled by AnimatedSection on parent page */}
-      {/* <p className="text-sm text-muted-foreground text-center px-2 mb-6">{t('description')}</p> */}
-      
       <div className="space-y-4">
-        <Label htmlFor="wakeUpTimePicker" className="block text-lg font-medium text-center text-foreground/90">
+        <Label htmlFor="wakeUpTimePicker" className="block text-md font-medium text-center text-muted-foreground mb-1">
           {t('wakeUpAtLabel')}
         </Label>
         <CustomTimePicker
@@ -151,11 +147,11 @@ export default function SleepCalculatorForm({ onCalculate }: SleepCalculatorForm
       </div>
 
       <div className="space-y-4 pt-6 border-t border-border/30">
-        <Label className="block text-lg font-medium text-center text-foreground/90">
+        <Label className="block text-md font-medium text-center text-muted-foreground mb-1">
           {t('goToBedNowLabel')}
         </Label>
         {currentTimeForBedNow && (
-          <p className="text-sm text-muted-foreground text-center">
+          <p className="text-xs text-muted-foreground text-center mb-2">
             {t('currentTimeLabel')} {currentTimeForBedNow}
           </p>
         )}

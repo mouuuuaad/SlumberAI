@@ -22,15 +22,10 @@
     "sleepScienceTitle": "Explore the Science of Sleep",
     "sleepScienceSubtitle": "Discover insights into how sleep works and how to improve yours.",
     "sleepScienceLinkText": "Dive into Sleep Science",
-    "footerCopyright": "© {year} SlumberAI. All rights reserved. Crafted with 💜",
-    "sleepCyclesTab": "Sleep Cycles",
-    "napOptimizerTab": "Nap Optimizer",
-    "aiCoachTab": "AI Coach",
-    "dreamJournalTab": "Dream Journal",
-    "sleepScienceTab": "Sleep Science"
+    "footerCopyright": "© {year} SlumberAI. All rights reserved. Crafted with 💜"
   },
   "SleepCalculatorForm": {
-    "title": "Plan Your Perfect Sleep",
+    "title": "Sleep Cycle Calculator",
     "description": "Calculates optimal sleep times based on 90-minute sleep cycles. Assumes 15 minutes to fall asleep.",
     "wakeUpAtLabel": "I want to wake up at...",
     "calculateBedtimeButton": "Calculate Bedtime",
@@ -43,7 +38,7 @@
     "errorBedtimeCalculation": "Could not calculate bedtime due to a time processing error."
   },
   "NapOptimizer": {
-    "title": "Optimize Your Naps",
+    "title": "Nap Optimizer",
     "description": "Calculate the best time to wake up from your nap for optimal refreshment.",
     "napTypeLabel": "Nap Type:",
     "selectNapTypePlaceholder": "Select nap type",
@@ -93,7 +88,7 @@
     "inputPlaceholder": "Ask about your sleep..."
   },
   "DreamJournal": {
-    "title": "Your Dream Journal",
+    "title": "Dream Journal",
     "description": "Log your dreams and get AI-powered sentiment analysis.",
     "exportToPdfButton": "Export to PDF",
     "dreamInputLabel": "What did you dream about?",

@@ -11,7 +11,7 @@ import { Calculator } from 'lucide-react';
 
 export default function CalculatorPage() {
   const t = useTranslations('HomePage'); // For footer structure
-  const calcPageT = useTranslations('SleepCalculatorForm'); // For page title if needed
+  const calcPageT = useTranslations('SleepCalculatorForm'); // For page title
   const [sleepResults, setSleepResults] = useState<CalculationResult | null>(null);
   const [isClient, setIsClient] = useState(false);
 
@@ -21,10 +21,8 @@ export default function CalculatorPage() {
 
   const handleSleepCalculation = (results: CalculationResult) => {
     setSleepResults(results);
-    // Scroll to results if needed, or ensure visibility
     const resultsElement = document.getElementById('sleep-results-display-calculator');
     if (resultsElement) {
-      // Delay scroll slightly to allow DOM update, especially with new chart
       setTimeout(() => {
          resultsElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }, 100);
@@ -55,8 +53,7 @@ export default function CalculatorPage() {
         >
           <div className="flex items-center mb-6">
             <Calculator className="h-7 w-7 text-primary mr-3" />
-            {/* Use HomePage.sleepCycleCalculatorTitle for consistency if already translated */}
-            <h2 className="text-2xl md:text-3xl font-semibold text-foreground">{t('sleepCycleCalculatorTitle') || calcPageT('title')}</h2>
+            <h2 className="text-2xl md:text-3xl font-semibold text-foreground">{calcPageT('title')}</h2>
           </div>
           <SleepCalculatorForm onCalculate={handleSleepCalculation} />
         </AnimatedSection>
