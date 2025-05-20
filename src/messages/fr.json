@@ -4,7 +4,12 @@
     "title": "SlumberAI",
     "toggleTheme": "Changer de thème",
     "languageSelectorLabel": "Sélectionner la langue",
-    "toggleThemeAriaLabel": "Changer le thème de couleur"
+    "toggleThemeAriaLabel": "Changer le thème de couleur",
+    "navCalculator": "Calculateur",
+    "navNapOptimizer": "Sieste",
+    "navAiCoach": "Coach IA",
+    "navDreamJournal": "Journal",
+    "navSleepScience": "Science"
   },
   "HomePage": {
     "heroTitle": "Débloquez des nuits reposantes et des journées pleines d'énergie",

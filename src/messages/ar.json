@@ -4,7 +4,12 @@
     "title": "SlumberAI",
     "toggleTheme": "تبديل السمة",
     "languageSelectorLabel": "اختر اللغة",
-    "toggleThemeAriaLabel": "تبديل سمة اللون"
+    "toggleThemeAriaLabel": "تبديل سمة اللون",
+    "navCalculator": "الحاسبة",
+    "navNapOptimizer": "القيلولة",
+    "navAiCoach": "مدرب AI",
+    "navDreamJournal": "المفكرة",
+    "navSleepScience": "العلم"
   },
   "HomePage": {
     "heroTitle": "افتح ليالي مريحة وأيامًا مليئة بالطاقة",

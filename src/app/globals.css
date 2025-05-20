@@ -7,6 +7,10 @@ body {
   font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 @layer base {
   :root {
     /* Soft Lavender Theme */
@@ -48,8 +52,6 @@ body {
   }
 
   .dark { 
-    /* Dark Theme - Kept from previous "Deep Navy" for contrast or future use */
-    /* You can redefine these if you want a dark lavender theme */
     --background: 225 40% 6%;    /* #0A0C1E Even Darker Navy Blue */
     --foreground: 225 15% 92%;   /* #E1E3E7 Slightly brighter Off-white for text */
 
@@ -59,7 +61,6 @@ body {
     --popover: 225 28% 9%;    /* #0F1222 Darker for popovers */
     --popover-foreground: 225 15% 90%;
 
-    /* For dark mode, we can use the original Lavender as primary, or a brighter variant */
     --primary: 276 55% 82%;     /* Brighter Soft Lavender for dark mode primary #DBCAE8 */
     --primary-foreground: 270 10% 15%; /* Darker text for contrast on dark primary */
     
@@ -69,7 +70,6 @@ body {
     --muted: 225 25% 14%;      /* #1B1F30 Muted dark navy */
     --muted-foreground: 225 10% 55%; /* #7F8699 Slightly desaturated for less contrast */
 
-    /* Pale blue accent can be brightened for dark mode */
     --accent: 195 45% 82%;      /* Brighter Pale Blue for dark mode accent #B3DCE5 */
     --accent-foreground: 225 30% 10%;
 
@@ -166,11 +166,11 @@ body {
   background: hsl(var(--secondary-foreground));
 }
 * {
-  scrollbar-width: auto; /* Changed from thin to auto for default, thin can be applied specifically */
+  scrollbar-width: auto; 
   scrollbar-color: hsl(var(--muted)) hsl(var(--background) / 0.5);
 }
 
-/* Custom thin scrollbar for specific elements like TabsList */
+/* Custom thin scrollbar for specific elements */
 .custom-scrollbar-thin::-webkit-scrollbar {
   height: 4px; 
   width: 4px;
@@ -203,3 +203,20 @@ body {
 .animate-hero-glow h1 {
   animation: hero-glow-animation 3s ease-in-out infinite;
 }
+
+/* Section entrance animation - already present in AnimatedSection component via Tailwind classes */
+/* If needed, a keyframe based one could be:
+@keyframes section-entrance-animation {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+.animate-section-entrance {
+  animation: section-entrance-animation 0.7s ease-out forwards;
+}
+*/

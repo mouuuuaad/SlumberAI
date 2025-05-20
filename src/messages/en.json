@@ -4,7 +4,12 @@
     "title": "SlumberAI",
     "toggleTheme": "Toggle theme",
     "languageSelectorLabel": "Select language",
-    "toggleThemeAriaLabel": "Toggle color theme"
+    "toggleThemeAriaLabel": "Toggle color theme",
+    "navCalculator": "Calculator",
+    "navNapOptimizer": "Nap",
+    "navAiCoach": "AI Coach",
+    "navDreamJournal": "Journal",
+    "navSleepScience": "Science"
   },
   "HomePage": {
     "heroTitle": "Unlock Restful Nights & Energized Days",
