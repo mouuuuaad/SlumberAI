@@ -3,7 +3,8 @@
   "Header": {
     "title": "SlumberAI",
     "toggleTheme": "تبديل السمة",
-    "languageSelectorLabel": "اختر اللغة"
+    "languageSelectorLabel": "اختر اللغة",
+    "toggleThemeAriaLabel": "تبديل سمة اللون"
   },
   "HomePage": {
     "heroTitle": "افتح ليالي مريحة وأيامًا مليئة بالطاقة",

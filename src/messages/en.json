@@ -3,7 +3,8 @@
   "Header": {
     "title": "SlumberAI",
     "toggleTheme": "Toggle theme",
-    "languageSelectorLabel": "Select language"
+    "languageSelectorLabel": "Select language",
+    "toggleThemeAriaLabel": "Toggle color theme"
   },
   "HomePage": {
     "heroTitle": "Unlock Restful Nights & Energized Days",
