@@ -34,5 +34,35 @@
     "errorInvalidTimePicker": "تنسيق الوقت من المنتقي غير صالح. يرجى إعادة التحديد.",
     "errorInvalidTimeFormat": "تنسيق الوقت المحدد غير صالح. يرجى ضبط المنتقي.",
     "errorBedtimeCalculation": "تعذر حساب وقت النوم بسبب خطأ في معالجة الوقت."
+  },
+  "NapOptimizer": {
+    "title": "محسن القيلولة",
+    "description": "احسب أفضل وقت للاستيقاظ من القيلولة للحصول على أفضل انتعاش.",
+    "napTypeLabel": "نوع القيلولة:",
+    "selectNapTypePlaceholder": "اختر نوع القيلولة",
+    "startTimeLabel": "وقت بدء القيلولة (HH:MM):",
+    "calculateButton": "احسب القيلولة",
+    "errorEnterStartTime": "الرجاء إدخال وقت بدء القيلولة.",
+    "errorInvalidTimeFormat": "تنسيق الوقت غير صالح. الرجاء استخدام HH:MM (توقيت 24 ساعة).",
+    "errorProcessTime": "تعذر معالجة الوقت. الرجاء التأكد من أنه بتنسيق HH:MM صالح.",
+    "resultText": "لقيلولة {napName} تبدأ في {startTime}، يجب أن تستيقظ في {wakeUpTime}.",
+    "napTypes": {
+      "power": {
+        "name": "قيلولة الطاقة ({duration} دقيقة)",
+        "description": "تعزز اليقظة والطاقة."
+      },
+      "nasa": {
+        "name": "قيلولة ناسا ({duration} دقيقة)",
+        "description": "تحسن الأداء واليقظة."
+      },
+      "shortRestorative": {
+        "name": "قيلولة قصيرة مجددة ({duration} دقيقة)",
+        "description": "تساعد في الذاكرة، قد تسبب النعاس عند الاستيقاظ."
+      },
+      "fullCycle": {
+        "name": "قيلولة دورة كاملة ({duration} دقيقة)",
+        "description": "دورة نوم كاملة، تحسن الإبداع."
+      }
+    }
   }
 }

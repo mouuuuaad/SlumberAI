@@ -34,5 +34,35 @@
     "errorInvalidTimePicker": "Invalid time format from picker. Please re-select.",
     "errorInvalidTimeFormat": "Invalid time format selected. Please adjust the picker.",
     "errorBedtimeCalculation": "Could not calculate bedtime due to a time processing error."
+  },
+  "NapOptimizer": {
+    "title": "Nap Optimizer",
+    "description": "Calculate the best time to wake up from your nap for optimal refreshment.",
+    "napTypeLabel": "Nap Type:",
+    "selectNapTypePlaceholder": "Select nap type",
+    "startTimeLabel": "Nap Start Time (HH:MM):",
+    "calculateButton": "Calculate Nap",
+    "errorEnterStartTime": "Please enter a start time for your nap.",
+    "errorInvalidTimeFormat": "Invalid time format. Please use HH:MM (24-hour).",
+    "errorProcessTime": "Could not process the time. Please ensure it is a valid HH:MM format.",
+    "resultText": "For a {napName} starting at {startTime}, you should wake up at {wakeUpTime}.",
+    "napTypes": {
+      "power": {
+        "name": "Power Nap ({duration} mins)",
+        "description": "Boosts alertness and energy."
+      },
+      "nasa": {
+        "name": "NASA Nap ({duration} mins)",
+        "description": "Improves performance and alertness."
+      },
+      "shortRestorative": {
+        "name": "Short Restorative Nap ({duration} mins)",
+        "description": "Helps with memory, may cause grogginess."
+      },
+      "fullCycle": {
+        "name": "Full Cycle Nap ({duration} mins)",
+        "description": "Full sleep cycle, improves creativity."
+      }
+    }
   }
 }

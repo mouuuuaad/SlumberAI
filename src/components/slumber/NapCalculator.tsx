@@ -8,17 +8,38 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Coffee, AlertCircle, Clock } from 'lucide-react';
-import { addMinutes, format, set } from 'date-fns'; // Import set
+import { addMinutes, format, set } from 'date-fns';
+import { useTranslations } from 'next-intl';
 
-const napTypes = [
-  { name: 'Power Nap', duration: 20, description: 'Boosts alertness and energy.' },
-  { name: 'NASA Nap', duration: 26, description: 'Improves performance and alertness.' },
-  { name: 'Short Restorative Nap', duration: 60, description: 'Helps with memory, may cause grogginess.' },
-  { name: 'Full Cycle Nap', duration: 90, description: 'Full sleep cycle, improves creativity.' },
-];
+interface NapType {
+  key: string; // for internal reference
+  duration: number;
+  name: string; // translated
+  description: string; // translated
+}
 
 export default function NapCalculator() {
-  const [selectedNapType, setSelectedNapType] = useState<string>(napTypes[0].duration.toString());
+  const t = useTranslations('NapOptimizer');
+
+  const napTypesData = [
+    { key: 'power', duration: 20 },
+    { key: 'nasa', duration: 26 },
+    { key: 'shortRestorative', duration: 60 },
+    { key: 'fullCycle', duration: 90 },
+  ];
+
+  const getTranslatedNapTypes = (): NapType[] => {
+    return napTypesData.map(nap => ({
+      key: nap.key,
+      duration: nap.duration,
+      name: t(`napTypes.${nap.key}.name`, {duration: nap.duration}),
+      description: t(`napTypes.${nap.key}.description`),
+    }));
+  };
+
+  const translatedNapTypes = getTranslatedNapTypes();
+
+  const [selectedNapDuration, setSelectedNapDuration] = useState<string>(translatedNapTypes[0].duration.toString());
   const [startTime, setStartTime] = useState('');
   const [napResult, setNapResult] = useState<string | null>(null);
   const [timeError, setTimeError] = useState<string | null>(null);
@@ -30,7 +51,7 @@ export default function NapCalculator() {
 
   const handleCalculateNap = () => {
     if (!startTime) {
-      setTimeError('Please enter a start time for your nap.');
+      setTimeError(t('errorEnterStartTime'));
       setNapResult(null);
       return;
     }
@@ -41,58 +62,62 @@ export default function NapCalculator() {
       const [hours, minutes] = startTime.split(':').map(Number);
 
       if (isNaN(hours) || isNaN(minutes) || hours < 0 || hours > 23 || minutes < 0 || minutes > 59) {
-        setTimeError('Invalid time format. Please use HH:MM (24-hour).');
+        setTimeError(t('errorInvalidTimeFormat'));
         return;
       }
       
-      const baseDateForParsing = new Date(2000, 0, 1); // Month is 0-indexed
+      const baseDateForParsing = new Date(2000, 0, 1); 
       const parsedStartTime = set(baseDateForParsing, { hours, minutes, seconds: 0, milliseconds: 0 });
 
       if (isNaN(parsedStartTime.getTime())) {
-        setTimeError('Invalid time format. Please use HH:MM (24-hour).');
+        setTimeError(t('errorInvalidTimeFormat'));
         return;
       }
 
-      const napDuration = parseInt(selectedNapType, 10);
+      const napDuration = parseInt(selectedNapDuration, 10);
       const wakeUpTime = addMinutes(parsedStartTime, napDuration);
-      const napInfo = napTypes.find(n => n.duration === napDuration);
+      const napInfo = translatedNapTypes.find(n => n.duration === napDuration);
 
       setNapResult(
-        `For a ${napInfo?.name || `${napDuration} min nap`} starting at ${format(parsedStartTime, 'hh:mm a')}, you should wake up at ${format(wakeUpTime, 'hh:mm a')}.`
+        t('resultText', {
+          napName: napInfo?.name || `${napDuration} min nap`,
+          startTime: format(parsedStartTime, 'hh:mm a'),
+          wakeUpTime: format(wakeUpTime, 'hh:mm a')
+        })
       );
     } catch (error) {
-      setTimeError('Could not process the time. Please ensure it is a valid HH:MM format.');
+      setTimeError(t('errorProcessTime'));
       console.error("Error calculating nap time:", error);
     }
   };
   
-  const selectedNapDetails = napTypes.find(n => n.duration.toString() === selectedNapType);
+  const selectedNapDetails = translatedNapTypes.find(n => n.duration.toString() === selectedNapDuration);
 
   return (
     <Card className="w-full bg-transparent border-0 shadow-none"> 
       <CardHeader className="pb-4">
         <CardTitle className="flex items-center gap-2 text-xl sm:text-2xl text-foreground">
           <Coffee className="h-6 w-6 text-primary" />
-          Nap Optimizer
+          {t('title')}
         </CardTitle>
         <CardDescription className="text-sm text-muted-foreground">
-          Calculate the best time to wake up from your nap for optimal refreshment.
+          {t('description')}
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
         <div className="space-y-2">
-          <Label htmlFor="napType" className="text-foreground/90">Nap Type:</Label>
-          <Select value={selectedNapType} onValueChange={(value) => {
-            setSelectedNapType(value);
+          <Label htmlFor="napType" className="text-foreground/90">{t('napTypeLabel')}</Label>
+          <Select value={selectedNapDuration} onValueChange={(value) => {
+            setSelectedNapDuration(value);
             setNapResult(null); 
           }}>
             <SelectTrigger id="napType" className="w-full md:w-[280px] bg-input text-foreground focus:bg-input focus:ring-primary">
-              <SelectValue placeholder="Select nap type" />
+              <SelectValue placeholder={t('selectNapTypePlaceholder')} />
             </SelectTrigger>
             <SelectContent>
-              {napTypes.map((nap) => (
+              {translatedNapTypes.map((nap) => (
                 <SelectItem key={nap.duration} value={nap.duration.toString()}>
-                  {nap.name} ({nap.duration} mins)
+                  {nap.name}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -101,7 +126,7 @@ export default function NapCalculator() {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="startTime" className="text-foreground/90">Nap Start Time (HH:MM):</Label>
+          <Label htmlFor="startTime" className="text-foreground/90">{t('startTimeLabel')}</Label>
           <Input
             id="startTime"
             type="time" 
@@ -121,7 +146,7 @@ export default function NapCalculator() {
         </div>
 
         <Button onClick={handleCalculateNap} className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-primary-foreground">
-          Calculate Nap
+          {t('calculateButton')}
         </Button>
 
         {napResult && (

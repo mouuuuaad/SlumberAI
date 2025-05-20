@@ -34,5 +34,35 @@
     "errorInvalidTimePicker": "Format d'heure du sélecteur invalide. Veuillez resélectionner.",
     "errorInvalidTimeFormat": "Format d'heure sélectionné invalide. Veuillez ajuster le sélecteur.",
     "errorBedtimeCalculation": "Impossible de calculer l'heure du coucher en raison d'une erreur de traitement de l'heure."
+  },
+  "NapOptimizer": {
+    "title": "Optimiseur de Sieste",
+    "description": "Calculez le meilleur moment pour vous réveiller de votre sieste pour un rafraîchissement optimal.",
+    "napTypeLabel": "Type de Sieste :",
+    "selectNapTypePlaceholder": "Sélectionner le type de sieste",
+    "startTimeLabel": "Heure de début de la sieste (HH:MM) :",
+    "calculateButton": "Calculer la Sieste",
+    "errorEnterStartTime": "Veuillez entrer une heure de début pour votre sieste.",
+    "errorInvalidTimeFormat": "Format d'heure invalide. Veuillez utiliser HH:MM (format 24 heures).",
+    "errorProcessTime": "Impossible de traiter l'heure. Veuillez vous assurer qu'elle est au format HH:MM valide.",
+    "resultText": "Pour une {napName} commençant à {startTime}, vous devriez vous réveiller à {wakeUpTime}.",
+    "napTypes": {
+      "power": {
+        "name": "Sieste Énergisante ({duration} min)",
+        "description": "Stimule la vigilance et l'énergie."
+      },
+      "nasa": {
+        "name": "Sieste NASA ({duration} min)",
+        "description": "Améliore les performances et la vigilance."
+      },
+      "shortRestorative": {
+        "name": "Sieste Réparatrice Courte ({duration} min)",
+        "description": "Aide à la mémoire, peut causer de la somnolence."
+      },
+      "fullCycle": {
+        "name": "Sieste Cycle Complet ({duration} min)",
+        "description": "Cycle de sommeil complet, améliore la créativité."
+      }
+    }
   }
 }
