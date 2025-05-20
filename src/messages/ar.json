@@ -64,5 +64,26 @@
         "description": "دورة نوم كاملة، تحسن الإبداع."
       }
     }
+  },
+  "AiSleepCoach": {
+    "title": "مدرب النوم بالذكاء الاصطناعي",
+    "description": "تحدث مع مدرب النوم الخاص بك للحصول على نصائح شخصية. أخبرني كيف تشعر حيال نومك أو اطرح أي أسئلة لديك.",
+    "personalizeAdviceLabel": "تخصيص النصيحة (اختياري)",
+    "ageLabel": "العمر",
+    "agePlaceholder": "مثال، 30",
+    "stressLevelLabel": "مستوى التوتر",
+    "stressLevelPlaceholder": "اختر مستوى التوتر",
+    "stressLevels": {
+      "low": "منخفض",
+      "medium": "متوسط",
+      "high": "مرتفع"
+    },
+    "lifestyleLabel": "نمط الحياة",
+    "lifestylePlaceholder": "مثال، موظف مكتبي قليل الحركة، رياضي نشط، طالب",
+    "loadingResponse": "مدربك الذكي يعد النصيحة...",
+    "errorResponse": "عذراً، واجهت مشكلة بسيطة في الاتصال بمعرفتي التدريبية. يرجى المحاولة مرة أخرى بعد لحظات.",
+    "initialPromptQuestion": "كيف تشعر حيال نومك؟",
+    "initialPromptExample": "مثال، \"أشعر بالتعب اليوم\" أو \"كيف يمكنني التوقف عن الغفوة؟\"",
+    "inputPlaceholder": "تحدث مع مدرب النوم الخاص بك..."
   }
 }

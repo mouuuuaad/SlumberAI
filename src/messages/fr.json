@@ -64,5 +64,26 @@
         "description": "Cycle de sommeil complet, améliore la créativité."
       }
     }
+  },
+  "AiSleepCoach": {
+    "title": "Coach IA du Sommeil",
+    "description": "Discutez avec votre Coach IA du Sommeil pour des conseils personnalisés. Dites-moi comment vous vous sentez par rapport à votre sommeil ou posez toutes vos questions.",
+    "personalizeAdviceLabel": "Personnaliser les conseils (Optionnel)",
+    "ageLabel": "Âge",
+    "agePlaceholder": "ex: 30",
+    "stressLevelLabel": "Niveau de stress",
+    "stressLevelPlaceholder": "Sélectionner le niveau de stress",
+    "stressLevels": {
+      "low": "Bas",
+      "medium": "Moyen",
+      "high": "Élevé"
+    },
+    "lifestyleLabel": "Style de vie",
+    "lifestylePlaceholder": "ex: Employé de bureau sédentaire, Athlète actif, Étudiant",
+    "loadingResponse": "Votre Coach IA prépare des conseils...",
+    "errorResponse": "Désolé, j'ai eu un petit problème pour me connecter à mes connaissances de coaching. Veuillez réessayer dans un instant.",
+    "initialPromptQuestion": "Comment vous sentez-vous par rapport à votre sommeil ?",
+    "initialPromptExample": "ex: \"Je me sens fatigué aujourd'hui\" ou \"Comment puis-je arrêter de repousser mon réveil ?\"",
+    "inputPlaceholder": "Discuter avec votre Coach IA du Sommeil..."
   }
 }

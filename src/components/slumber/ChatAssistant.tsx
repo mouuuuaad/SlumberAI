@@ -12,6 +12,7 @@ import { Bot, User, Send, Sparkles, Settings2 } from 'lucide-react';
 import { aiSleepCoach, type AiSleepCoachInput, type AiSleepCoachOutput } from '@/ai/flows/ai-sleep-coach';
 import { cn } from '@/lib/utils';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { useTranslations } from 'next-intl';
 
 interface Message {
   id: string;
@@ -21,6 +22,7 @@ interface Message {
 }
 
 export default function ChatAssistant() {
+  const t = useTranslations('AiSleepCoach');
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -71,14 +73,14 @@ export default function ChatAssistant() {
       if (lifestyle.trim()) userProfileInput.lifestyle = lifestyle.trim();
       if (stressLevel) userProfileInput.stressLevel = stressLevel;
 
-      const input: AiSleepCoachInput = { 
+      const input: AiSleepCoachInput = {
         currentQuery,
         userProfile: Object.keys(userProfileInput).length > 0 ? userProfileInput : undefined,
       };
       const result: AiSleepCoachOutput = await aiSleepCoach(input);
-      
+
       const assistantMessage: Message = {
-        id: (Date.now() + 1).toString(), 
+        id: (Date.now() + 1).toString(),
         role: 'assistant',
         content: result.advice,
         followUpQuestions: result.followUpQuestions,
@@ -89,7 +91,7 @@ export default function ChatAssistant() {
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        content: 'Sorry, I had a little trouble connecting to my coaching knowledge. Please try again in a moment.',
+        content: t('errorResponse'),
       };
       setMessages((prev) => [...prev, errorMessage]);
     } finally {
@@ -98,59 +100,59 @@ export default function ChatAssistant() {
   };
 
   return (
-    <Card className="w-full h-[700px] md:h-[650px] flex flex-col bg-transparent border-0 shadow-none"> 
+    <Card className="w-full h-[700px] md:h-[650px] flex flex-col bg-transparent border-0 shadow-none">
       <CardHeader className="pb-2">
         <CardTitle className="flex items-center gap-2 text-xl sm:text-2xl text-foreground">
           <Sparkles className="h-6 w-6 text-primary" />
-          AI Sleep Coach
+          {t('title')}
         </CardTitle>
         <CardDescription className="text-sm text-muted-foreground">
-          Chat with your AI Sleep Coach for personalized advice. Tell me how you're feeling about your sleep or ask any questions you have.
+          {t('description')}
         </CardDescription>
       </CardHeader>
       <CardContent className="flex-grow flex flex-col p-0 overflow-hidden">
-        
+
         <Accordion type="single" collapsible className="px-4 md:px-6 pt-2 pb-1 border-b border-border/30">
           <AccordionItem value="profile" className="border-b-0">
             <AccordionTrigger className="text-sm hover:no-underline text-foreground/90 py-2">
               <div className="flex items-center gap-2">
                 <Settings2 className="h-4 w-4" />
-                Personalize Advice (Optional)
+                {t('personalizeAdviceLabel')}
               </div>
             </AccordionTrigger>
             <AccordionContent className="pt-3 pb-2 space-y-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                  <Label htmlFor="age" className="text-xs">Age</Label>
-                  <Input 
-                    id="age" 
-                    type="number" 
-                    placeholder="e.g., 30" 
-                    value={age} 
+                  <Label htmlFor="age" className="text-xs">{t('ageLabel')}</Label>
+                  <Input
+                    id="age"
+                    type="number"
+                    placeholder={t('agePlaceholder')}
+                    value={age}
                     onChange={(e) => setAge(e.target.value)}
                     className="bg-input/70 text-foreground placeholder:text-muted-foreground/70 h-9"
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <Label htmlFor="stressLevel" className="text-xs">Stress Level</Label>
+                  <Label htmlFor="stressLevel" className="text-xs">{t('stressLevelLabel')}</Label>
                   <Select value={stressLevel} onValueChange={setStressLevel}>
                     <SelectTrigger id="stressLevel" className="bg-input/70 text-foreground placeholder:text-muted-foreground/70 h-9">
-                      <SelectValue placeholder="Select stress level" />
+                      <SelectValue placeholder={t('stressLevelPlaceholder')} />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="low">Low</SelectItem>
-                      <SelectItem value="medium">Medium</SelectItem>
-                      <SelectItem value="high">High</SelectItem>
+                      <SelectItem value="low">{t('stressLevels.low')}</SelectItem>
+                      <SelectItem value="medium">{t('stressLevels.medium')}</SelectItem>
+                      <SelectItem value="high">{t('stressLevels.high')}</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
               </div>
               <div className="space-y-1.5">
-                <Label htmlFor="lifestyle" className="text-xs">Lifestyle</Label>
-                <Input 
-                  id="lifestyle" 
-                  placeholder="e.g., Sedentary office worker, Active athlete, Student" 
-                  value={lifestyle} 
+                <Label htmlFor="lifestyle" className="text-xs">{t('lifestyleLabel')}</Label>
+                <Input
+                  id="lifestyle"
+                  placeholder={t('lifestylePlaceholder')}
+                  value={lifestyle}
                   onChange={(e) => setLifestyle(e.target.value)}
                   className="bg-input/70 text-foreground placeholder:text-muted-foreground/70 h-9"
                 />
@@ -166,8 +168,8 @@ export default function ChatAssistant() {
                 <div
                   className={cn(
                     'flex items-start gap-3 p-3 rounded-lg max-w-[85%] shadow-sm',
-                    message.role === 'user' 
-                      ? 'ml-auto bg-primary text-primary-foreground' 
+                    message.role === 'user'
+                      ? 'ml-auto bg-primary text-primary-foreground'
                       : 'bg-card text-card-foreground border'
                   )}
                 >
@@ -195,14 +197,14 @@ export default function ChatAssistant() {
             {isLoading && (
               <div className="flex items-start gap-3 p-3 rounded-lg bg-muted max-w-[85%] shadow-sm">
                 <Bot className="h-5 w-5 sm:h-6 sm:w-6 text-accent flex-shrink-0 mt-0.5" />
-                <p className="text-sm animate-pulse text-muted-foreground">Your AI Coach is preparing advice...</p>
+                <p className="text-sm animate-pulse text-muted-foreground">{t('loadingResponse')}</p>
               </div>
             )}
              {messages.length === 0 && !isLoading && (
               <div className="flex flex-col items-center justify-center text-center py-10 h-full">
                 <Sparkles className="h-12 w-12 mx-auto text-muted-foreground/50 mb-3" />
-                <p className="text-muted-foreground">How are you feeling about your sleep?</p>
-                <p className="text-xs text-muted-foreground/70 mt-1">e.g., "I feel tired today" or "How can I stop snoozing?"</p>
+                <p className="text-muted-foreground">{t('initialPromptQuestion')}</p>
+                <p className="text-xs text-muted-foreground/70 mt-1">{t('initialPromptExample')}</p>
               </div>
             )}
           </div>
@@ -211,7 +213,7 @@ export default function ChatAssistant() {
           <div className="flex items-center gap-2">
             <Input
               type="text"
-              placeholder="Chat with your AI Sleep Coach..."
+              placeholder={t('inputPlaceholder')}
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
               disabled={isLoading}

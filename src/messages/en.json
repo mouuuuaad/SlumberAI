@@ -64,5 +64,26 @@
         "description": "Full sleep cycle, improves creativity."
       }
     }
+  },
+  "AiSleepCoach": {
+    "title": "AI Sleep Coach",
+    "description": "Chat with your AI Sleep Coach for personalized advice. Tell me how you're feeling about your sleep or ask any questions you have.",
+    "personalizeAdviceLabel": "Personalize Advice (Optional)",
+    "ageLabel": "Age",
+    "agePlaceholder": "e.g., 30",
+    "stressLevelLabel": "Stress Level",
+    "stressLevelPlaceholder": "Select stress level",
+    "stressLevels": {
+      "low": "Low",
+      "medium": "Medium",
+      "high": "High"
+    },
+    "lifestyleLabel": "Lifestyle",
+    "lifestylePlaceholder": "e.g., Sedentary office worker, Active athlete, Student",
+    "loadingResponse": "Your AI Coach is preparing advice...",
+    "errorResponse": "Sorry, I had a little trouble connecting to my coaching knowledge. Please try again in a moment.",
+    "initialPromptQuestion": "How are you feeling about your sleep?",
+    "initialPromptExample": "e.g., \"I feel tired today\" or \"How can I stop snoozing?\"",
+    "inputPlaceholder": "Chat with your AI Sleep Coach..."
   }
 }
