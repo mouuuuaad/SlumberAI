@@ -21,5 +21,18 @@
     "aiCoachTab": "AI Coach",
     "dreamJournalTab": "Dream Journal",
     "sleepScienceTab": "Sleep Science"
+  },
+  "SleepCalculatorForm": {
+    "title": "Sleep Cycle Calculator",
+    "description": "Calculates optimal sleep times based on 90-minute sleep cycles. Assumes 15 minutes to fall asleep.",
+    "wakeUpAtLabel": "I want to wake up at...",
+    "calculateBedtimeButton": "Calculate Bedtime",
+    "goToBedNowLabel": "If I go to bed now...",
+    "currentTimeLabel": "Current time:",
+    "calculateWakeUpTimesButton": "Calculate Wake-up Times",
+    "errorSelectWakeUpTime": "Please select a valid wake-up time.",
+    "errorInvalidTimePicker": "Invalid time format from picker. Please re-select.",
+    "errorInvalidTimeFormat": "Invalid time format selected. Please adjust the picker.",
+    "errorBedtimeCalculation": "Could not calculate bedtime due to a time processing error."
   }
 }

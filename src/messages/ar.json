@@ -21,5 +21,18 @@
     "aiCoachTab": "مدرب الذكاء الاصطناعي",
     "dreamJournalTab": "مفكرة الأحلام",
     "sleepScienceTab": "علم النوم"
+  },
+  "SleepCalculatorForm": {
+    "title": "حاسبة دورة النوم",
+    "description": "يحسب أوقات النوم المثالية بناءً على دورات نوم مدتها 90 دقيقة. يفترض 15 دقيقة للخلود إلى النوم.",
+    "wakeUpAtLabel": "أريد أن أستيقظ في...",
+    "calculateBedtimeButton": "احسب وقت النوم",
+    "goToBedNowLabel": "إذا ذهبت إلى الفراش الآن...",
+    "currentTimeLabel": "الوقت الحالي:",
+    "calculateWakeUpTimesButton": "احسب أوقات الاستيقاظ",
+    "errorSelectWakeUpTime": "يرجى تحديد وقت استيقاظ صالح.",
+    "errorInvalidTimePicker": "تنسيق الوقت من المنتقي غير صالح. يرجى إعادة التحديد.",
+    "errorInvalidTimeFormat": "تنسيق الوقت المحدد غير صالح. يرجى ضبط المنتقي.",
+    "errorBedtimeCalculation": "تعذر حساب وقت النوم بسبب خطأ في معالجة الوقت."
   }
 }
