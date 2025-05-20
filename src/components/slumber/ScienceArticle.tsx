@@ -36,7 +36,7 @@ export default function ScienceArticle({ title, icon, sections, defaultOpen = fa
         <Accordion type="single" collapsible className="w-full" defaultValue={defaultOpen && sections.length > 0 ? sections[0].id : undefined}>
           {sections.map((section, index) => (
             <AccordionItem value={section.id} key={section.id} className="border-b-border/30 last:border-b-0">
-              <AccordionTrigger className="text-base sm:text-lg hover:no-underline text-left text-foreground/90">
+              <AccordionTrigger className="text-base sm:text-lg font-normal py-3 hover:no-underline text-left text-foreground/90">
                 {section.title}
               </AccordionTrigger>
               <AccordionContent className="text-sm sm:text-base text-muted-foreground whitespace-pre-line pt-2 pb-4">
@@ -49,3 +49,4 @@ export default function ScienceArticle({ title, icon, sections, defaultOpen = fa
     </Card>
   );
 }
+
