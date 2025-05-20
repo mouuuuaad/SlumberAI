@@ -1,25 +1,23 @@
-
 'use client';
 
 import { Moon, Sun, BedDouble, Languages } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useEffect, useState } from 'react';
 import { useTranslations, useLocale } from 'next-intl';
-import * as NextIntlNavigation from 'next-intl/navigation'; // Changed import
+import { useRouter, usePathname } from 'next/navigation'; // Changed import
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 export default function Header() {
   const t = useTranslations('Header');
   const currentLocale = useLocale();
-  const router = NextIntlNavigation.useRouter(); // Changed usage
-  const pathname = NextIntlNavigation.usePathname(); // Changed usage
+  const router = useRouter(); // Using next/navigation
+  const pathname = usePathname(); // Using next/navigation
 
   const [mounted, setMounted] = useState(false);
   const [isDark, setIsDark] = useState(false);
 
   useEffect(() => {
     setMounted(true);
-    // Initialize theme based on localStorage or system preference
     const savedTheme = localStorage.getItem('theme');
     if (savedTheme === 'dark') {
       setIsDark(true);
@@ -27,7 +25,7 @@ export default function Header() {
     } else if (savedTheme === 'light') {
       setIsDark(false);
       document.documentElement.classList.remove('dark');
-    } else { // system or no preference
+    } else { 
       const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
       setIsDark(systemPrefersDark);
       if (systemPrefersDark) {
@@ -51,7 +49,18 @@ export default function Header() {
   };
 
   const handleLocaleChange = (newLocale: string) => {
-    router.push(pathname, { locale: newLocale });
+    // pathname from next/navigation includes the current locale, e.g., /en/about
+    // We need to remove the current locale prefix and add the new one.
+    let newPath = pathname;
+    if (pathname.startsWith(`/${currentLocale}`)) {
+      const basePath = pathname.substring(currentLocale.length + 1); // +1 for the slash
+      newPath = `/${newLocale}${basePath}`;
+    } else {
+      // Should not happen if localePrefix is 'always' and we are on a localized path
+      // but as a fallback, prepend new locale.
+      newPath = `/${newLocale}${pathname}`;
+    }
+    router.push(newPath);
   };
 
   const ThemeIcon = isDark ? Sun : Moon;
@@ -88,12 +97,12 @@ export default function Header() {
           )}
 
           {mounted ? (
-            <Button variant="outline" size="icon" onClick={toggleTheme} aria-label={t('toggleTheme')} className="border-border/70 bg-background hover:bg-accent/50">
+            <Button variant="outline" size="icon" onClick={toggleTheme} aria-label={t('toggleThemeAriaLabel')} className="border-border/70 bg-background hover:bg-accent/50">
               <ThemeIcon className="h-5 w-5 transition-all" />
             </Button>
           ) : (
-            <Button variant="outline" size="icon" aria-label={t('toggleTheme')} className="border-border/70" disabled>
-              <Sun className="h-5 w-5 transition-all" /> {/* Default to Sun, will be corrected on mount */}
+            <Button variant="outline" size="icon" aria-label={t('toggleThemeAriaLabel')} className="border-border/70" disabled>
+              <Sun className="h-5 w-5 transition-all" />
             </Button>
           )}
         </div>
