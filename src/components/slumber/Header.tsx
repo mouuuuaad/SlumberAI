@@ -5,21 +5,37 @@ import { Moon, Sun, BedDouble, Languages } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useEffect, useState } from 'react';
 import { useTranslations, useLocale } from 'next-intl';
-import { useRouter, usePathname } from 'next-intl/navigation';
+import * as NextIntlNavigation from 'next-intl/navigation'; // Changed import
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 export default function Header() {
   const t = useTranslations('Header');
   const currentLocale = useLocale();
-  const router = useRouter();
-  const pathname = usePathname();
+  const router = NextIntlNavigation.useRouter(); // Changed usage
+  const pathname = NextIntlNavigation.usePathname(); // Changed usage
 
   const [mounted, setMounted] = useState(false);
   const [isDark, setIsDark] = useState(false);
 
   useEffect(() => {
     setMounted(true);
-    setIsDark(document.documentElement.classList.contains('dark'));
+    // Initialize theme based on localStorage or system preference
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'dark') {
+      setIsDark(true);
+      document.documentElement.classList.add('dark');
+    } else if (savedTheme === 'light') {
+      setIsDark(false);
+      document.documentElement.classList.remove('dark');
+    } else { // system or no preference
+      const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      setIsDark(systemPrefersDark);
+      if (systemPrefersDark) {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+    }
   }, []);
 
   const toggleTheme = () => {
@@ -50,7 +66,7 @@ export default function Header() {
         <div className="flex items-center gap-2 sm:gap-3">
           {mounted ? (
             <Select value={currentLocale} onValueChange={handleLocaleChange}>
-              <SelectTrigger 
+              <SelectTrigger
                 className="w-auto sm:w-[130px] h-9 text-xs sm:text-sm border-border/70 bg-background hover:bg-accent/50 focus:ring-ring"
                 aria-label={t('languageSelectorLabel')}
               >
@@ -68,7 +84,7 @@ export default function Header() {
               </SelectContent>
             </Select>
           ) : (
-            <div className="w-auto sm:w-[130px] h-9 bg-muted rounded-md animate-pulse" /> // Placeholder
+            <div className="w-auto sm:w-[130px] h-9 bg-muted rounded-md animate-pulse" />
           )}
 
           {mounted ? (
@@ -77,7 +93,7 @@ export default function Header() {
             </Button>
           ) : (
             <Button variant="outline" size="icon" aria-label={t('toggleTheme')} className="border-border/70" disabled>
-              <Sun className="h-5 w-5 transition-all" />
+              <Sun className="h-5 w-5 transition-all" /> {/* Default to Sun, will be corrected on mount */}
             </Button>
           )}
         </div>
