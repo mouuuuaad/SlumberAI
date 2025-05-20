@@ -44,7 +44,7 @@ export default function HomePage() {
       <main className="flex-grow container mx-auto px-4 py-10 md:py-16 flex flex-col items-center space-y-10 md:space-y-12">
         
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full max-w-xl md:max-w-2xl">
-          <TabsList className="grid w-full grid-cols-5 mb-8 bg-card/70 p-1.5 rounded-lg">
+          <TabsList className="flex items-center justify-start sm:justify-center overflow-x-auto whitespace-nowrap mb-8 bg-card/70 p-1.5 rounded-lg custom-scrollbar-thin">
             <TabsTrigger value="calculator" className="text-xs sm:text-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md">
               <Calculator className="h-4 w-4 mr-1.5 sm:mr-2" /> {t('sleepCyclesTab')}
             </TabsTrigger>

@@ -136,3 +136,23 @@ body {
   scrollbar-width: thin;
   scrollbar-color: hsl(var(--muted) / 0.8) hsl(var(--background) / 0.3);
 }
+
+/* Custom thin scrollbar for specific elements like TabsList */
+.custom-scrollbar-thin::-webkit-scrollbar {
+  height: 4px; 
+  width: 4px;
+}
+.custom-scrollbar-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-scrollbar-thin::-webkit-scrollbar-thumb {
+  background: hsl(var(--muted) / 0.4);
+  border-radius: 10px;
+}
+.custom-scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--muted) / 0.7);
+}
+.custom-scrollbar-thin {
+  scrollbar-width: thin;
+  scrollbar-color: hsl(var(--muted) / 0.4) transparent;
+}
