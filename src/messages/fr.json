@@ -73,7 +73,7 @@
     }
   },
   "AiSleepCoach": {
-    "title": "Votre coach personnel IA du sommeil",
+    "pageTitle": "Coach IA du Sommeil",
     "description": "Discutez avec votre Coach IA du Sommeil pour des conseils personnalisés. Dites-moi comment vous vous sentez par rapport à votre sommeil ou posez toutes vos questions.",
     "personalizeAdviceLabel": "Personnaliser les conseils (Optionnel)",
     "ageLabel": "Âge",
@@ -89,9 +89,8 @@
     "lifestylePlaceholder": "ex: Employé de bureau sédentaire, Athlète actif, Étudiant",
     "loadingResponse": "Votre Coach IA prépare des conseils...",
     "errorResponse": "Désolé, j'ai eu un petit problème pour me connecter à mes connaissances de coaching. Veuillez réessayer dans un instant.",
-    "initialPromptQuestion": "Comment vous sentez-vous par rapport à votre sommeil ?",
-    "initialPromptExample": "ex: \"Je me sens fatigué aujourd'hui\" ou \"Comment puis-jearrêter de repousser mon réveil ?\"",
-    "inputPlaceholder": "Discuter avec votre Coach IA du Sommeil..."
+    "initialBotGreeting": "Bonjour ! C'est formidable que vous preniez des mesures pour améliorer votre sommeil. Le sommeil est si important pour notre bien-être général, et je suis là pour vous aider dans ce parcours.\n\nPour vous donner les meilleurs conseils, il serait utile de comprendre ce pour quoi vous cherchez de l'aide spécifiquement. En attendant, voici quelques conseils généraux qui font souvent la différence :\n\n1. **Établissez un horaire de sommeil régulier :** Essayez de vous coucher et de vous réveiller à peu près à la même heure chaque jour, même le week-end. Cela aide à réguler le cycle naturel veille-sommeil de votre corps.\n2. **Créez une routine de coucher relaxante :** Cela pourrait inclure des activités comme prendre un bain chaud, lire un livre ou écouter de la musique apaisante. Évitez les écrans (TV, téléphone, ordinateur) pendant au moins une heure avant de vous coucher.\n3. **Optimisez votre environnement de sommeil :** Assurez-vous que votre chambre est sombre, calme et fraîche. Un matelas et des oreillers confortables sont également essentiels.\n4. **Surveillez votre alimentation et faites de l'exercice :** Évitez la caféine et l'alcool à l'approche du coucher. L'exercice régulier est excellent, mais évitez les entraînements intenses le soir.",
+    "inputPlaceholder": "Posez une question sur votre sommeil..."
   },
   "DreamJournal": {
     "title": "Votre journal de rêves",

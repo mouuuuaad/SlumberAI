@@ -9,8 +9,8 @@ import { MessageSquare } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 export default function AiCoachPage() {
-  const t = useTranslations('HomePage'); // For footer and consistent page structure
-  const coachT = useTranslations('AiSleepCoach'); // For fallback title
+  const t = useTranslations('HomePage'); // For footer structure
+  const coachT = useTranslations('AiSleepCoach');
   const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
@@ -25,7 +25,7 @@ export default function AiCoachPage() {
           {/* Placeholder for loading state if needed */}
         </main>
         <footer className="py-8 text-center text-xs sm:text-sm text-muted-foreground border-t border-border/30">
-          <p>{t('footerCopyright', { year: new Date().getFullYear() })}</p>
+          <p>{t('footerCopyright', { year: 2025 })}</p>
         </footer>
       </div>
     );
@@ -39,15 +39,18 @@ export default function AiCoachPage() {
           delay="100ms"
           className="w-full max-w-2xl lg:max-w-3xl glassmorphic rounded-xl shadow-2xl p-6 md:p-8"
         >
-          <div className="flex items-center mb-6">
+          <div className="flex items-center mb-2">
             <MessageSquare className="h-7 w-7 text-primary mr-3" />
-            <h2 className="text-2xl md:text-3xl font-semibold text-foreground">{t('aiCoachTitle') || coachT('title')}</h2>
+            <h2 className="text-2xl md:text-3xl font-semibold text-foreground">{coachT('pageTitle')}</h2>
           </div>
+          <p className="text-sm text-muted-foreground mb-6 text-center sm:text-left px-1">
+            {coachT('description')}
+          </p>
          <ChatAssistant />
         </AnimatedSection>
       </main>
       <footer className="py-8 text-center text-xs sm:text-sm text-muted-foreground border-t border-border/30">
-        <p>{t('footerCopyright', { year: new Date().getFullYear() })}</p>
+        <p>{t('footerCopyright', { year: 2025 })}</p>
       </footer>
     </div>
   );

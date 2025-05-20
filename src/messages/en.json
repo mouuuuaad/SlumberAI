@@ -73,7 +73,7 @@
     }
   },
   "AiSleepCoach": {
-    "title": "Your Personal AI Sleep Coach",
+    "pageTitle": "AI Sleep Coach",
     "description": "Chat with your AI Sleep Coach for personalized advice. Tell me how you're feeling about your sleep or ask any questions you have.",
     "personalizeAdviceLabel": "Personalize Advice (Optional)",
     "ageLabel": "Age",
@@ -89,9 +89,8 @@
     "lifestylePlaceholder": "e.g., Sedentary office worker, Active athlete, Student",
     "loadingResponse": "Your AI Coach is preparing advice...",
     "errorResponse": "Sorry, I had a little trouble connecting to my coaching knowledge. Please try again in a moment.",
-    "initialPromptQuestion": "How are you feeling about your sleep?",
-    "initialPromptExample": "e.g., \"I feel tired today\" or \"How can I stop snoozing?\"",
-    "inputPlaceholder": "Chat with your AI Sleep Coach..."
+    "initialBotGreeting": "Hi there! It's great that you're taking steps to improve your sleep. Sleep is so important for our overall well-being, and I'm here to help you on that journey.\n\nTo give you the best advice, it would be helpful to understand what specifically you're looking for help with. In the meantime, here are a few general tips that often make a difference:\n\n1. **Establish a Regular Sleep Schedule:** Try to go to bed and wake up around the same time every day, even on weekends. This helps regulate your body's natural sleep-wake cycle.\n2. **Create a Relaxing Bedtime Routine:** This could include activities like taking a warm bath, reading a book, or listening to calming music. Avoid screens (TV, phone, computer) for at least an hour before bed.\n3. **Optimize Your Sleep Environment:** Make sure your bedroom is dark, quiet, and cool. A comfortable mattress and pillows are also essential.\n4. **Watch Your Diet and Exercise:** Avoid caffeine and alcohol close to bedtime. Regular exercise is great, but avoid intense workouts in the evening.",
+    "inputPlaceholder": "Ask about your sleep..."
   },
   "DreamJournal": {
     "title": "Your Dream Journal",

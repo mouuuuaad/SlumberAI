@@ -1,14 +1,13 @@
 
 'use client';
 
-import { useState, useRef, useEffect, type FormEvent } from 'react';
+import { useState, useRef, useEffect, type FormEvent, Fragment } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Bot, User, Send, Sparkles, Settings2 } from 'lucide-react';
+import { Bot, User, Send, Settings2 } from 'lucide-react'; // Removed Sparkles
 import { aiSleepCoach, type AiSleepCoachInput, type AiSleepCoachOutput } from '@/ai/flows/ai-sleep-coach';
 import { cn } from '@/lib/utils';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
@@ -19,10 +18,30 @@ interface Message {
   role: 'user' | 'assistant';
   content: string;
   followUpQuestions?: string[];
+  isGreeting?: boolean; // To identify the initial greeting
 }
+
+// Helper function to render text with **bold** tags
+const renderBoldText = (text: string) => {
+  return text.split(/(\*\*.*?\*\*)/g).map((part, index) => {
+    if (part.startsWith('**') && part.endsWith('**')) {
+      return <strong key={index}>{part.slice(2, -2)}</strong>;
+    }
+    return <Fragment key={index}>{part}</Fragment>;
+  });
+};
+
 
 export default function ChatAssistant() {
   const t = useTranslations('AiSleepCoach');
+  
+  const initialGreetingMessage: Message = {
+    id: 'greeting-0',
+    role: 'assistant',
+    content: t('initialBotGreeting'),
+    isGreeting: true,
+  };
+
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -62,7 +81,8 @@ export default function ChatAssistant() {
       role: 'user',
       content: inputValue.trim(),
     };
-    setMessages((prev) => [...prev, userMessage]);
+    // If the only message is the greeting, replace it, otherwise append
+    setMessages((prev) => prev.length === 1 && prev[0].isGreeting ? [userMessage] : [...prev, userMessage]);
     const currentQuery = inputValue.trim();
     setInputValue('');
     setIsLoading(true);
@@ -73,9 +93,13 @@ export default function ChatAssistant() {
       if (lifestyle.trim()) userProfileInput.lifestyle = lifestyle.trim();
       if (stressLevel) userProfileInput.stressLevel = stressLevel;
 
+      // For the first user message after greeting, pass greeting as part of history if needed,
+      // or adjust flow to handle initial queries better.
+      // For now, simply passing the current query.
       const input: AiSleepCoachInput = {
         currentQuery,
         userProfile: Object.keys(userProfileInput).length > 0 ? userProfileInput : undefined,
+        // sleepHistory: messages.filter(m => !m.isGreeting).map(m => ({ date: m.id, quality: m.role, notes: m.content, durationHours: 0})) // Example mapping
       };
       const result: AiSleepCoachOutput = await aiSleepCoach(input);
 
@@ -98,15 +122,18 @@ export default function ChatAssistant() {
       setIsLoading(false);
     }
   };
+  
+  // Display initial greeting if no other messages are present.
+  useEffect(() => {
+    if (messages.length === 0 && !isLoading) {
+      setMessages([initialGreetingMessage]);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Run once on mount
 
   return (
-    // Removed Card wrapper, styling is now on parent AnimatedSection
-    // Removed CardHeader, title is on parent AnimatedSection
-    // Removed CardDescription, description is on parent AnimatedSection
-    <div className="w-full h-[700px] md:h-[650px] flex flex-col overflow-hidden">
-      <p className="text-sm text-muted-foreground mb-4 text-center">
-        {t('description')}
-      </p>
+    <div className="w-full h-[600px] md:h-[600px] flex flex-col overflow-hidden">
+      {/* Description is now on the parent page */}
       <div className="flex-grow flex flex-col bg-card/80 border border-border/30 rounded-lg shadow-inner">
         <Accordion type="single" collapsible className="px-4 md:px-6 pt-2 pb-1 border-b border-border/30">
           <AccordionItem value="profile" className="border-b-0">
@@ -166,11 +193,13 @@ export default function ChatAssistant() {
                     'flex items-start gap-3 p-3 rounded-lg max-w-[85%] shadow-sm',
                     message.role === 'user'
                       ? 'ml-auto bg-primary text-primary-foreground'
-                      : 'bg-card text-card-foreground border' // Changed from bg-muted to bg-card for better contrast
+                      : 'bg-card text-card-foreground border'
                   )}
                 >
                   {message.role === 'assistant' && <Bot className="h-5 w-5 sm:h-6 sm:w-6 text-accent flex-shrink-0 mt-0.5" />}
-                  <p className="text-sm whitespace-pre-wrap break-words">{message.content}</p>
+                  <div className="text-sm whitespace-pre-wrap break-words">
+                    {message.isGreeting ? renderBoldText(message.content) : message.content}
+                  </div>
                   {message.role === 'user' && <User className="h-5 w-5 sm:h-6 sm:w-6 text-primary-foreground flex-shrink-0 mt-0.5" />}
                 </div>
                 {message.role === 'assistant' && message.followUpQuestions && message.followUpQuestions.length > 0 && (
@@ -190,17 +219,10 @@ export default function ChatAssistant() {
                 )}
               </div>
             ))}
-            {isLoading && (
+            {isLoading && messages.length > 0 && !(messages.length === 1 && messages[0].isGreeting) && (
               <div className="flex items-start gap-3 p-3 rounded-lg bg-muted/70 max-w-[85%] shadow-sm">
                 <Bot className="h-5 w-5 sm:h-6 sm:w-6 text-accent flex-shrink-0 mt-0.5" />
                 <p className="text-sm animate-pulse text-muted-foreground">{t('loadingResponse')}</p>
-              </div>
-            )}
-             {messages.length === 0 && !isLoading && (
-              <div className="flex flex-col items-center justify-center text-center py-10 h-full">
-                <Sparkles className="h-12 w-12 mx-auto text-muted-foreground/50 mb-3" />
-                <p className="text-muted-foreground">{t('initialPromptQuestion')}</p>
-                <p className="text-xs text-muted-foreground/70 mt-1">{t('initialPromptExample')}</p>
               </div>
             )}
           </div>
