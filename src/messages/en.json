@@ -14,6 +14,11 @@
     "dreamJournalTitle": "Dream Journal",
     "sleepScienceTitle": "Explore the Science of Sleep",
     "sleepScienceLinkText": "Dive into Sleep Science",
-    "footerCopyright": "© {year} SlumberAI. All rights reserved. Crafted with 💜"
+    "footerCopyright": "© {year} SlumberAI. All rights reserved. Crafted with 💜",
+    "sleepCyclesTab": "Sleep Cycles",
+    "napOptimizerTab": "Nap Optimizer",
+    "aiCoachTab": "AI Coach",
+    "dreamJournalTab": "Dream Journal",
+    "sleepScienceTab": "Sleep Science"
   }
 }

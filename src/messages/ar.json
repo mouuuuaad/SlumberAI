@@ -14,6 +14,11 @@
     "dreamJournalTitle": "مفكرة الأحلام",
     "sleepScienceTitle": "استكشف علم النوم",
     "sleepScienceLinkText": "الغوص في علم النوم",
-    "footerCopyright": "© {year} SlumberAI. جميع الحقوق محفوظة. صنع بـ 💜"
+    "footerCopyright": "© {year} SlumberAI. جميع الحقوق محفوظة. صنع بـ 💜",
+    "sleepCyclesTab": "دورات النوم",
+    "napOptimizerTab": "محسن القيلولة",
+    "aiCoachTab": "مدرب الذكاء الاصطناعي",
+    "dreamJournalTab": "مفكرة الأحلام",
+    "sleepScienceTab": "علم النوم"
   }
 }
