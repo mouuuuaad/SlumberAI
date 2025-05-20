@@ -9,7 +9,8 @@
     "navNapOptimizer": "Nap",
     "navAiCoach": "AI Coach",
     "navDreamJournal": "Journal",
-    "navSleepScience": "Science"
+    "navSleepScience": "Science",
+    "navSleepGame": "Sleep Game"
   },
   "HomePage": {
     "heroTitle": "Unlock Restful Nights & Energized Days",
@@ -117,5 +118,9 @@
     "title": "Sleep Science Explorer",
     "subtitle": "Dive into the fascinating science behind sleep. Understand your body's needs and learn how to optimize your rest for better health and well-being.",
     "backToMainLink": "Back to Main Page"
+  },
+  "SleepGamePage": {
+    "title": "Star Catcher Game",
+    "description": "Gently guide the orb to catch the falling stars. Relax and let your mind unwind."
   }
 }

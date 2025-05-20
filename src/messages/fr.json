@@ -9,7 +9,8 @@
     "navNapOptimizer": "Sieste",
     "navAiCoach": "Coach IA",
     "navDreamJournal": "Journal",
-    "navSleepScience": "Science"
+    "navSleepScience": "Science",
+    "navSleepGame": "Jeu de Sommeil"
   },
   "HomePage": {
     "heroTitle": "Débloquez des nuits reposantes et des journées pleines d'énergie",
@@ -117,5 +118,9 @@
     "title": "Explorateur de la Science du Sommeil",
     "subtitle": "Plongez dans la science fascinante du sommeil. Comprenez les besoins de votre corps et apprenez à optimiser votre repos pour une meilleure santé et un plus grand bien-être.",
     "backToMainLink": "Retour à la page principale"
+  },
+  "SleepGamePage": {
+    "title": "Jeu Attrape-Étoiles",
+    "description": "Guidez doucement l'orbe pour attraper les étoiles filantes. Détendez-vous et laissez votre esprit se calmer."
   }
 }
