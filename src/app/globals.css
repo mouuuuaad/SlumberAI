@@ -9,7 +9,47 @@ body {
 
 @layer base {
   :root {
-    /* Dark Theme - Deep Navy, Gold/Cream Accents - Refined for "Sleep" */
+    /* Soft Lavender Theme */
+    --background: 270 50% 96%; /* #F4EFF7 Light Desaturated Lavender */
+    --foreground: 270 10% 25%; /* Darker lavender for text */
+
+    --card: 270 40% 99%;       /* Very light lavender for cards, almost white */
+    --card-foreground: 270 10% 30%;
+
+    --popover: 270 50% 98%;    /* Slightly off-white lavender for popovers */
+    --popover-foreground: 270 10% 25%;
+
+    --primary: 276 47% 78%;     /* #D0B4DE Soft Lavender */
+    --primary-foreground: 270 50% 99%; /* Almost white text for contrast on primary */
+    
+    --secondary: 270 30% 90%;  /* Lighter lavender for secondary elements */
+    --secondary-foreground: 270 10% 20%;
+
+    --muted: 270 25% 85%;      /* Muted lavender */
+    --muted-foreground: 270 10% 45%; /* Desaturated for less contrast */
+
+    --accent: 195 38% 78%;      /* #A0CED9 Pale Blue (lighter, less saturated) */
+    --accent-foreground: 270 10% 20%;
+
+    --destructive: 0 70% 60%; /* A standard red for destructive actions */
+    --destructive-foreground: 0 0% 100%; /* White text on destructive */
+
+    --border: 270 30% 80%;     /* Border color, can be subtle lavender */
+    --input: 270 40% 94%;      /* Input background for light theme */
+    --ring: 276 47% 78%;        /* Ring color based on primary */
+
+    --chart-1: 276 50% 75%; 
+    --chart-2: 195 40% 75%;
+    --chart-3: 276 40% 80%;
+    --chart-4: 195 30% 80%; 
+    --chart-5: 276 30% 70%;
+
+    --radius: 0.75rem; /* Slightly more rounded */
+  }
+
+  .dark { 
+    /* Dark Theme - Kept from previous "Deep Navy" for contrast or future use */
+    /* You can redefine these if you want a dark lavender theme */
     --background: 225 40% 6%;    /* #0A0C1E Even Darker Navy Blue */
     --foreground: 225 15% 92%;   /* #E1E3E7 Slightly brighter Off-white for text */
 
@@ -19,8 +59,9 @@ body {
     --popover: 225 28% 9%;    /* #0F1222 Darker for popovers */
     --popover-foreground: 225 15% 90%;
 
-    --primary: 45 70% 70%;     /* #EBD99A Softer Gold/Cream for buttons/primary actions */
-    --primary-foreground: 225 30% 8%; /* #0D101C Very dark text for contrast on primary */
+    /* For dark mode, we can use the original Lavender as primary, or a brighter variant */
+    --primary: 276 55% 82%;     /* Brighter Soft Lavender for dark mode primary #DBCAE8 */
+    --primary-foreground: 270 10% 15%; /* Darker text for contrast on dark primary */
     
     --secondary: 225 25% 18%;  /* #24293C Darker secondary elements */
     --secondary-foreground: 225 15% 78%; /* #BCC1CA */
@@ -28,68 +69,22 @@ body {
     --muted: 225 25% 14%;      /* #1B1F30 Muted dark navy */
     --muted-foreground: 225 10% 55%; /* #7F8699 Slightly desaturated for less contrast */
 
-    --accent: 35 80% 75%;      /* #F5DAB0 Lighter Cream/Beige for accents if needed */
+    /* Pale blue accent can be brightened for dark mode */
+    --accent: 195 45% 82%;      /* Brighter Pale Blue for dark mode accent #B3DCE5 */
     --accent-foreground: 225 30% 10%;
 
     --destructive: 0 60% 55%; /* #D64545 A standard red for destructive actions */
     --destructive-foreground: 0 0% 100%; /* White text on destructive */
 
-    --border: 225 20% 22%;     /* #2E3347 Border color, can be subtle */
-    --input: 225 25% 12%;      /* #161A2B Input background for dark theme */
-    --ring: 45 70% 75%;        /* #EFDFB0 Ring color based on primary/accent for focus */
+    --border: 225 20% 22%;     /* #2E3347 Border color */
+    --input: 225 25% 12%;      /* #161A2B Input background */
+    --ring: 276 55% 82%;        /* Ring color based on dark primary */
 
-    --chart-1: 45 70% 65%; 
-    --chart-2: 35 80% 70%;
-    --chart-3: 45 60% 75%;
-    --chart-4: 35 70% 80%; 
-    --chart-5: 45 50% 60%;
-
-    --radius: 0.75rem; /* Slightly more rounded */
-
-    /* Sidebar values - adjust if sidebar is used */
-    --sidebar-background: 225 25% 9%; /* #0F1222 */
-    --sidebar-foreground: 225 15% 88%; /* #D7DBE3 */
-    --sidebar-primary: var(--primary);
-    --sidebar-primary-foreground: var(--primary-foreground);
-    --sidebar-accent: var(--accent);
-    --sidebar-accent-foreground: var(--accent-foreground);
-    --sidebar-border: 225 20% 18%;   /* #24293C */
-    --sidebar-ring: var(--ring);
-  }
-
-  .dark { 
-    --background: 225 40% 6%;    
-    --foreground: 225 15% 92%;   
-    --card: 225 30% 10%;       
-    --card-foreground: 225 15% 88%; 
-    --popover: 225 28% 9%;    
-    --popover-foreground: 225 15% 90%;
-    --primary: 45 70% 70%;     
-    --primary-foreground: 225 30% 8%; 
-    --secondary: 225 25% 18%;  
-    --secondary-foreground: 225 15% 78%; 
-    --muted: 225 25% 14%;      
-    --muted-foreground: 225 10% 55%; 
-    --accent: 35 80% 75%;      
-    --accent-foreground: 225 30% 10%;
-    --destructive: 0 60% 55%; 
-    --destructive-foreground: 0 0% 100%;
-    --border: 225 20% 22%;     
-    --input: 225 25% 12%;      
-    --ring: 45 70% 75%;       
-    --chart-1: 45 70% 65%; 
-    --chart-2: 35 80% 70%;
-    --chart-3: 45 60% 75%;
-    --chart-4: 35 70% 80%; 
-    --chart-5: 45 50% 60%;
-    --sidebar-background: 225 25% 9%;
-    --sidebar-foreground: 225 15% 88%;
-    --sidebar-primary: var(--primary);
-    --sidebar-primary-foreground: var(--primary-foreground);
-    --sidebar-accent: var(--accent);
-    --sidebar-accent-foreground: var(--accent-foreground);
-    --sidebar-border: 225 20% 18%;
-    --sidebar-ring: var(--ring);
+    --chart-1: 276 50% 70%; 
+    --chart-2: 195 40% 70%;
+    --chart-3: 276 40% 75%;
+    --chart-4: 195 30% 75%; 
+    --chart-5: 276 30% 65%;
   }
 }
 
@@ -107,34 +102,72 @@ body {
     flex-grow: 1;
   }
   html.dark body {
-     @apply bg-background text-foreground;
+     /* When dark mode is active, use the dark theme variables */
+    --background: 225 40% 6%;    
+    --foreground: 225 15% 92%;   
+    --card: 225 30% 10%;       
+    --card-foreground: 225 15% 88%; 
+    --popover: 225 28% 9%;    
+    --popover-foreground: 225 15% 90%;
+    --primary: 276 55% 82%;     
+    --primary-foreground: 270 10% 15%; 
+    --secondary: 225 25% 18%;  
+    --secondary-foreground: 225 15% 78%; 
+    --muted: 225 25% 14%;      
+    --muted-foreground: 225 10% 55%; 
+    --accent: 195 45% 82%;      
+    --accent-foreground: 225 30% 10%;
+    --destructive: 0 60% 55%; 
+    --destructive-foreground: 0 0% 100%;
+    --border: 225 20% 22%;     
+    --input: 225 25% 12%;      
+    --ring: 276 55% 82%;       
+    --chart-1: 276 50% 70%; 
+    --chart-2: 195 40% 70%;
+    --chart-3: 276 40% 75%;
+    --chart-4: 195 30% 75%; 
+    --chart-5: 276 30% 65%;
+     @apply bg-background text-foreground; /* Apply dark theme colors */
   }
 }
 
 .glassmorphic {
-  @apply bg-card/50 backdrop-blur-lg border-white/5 shadow-xl; /* Reduced opacity for deeper bg visibility */
+  /* Glassmorphism for light theme, referencing the light theme card color */
+  background-color: hsl(var(--card) / 0.6); /* Use card color with alpha */
+  backdrop-filter: blur(12px); /* Standard blur */
+  border: 1px solid hsl(var(--border) / 0.2); /* Subtle border */
+  @apply shadow-xl; /* Existing shadow */
 }
 
+.dark .glassmorphic {
+  /* Glassmorphism for dark theme, referencing the dark theme card color */
+  background-color: hsl(225 30% 10% / 0.6); /* Dark card color with alpha */
+  backdrop-filter: blur(12px);
+  border: 1px solid hsl(225 20% 22% / 0.3); /* Subtle dark border */
+  @apply shadow-2xl; /* Can use a slightly stronger shadow for dark mode if desired */
+}
+
+
 ::-webkit-scrollbar {
-  width: 6px; /* Slimmer scrollbar */
-  height: 6px;
+  width: 8px; 
+  height: 8px;
 }
 ::-webkit-scrollbar-track {
-  background: hsl(var(--background) / 0.3); /* More transparent track */
+  background: hsl(var(--background) / 0.5); 
   border-radius: 10px;
 }
 ::-webkit-scrollbar-thumb {
-  background: hsl(var(--muted) / 0.8); /* Slightly more visible thumb */
+  background: hsl(var(--muted)); 
   border-radius: 10px;
-  border: 1px solid transparent; 
+  border: 2px solid transparent; 
   background-clip: content-box; 
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: hsl(var(--secondary-foreground) / 0.9);
+  background: hsl(var(--secondary-foreground));
 }
 * {
-  scrollbar-width: thin;
-  scrollbar-color: hsl(var(--muted) / 0.8) hsl(var(--background) / 0.3);
+  scrollbar-width: auto; /* Changed from thin to auto for default, thin can be applied specifically */
+  scrollbar-color: hsl(var(--muted)) hsl(var(--background) / 0.5);
 }
 
 /* Custom thin scrollbar for specific elements like TabsList */
@@ -146,27 +179,27 @@ body {
   background: transparent;
 }
 .custom-scrollbar-thin::-webkit-scrollbar-thumb {
-  background: hsl(var(--muted) / 0.4);
+  background: hsl(var(--muted) / 0.6);
   border-radius: 10px;
 }
 .custom-scrollbar-thin::-webkit-scrollbar-thumb:hover {
-  background: hsl(var(--muted) / 0.7);
+  background: hsl(var(--muted) / 0.9);
 }
 .custom-scrollbar-thin {
   scrollbar-width: thin;
-  scrollbar-color: hsl(var(--muted) / 0.4) transparent;
+  scrollbar-color: hsl(var(--muted) / 0.6) transparent;
 }
 
 /* Hero text glow animation */
 @keyframes hero-glow-animation {
   0%, 100% {
-    text-shadow: 0 0 5px hsl(var(--primary)/0.4), 0 0 10px hsl(var(--primary)/0.3), 0 0 15px hsl(var(--primary)/0.2);
+    text-shadow: 0 0 8px hsl(var(--primary)/0.5), 0 0 15px hsl(var(--primary)/0.4), 0 0 25px hsl(var(--primary)/0.3);
   }
   50% {
-    text-shadow: 0 0 10px hsl(var(--primary)/0.6), 0 0 20px hsl(var(--primary)/0.4), 0 0 30px hsl(var(--primary)/0.3);
+    text-shadow: 0 0 15px hsl(var(--primary)/0.7), 0 0 30px hsl(var(--primary)/0.5), 0 0 45px hsl(var(--primary)/0.4);
   }
 }
 
 .animate-hero-glow h1 {
-  animation: hero-glow-animation 4s ease-in-out infinite;
+  animation: hero-glow-animation 3s ease-in-out infinite;
 }
