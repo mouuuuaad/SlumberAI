@@ -1,12 +1,18 @@
 import type { Metadata } from 'next';
 import './globals.css'; // Root global styles
+import { Geist } from 'next/font/google'; // Import Geist font
+
+// Initialize Geist Sans font
+const geistSans = Geist({
+  variable: '--font-geist-sans',
+  subsets: ['latin'],
+});
 
 export const metadata: Metadata = {
   title: 'SlumberAI', // Generic title, can be overridden by locale-specific layouts
   description: 'Your personal sleep companion, available in multiple languages.',
-  manifest: '/manifest.json', // Manifest link can stay here or be in locale layout
-  // themeColor property is better handled in specific locale layouts if it needs to change,
-  // or if it's static, can be here. For now, we'll let the [locale]/layout.tsx handle it via its own metadata.
+  manifest: '/manifest.json',
+  // themeColor can be set here if static, or in [locale]/layout.tsx via viewport export
 };
 
 export default function RootLayout({
@@ -14,13 +20,16 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  // This root layout no longer sets the lang attribute or specific classes on html/body.
-  // This will be handled by the [locale]/layout.tsx.
-  // Adding suppressHydrationWarning here helps if client-side JS (like ThemeProvider)
-  // modifies html/body classes/attributes in a way that differs from SSR.
+  // Next.js with next-intl will handle the `lang` and `dir` attributes on <html>
+  // based on the active locale.
   return (
     <html suppressHydrationWarning>
-      <body suppressHydrationWarning>{children}</body>
+      <body 
+        className={`${geistSans.variable} font-sans antialiased`} 
+        suppressHydrationWarning
+      >
+        {children}
+      </body>
     </html>
   );
 }
