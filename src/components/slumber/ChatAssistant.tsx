@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Bot, User, Send, Settings2 } from 'lucide-react'; // Removed Sparkles
+import { Bot, User, Send, Settings2 } from 'lucide-react';
 import { aiSleepCoach, type AiSleepCoachInput, type AiSleepCoachOutput } from '@/ai/flows/ai-sleep-coach';
 import { cn } from '@/lib/utils';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
@@ -93,13 +93,9 @@ export default function ChatAssistant() {
       if (lifestyle.trim()) userProfileInput.lifestyle = lifestyle.trim();
       if (stressLevel) userProfileInput.stressLevel = stressLevel;
 
-      // For the first user message after greeting, pass greeting as part of history if needed,
-      // or adjust flow to handle initial queries better.
-      // For now, simply passing the current query.
       const input: AiSleepCoachInput = {
         currentQuery,
         userProfile: Object.keys(userProfileInput).length > 0 ? userProfileInput : undefined,
-        // sleepHistory: messages.filter(m => !m.isGreeting).map(m => ({ date: m.id, quality: m.role, notes: m.content, durationHours: 0})) // Example mapping
       };
       const result: AiSleepCoachOutput = await aiSleepCoach(input);
 
@@ -123,17 +119,15 @@ export default function ChatAssistant() {
     }
   };
   
-  // Display initial greeting if no other messages are present.
   useEffect(() => {
     if (messages.length === 0 && !isLoading) {
       setMessages([initialGreetingMessage]);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // Run once on mount
+  }, []); 
 
   return (
     <div className="w-full h-[600px] md:h-[600px] flex flex-col overflow-hidden">
-      {/* Description is now on the parent page */}
       <div className="flex-grow flex flex-col bg-card/80 border border-border/30 rounded-lg shadow-inner">
         <Accordion type="single" collapsible className="px-4 md:px-6 pt-2 pb-1 border-b border-border/30">
           <AccordionItem value="profile" className="border-b-0">
@@ -184,7 +178,7 @@ export default function ChatAssistant() {
           </AccordionItem>
         </Accordion>
 
-        <ScrollArea className="flex-grow p-4 md:p-6" ref={scrollAreaRef}>
+        <ScrollArea className="flex-grow min-h-0 p-4 md:p-6" ref={scrollAreaRef}> {/* Added min-h-0 */}
           <div className="space-y-4">
             {messages.map((message) => (
               <div key={message.id} className="flex flex-col">
