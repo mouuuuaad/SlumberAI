@@ -22,12 +22,7 @@
     "sleepScienceTitle": "Explorez la science du sommeil",
     "sleepScienceSubtitle": "Découvrez comment fonctionne le sommeil et comment améliorer le vôtre.",
     "sleepScienceLinkText": "Plongez dans la science du sommeil",
-    "footerCopyright": "© {year} SlumberAI. Tous droits réservés. Conçu avec 💜",
-    "sleepCyclesTab": "Cycles de Sommeil",
-    "napOptimizerTab": "Optimiseur de Sieste",
-    "aiCoachTab": "Coach IA",
-    "dreamJournalTab": "Journal des Rêves",
-    "sleepScienceTab": "Science du Sommeil"
+    "footerCopyright": "© {year} SlumberAI. Tous droits réservés. Conçu avec 💜"
   },
   "SleepCalculatorForm": {
     "title": "Planifiez votre sommeil parfait",
@@ -90,7 +85,7 @@
     "loadingResponse": "Votre Coach IA prépare des conseils...",
     "errorResponse": "Désolé, j'ai eu un petit problème pour me connecter à mes connaissances de coaching. Veuillez réessayer dans un instant.",
     "initialPromptQuestion": "Comment vous sentez-vous par rapport à votre sommeil ?",
-    "initialPromptExample": "ex: \"Je me sens fatigué aujourd'hui\" ou \"Comment puis-je arrêter de repousser mon réveil ?\"",
+    "initialPromptExample": "ex: \"Je me sens fatigué aujourd'hui\" ou \"Comment puis-jearrêter de repousser mon réveil ?\"",
     "inputPlaceholder": "Discuter avec votre Coach IA du Sommeil..."
   },
   "DreamJournal": {
@@ -121,6 +116,15 @@
   },
   "SleepGamePage": {
     "title": "Jeu Attrape-Étoiles",
-    "description": "Guidez doucement l'orbe pour attraper les étoiles filantes. Détendez-vous et laissez votre esprit se calmer."
+    "description": "Guidez doucement l'orbe pour attraper les étoiles filantes. Détendez-vous et laissez votre esprit se calmer.",
+    "loadingGameMessage": "Chargement du jeu...",
+    "startGameButton": "Commencer le jeu",
+    "scoreLabel": "Score :",
+    "missedLabel": "Manquées :",
+    "gameOverTitle": "Partie terminée !",
+    "finalScoreLabel": "Score final :",
+    "tooManyMissedText": "Trop d'étoiles manquées. Beaux rêves la prochaine fois !",
+    "goodTryText": "Bien essayé ! Prêt pour une autre session d'attrapage d'étoiles ?",
+    "restartGameButton": "Rejouer"
   }
 }

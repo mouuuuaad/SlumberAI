@@ -22,12 +22,7 @@
     "sleepScienceTitle": "Explore the Science of Sleep",
     "sleepScienceSubtitle": "Discover insights into how sleep works and how to improve yours.",
     "sleepScienceLinkText": "Dive into Sleep Science",
-    "footerCopyright": "© {year} SlumberAI. All rights reserved. Crafted with 💜",
-    "sleepCyclesTab": "Sleep Cycles",
-    "napOptimizerTab": "Nap Optimizer",
-    "aiCoachTab": "AI Coach",
-    "dreamJournalTab": "Dream Journal",
-    "sleepScienceTab": "Sleep Science"
+    "footerCopyright": "© {year} SlumberAI. All rights reserved. Crafted with 💜"
   },
   "SleepCalculatorForm": {
     "title": "Plan Your Perfect Sleep",
@@ -121,6 +116,15 @@
   },
   "SleepGamePage": {
     "title": "Star Catcher Game",
-    "description": "Gently guide the orb to catch the falling stars. Relax and let your mind unwind."
+    "description": "Gently guide the orb to catch the falling stars. Relax and let your mind unwind.",
+    "loadingGameMessage": "Loading Game...",
+    "startGameButton": "Start Game",
+    "scoreLabel": "Score:",
+    "missedLabel": "Missed:",
+    "gameOverTitle": "Game Over!",
+    "finalScoreLabel": "Final Score:",
+    "tooManyMissedText": "Too many stars missed. Sweet dreams next time!",
+    "goodTryText": "Nice try! Ready for another round of star catching?",
+    "restartGameButton": "Play Again"
   }
 }
