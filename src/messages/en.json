@@ -22,7 +22,12 @@
     "sleepScienceTitle": "Explore the Science of Sleep",
     "sleepScienceSubtitle": "Understand your body's needs and learn how to optimize your rest for better health and well-being.",
     "sleepScienceLinkText": "Dive into Sleep Science",
-    "footerCopyright": "© {year} SlumberAI. All rights reserved. Crafted with 💜"
+    "footerCopyright": "© {year} SlumberAI. All rights reserved. Crafted with 💜",
+    "sleepCyclesTab": "Sleep Cycles",
+    "napOptimizerTab": "Nap Optimizer",
+    "aiCoachTab": "AI Coach",
+    "dreamJournalTab": "Dream Journal",
+    "sleepScienceTab": "Sleep Science"
   },
   "SleepCalculatorForm": {
     "title": "Sleep Cycle Calculator",
@@ -91,10 +96,25 @@
     },
     "lifestyleLabel": "Lifestyle",
     "lifestylePlaceholder": "e.g., Sedentary office worker, Active athlete, Student",
-    "loadingResponse": "Your AI Coach is preparing advice...",
+    "loadingResponse": "SlumberAI is thinking...",
     "errorResponse": "Sorry, I had a little trouble connecting to my coaching knowledge. Please try again in a moment.",
-    "initialBotGreeting": "Hi there! It's great that you're taking steps to improve your sleep. Sleep is so important for our overall well-being, and I'm here to help you on that journey.\n\nTo give you the best advice, it would be helpful to understand what specifically you're looking for help with. In the meantime, here are a few general tips that often make a difference:\n\n1. **Establish a Regular Sleep Schedule:** Try to go to bed and wake up around the same time every day, even on weekends. This helps regulate your body's natural sleep-wake cycle.\n2. **Create a Relaxing Bedtime Routine:** This could include activities like taking a warm bath, reading a book, or listening to calming music. Avoid screens (TV, phone, computer) for at least an hour before bed.\n3. **Optimize Your Sleep Environment:** Make sure your bedroom is dark, quiet, and cool. A comfortable mattress and pillows are also essential.\n4. **Watch Your Diet and Exercise:** Avoid caffeine and alcohol close to bedtime. Regular exercise is great, but avoid intense workouts in the evening.",
-    "inputPlaceholder": "Ask about your sleep..."
+    "initialBotGreeting": "Hi there! I'm SlumberAI, your personal sleep guide. How can I help you improve your sleep today?",
+    "inputPlaceholder": "Ask SlumberAI about your sleep...",
+    "sidebarCollapse": "Collapse sidebar",
+    "sidebarExpand": "Expand sidebar"
+  },
+  "AiSleepCoachSidebar": {
+    "newChat": "New Chat",
+    "chatHistory": "Chat History",
+    "today": "Today",
+    "previous7Days": "Previous 7 Days",
+    "previous30Days": "Previous 30 Days",
+    "currentSessionTitle": "Current Session",
+    "noHistory": "No chat history yet.",
+    "settings": "Settings",
+    "clearHistory": "Clear Conversation",
+    "confirmClearHistory": "Are you sure you want to clear the current conversation history? This action cannot be undone.",
+    "newChatFeaturePlaceholder": "Starting a new chat with distinct history is coming soon!"
   },
   "DreamJournal": {
     "title": "Dream Journal",

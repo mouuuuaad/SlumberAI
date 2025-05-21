@@ -22,7 +22,12 @@
     "sleepScienceTitle": "Explorez la science du sommeil",
     "sleepScienceSubtitle": "Comprenez les besoins de votre corps et apprenez à optimiser votre repos pour une meilleure santé et un plus grand bien-être.",
     "sleepScienceLinkText": "Plongez dans la science du sommeil",
-    "footerCopyright": "© {year} SlumberAI. Tous droits réservés. Conçu avec 💜"
+    "footerCopyright": "© {year} SlumberAI. Tous droits réservés. Conçu avec 💜",
+    "sleepCyclesTab": "Cycles de Sommeil",
+    "napOptimizerTab": "Optimiseur de Sieste",
+    "aiCoachTab": "Coach IA",
+    "dreamJournalTab": "Journal des Rêves",
+    "sleepScienceTab": "Science du Sommeil"
   },
   "SleepCalculatorForm": {
     "title": "Calculateur de Cycle de Sommeil",
@@ -91,10 +96,25 @@
     },
     "lifestyleLabel": "Style de vie",
     "lifestylePlaceholder": "ex: Employé de bureau sédentaire, Athlète actif, Étudiant",
-    "loadingResponse": "Votre Coach IA prépare des conseils...",
+    "loadingResponse": "SlumberAI réfléchit...",
     "errorResponse": "Désolé, j'ai eu un petit problème pour me connecter à mes connaissances de coaching. Veuillez réessayer dans un instant.",
-    "initialBotGreeting": "Bonjour ! C'est formidable que vous preniez des mesures pour améliorer votre sommeil. Le sommeil est si important pour notre bien-être général, et je suis là pour vous aider dans ce parcours.\n\nPour vous donner les meilleurs conseils, il serait utile de comprendre ce pour quoi vous cherchez de l'aide spécifiquement. En attendant, voici quelques conseils généraux qui font souvent la différence :\n\n1. **Établissez un horaire de sommeil régulier :** Essayez de vous coucher et de vous réveiller à peu près à la même heure chaque jour, même le week-end. Cela aide à réguler le cycle naturel veille-sommeil de votre corps.\n2. **Créez une routine de coucher relaxante :** Cela pourrait inclure des activités comme prendre un bain chaud, lire un livre ou écouter de la musique apaisante. Évitez les écrans (TV, téléphone, ordinateur) pendant au moins une heure avant de vous coucher.\n3. **Optimisez votre environnement de sommeil :** Assurez-vous que votre chambre est sombre, calme et fraîche. Un matelas et des oreillers confortables sont également essentiels.\n4. **Surveillez votre alimentation et faites de l'exercice :** Évitez la caféine et l'alcool à l'approche du coucher. L'exercice régulier est excellent, mais évitez les entraînements intenses le soir.",
-    "inputPlaceholder": "Posez une question sur votre sommeil..."
+    "initialBotGreeting": "Bonjour ! Je suis SlumberAI, votre guide personnel du sommeil. Comment puis-je vous aider à améliorer votre sommeil aujourd'hui ?",
+    "inputPlaceholder": "Interrogez SlumberAI sur votre sommeil...",
+    "sidebarCollapse": "Réduire la barre latérale",
+    "sidebarExpand": "Étendre la barre latérale"
+  },
+  "AiSleepCoachSidebar": {
+    "newChat": "Nouveau Chat",
+    "chatHistory": "Historique des Chats",
+    "today": "Aujourd'hui",
+    "previous7Days": "7 derniers jours",
+    "previous30Days": "30 derniers jours",
+    "currentSessionTitle": "Session Actuelle",
+    "noHistory": "Aucun historique de chat pour le moment.",
+    "settings": "Paramètres",
+    "clearHistory": "Effacer la Conversation",
+    "confirmClearHistory": "Êtes-vous sûr de vouloir effacer l'historique de la conversation actuelle ? Cette action est irréversible.",
+    "newChatFeaturePlaceholder": "Démarrer un nouveau chat avec un historique distinct sera bientôt disponible !"
   },
   "DreamJournal": {
     "title": "Journal des rêves",

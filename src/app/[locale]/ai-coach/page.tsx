@@ -3,55 +3,65 @@
 
 import Header from '@/components/slumber/Header';
 import ChatAssistant from '@/components/slumber/ChatAssistant';
-import AnimatedSection from '@/components/slumber/AnimatedSection';
+import ConversationSidebar from '@/components/slumber/ConversationSidebar';
 import { useTranslations } from 'next-intl';
-import { MessageSquare } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { PanelLeftClose, PanelLeftOpen } from 'lucide-react';
 
 export default function AiCoachPage() {
   const t = useTranslations('HomePage'); // For footer structure
   const coachT = useTranslations('AiSleepCoach');
   const [isClient, setIsClient] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
   useEffect(() => {
     setIsClient(true);
+    // Optionally, set sidebar state based on screen size
+    if (window.innerWidth < 768) { // md breakpoint
+      setIsSidebarOpen(false);
+    }
   }, []);
+
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+  };
 
   if (!isClient) {
     return (
-      <div className="flex flex-col min-h-screen bg-background text-foreground">
+      <div className="flex flex-col h-screen bg-background text-foreground">
         <Header />
-        <main className="flex-grow container mx-auto px-4 py-10 md:py-16 flex flex-col items-center">
-          {/* Placeholder for loading state if needed */}
+        <main className="flex-grow flex items-center justify-center">
+          {/* Placeholder or loading spinner */}
         </main>
         <footer className="py-8 text-center text-xs sm:text-sm text-muted-foreground border-t border-border/30">
-          <p>{t('footerCopyright', { year: 2025 })}</p>
+          <p>{t('footerCopyright', { year: new Date().getFullYear() })}</p>
         </footer>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-background text-foreground">
+    <div className="flex flex-col h-screen bg-background text-foreground overflow-hidden">
       <Header />
-      <main className="flex-grow container mx-auto px-4 py-10 md:py-16 flex flex-col items-center space-y-12 md:space-y-16">
-        <AnimatedSection 
-          delay="100ms"
-          className="w-full max-w-2xl lg:max-w-3xl glassmorphic rounded-xl shadow-2xl p-6 md:p-8"
-        >
-          <div className="flex items-center mb-2">
-            <MessageSquare className="h-7 w-7 text-primary mr-3" />
-            <h2 className="text-2xl md:text-3xl font-semibold text-foreground">{coachT('pageTitle')}</h2>
+      <div className="flex flex-grow overflow-hidden">
+        <ConversationSidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
+        <main className="flex-grow flex flex-col relative">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={toggleSidebar}
+            className="absolute top-2 left-2 z-20 md:hidden text-foreground hover:bg-accent/20"
+            aria-label={isSidebarOpen ? coachT('sidebarCollapse') : coachT('sidebarExpand')}
+          >
+            {isSidebarOpen ? <PanelLeftClose className="h-5 w-5" /> : <PanelLeftOpen className="h-5 w-5" />}
+          </Button>
+          <div className="flex-grow p-4 md:p-6 overflow-y-auto"> {/* Added padding here */}
+            <ChatAssistant />
           </div>
-          <p className="text-sm text-muted-foreground mb-6 text-center sm:text-left px-1">
-            {coachT('description')}
-          </p>
-         <ChatAssistant />
-        </AnimatedSection>
-      </main>
-      <footer className="py-8 text-center text-xs sm:text-sm text-muted-foreground border-t border-border/30">
-        <p>{t('footerCopyright', { year: 2025 })}</p>
-      </footer>
+        </main>
+      </div>
+      {/* Footer is removed to maximize chat area, similar to typical chat apps */}
     </div>
   );
 }

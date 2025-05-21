@@ -54,6 +54,13 @@ html {
     --chart-5: 276 30% 70%;
 
     --radius: 0.75rem; /* Slightly more rounded */
+
+    /* Chat Sidebar Specific - Dark Theme (as per image) */
+    --sidebar-background: 225 20% 12%; /* Very Dark Blue/Gray e.g. #1A1D26 */
+    --sidebar-foreground: 225 15% 88%; /* Off-white e.g. #D7DBE3 */
+    --sidebar-accent: 225 20% 18%;    /* Slightly lighter Dark Blue/Gray for hover e.g. #252938 */
+    --sidebar-accent-foreground: 225 15% 95%; /* Brighter white for hover text */
+    --sidebar-border: 225 20% 25%; /* Border for sidebar elements */
   }
 
   .dark { 
@@ -90,6 +97,14 @@ html {
     --chart-3: 276 40% 75%;
     --chart-4: 195 30% 75%; 
     --chart-5: 276 30% 65%;
+
+    /* Override sidebar vars for dark mode if they should be different from light mode's interpretation */
+    /* The provided sidebar vars are already dark-themed, so they work well here. */
+    --sidebar-background: 225 20% 12%; /* #1A1D26 */
+    --sidebar-foreground: 225 15% 88%; /* #D7DBE3 */
+    --sidebar-accent: 225 20% 18%;    /* #252938 */
+    --sidebar-accent-foreground: 225 15% 95%; 
+    --sidebar-border: 225 15% 20%; /* Slightly lighter border for dark sidebar */
   }
 }
 
@@ -107,49 +122,22 @@ html {
     flex-grow: 1;
   }
   html.dark body {
-     /* When dark mode is active, use the dark theme variables */
-    --background: 225 40% 6%;    
-    --foreground: 225 15% 92%;   
-    --card: 225 30% 10%;       
-    --card-foreground: 225 15% 88%; 
-    --popover: 225 28% 9%;    
-    --popover-foreground: 225 15% 90%;
-    --primary: 276 55% 82%;     
-    --primary-foreground: 270 10% 15%; 
-    --secondary: 225 25% 18%;  
-    --secondary-foreground: 225 15% 78%; 
-    --muted: 225 25% 14%;      
-    --muted-foreground: 225 10% 55%; 
-    --accent: 195 45% 82%;      
-    --accent-foreground: 225 30% 10%;
-    --destructive: 0 60% 55%; 
-    --destructive-foreground: 0 0% 100%;
-    --border: 225 20% 22%;     
-    --input: 225 25% 12%;      
-    --ring: 276 55% 82%;       
-    --chart-1: 276 50% 70%; 
-    --chart-2: 195 40% 70%;
-    --chart-3: 276 40% 75%;
-    --chart-4: 195 30% 75%; 
-    --chart-5: 276 30% 65%;
-     @apply bg-background text-foreground; /* Apply dark theme colors */
+    @apply bg-background text-foreground; /* Apply dark theme colors */
   }
 }
 
 .glassmorphic {
-  /* Glassmorphism for light theme, referencing the light theme card color */
-  background-color: hsl(var(--card) / 0.6); /* Use card color with alpha */
-  backdrop-filter: blur(12px); /* Standard blur */
-  border: 1px solid hsl(var(--border) / 0.2); /* Subtle border */
-  @apply shadow-xl; /* Existing shadow */
+  background-color: hsl(var(--card) / 0.6); 
+  backdrop-filter: blur(12px); 
+  border: 1px solid hsl(var(--border) / 0.2); 
+  @apply shadow-xl; 
 }
 
 .dark .glassmorphic {
-  /* Glassmorphism for dark theme, referencing the dark theme card color */
-  background-color: hsl(225 30% 10% / 0.6); /* Dark card color with alpha */
+  background-color: hsl(var(--card) / 0.6); /* Use dark theme's card variable */
   backdrop-filter: blur(12px);
-  border: 1px solid hsl(225 20% 22% / 0.3); /* Subtle dark border */
-  @apply shadow-2xl; /* Can use a slightly stronger shadow for dark mode if desired */
+  border: 1px solid hsl(var(--border) / 0.3); /* Use dark theme's border variable */
+  @apply shadow-2xl; 
 }
 
 
@@ -184,16 +172,27 @@ html {
   background: transparent;
 }
 .custom-scrollbar-thin::-webkit-scrollbar-thumb {
-  background: hsl(var(--muted) / 0.6);
+  background: hsl(var(--muted-foreground) / 0.4); /* More subtle for thin scrollbar */
   border-radius: 10px;
 }
 .custom-scrollbar-thin::-webkit-scrollbar-thumb:hover {
-  background: hsl(var(--muted) / 0.9);
+  background: hsl(var(--muted-foreground) / 0.7);
 }
 .custom-scrollbar-thin {
   scrollbar-width: thin;
-  scrollbar-color: hsl(var(--muted) / 0.6) transparent;
+  scrollbar-color: hsl(var(--muted-foreground) / 0.4) transparent;
 }
+
+.dark .custom-scrollbar-thin::-webkit-scrollbar-thumb {
+  background: hsl(var(--muted-foreground) / 0.3); /* Even more subtle for dark thin scrollbar */
+}
+.dark .custom-scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--muted-foreground) / 0.6);
+}
+.dark .custom-scrollbar-thin {
+   scrollbar-color: hsl(var(--muted-foreground) / 0.3) transparent;
+}
+
 
 /* Hero text glow animation */
 @keyframes hero-glow-animation {
@@ -207,4 +206,23 @@ html {
 
 .animate-hero-glow h1 {
   animation: hero-glow-animation 3s ease-in-out infinite;
+}
+
+/* Specific sidebar scrollbar to match image (very subtle) */
+.sidebar-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+.sidebar-scrollbar::-webkit-scrollbar-track {
+  background: transparent; /* Track is invisible */
+}
+.sidebar-scrollbar::-webkit-scrollbar-thumb {
+  background: hsl(var(--sidebar-accent) / 0.5); /* Thumb is semi-transparent accent */
+  border-radius: 3px;
+}
+.sidebar-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--sidebar-accent) / 0.8);
+}
+.sidebar-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: hsl(var(--sidebar-accent) / 0.5) transparent;
 }
