@@ -20,13 +20,11 @@
     "aiCoachTitle": "AI Sleep Coach",
     "dreamJournalTitle": "Dream Journal",
     "sleepScienceTitle": "Explore the Science of Sleep",
-    "sleepScienceSubtitle": "Discover insights into how sleep works and how to improve yours.",
     "sleepScienceLinkText": "Dive into Sleep Science",
     "footerCopyright": "© {year} SlumberAI. All rights reserved. Crafted with 💜"
   },
   "SleepCalculatorForm": {
     "title": "Sleep Cycle Calculator",
-    "description": "Calculates optimal sleep times based on 90-minute sleep cycles. Assumes 15 minutes to fall asleep.",
     "wakeUpAtLabel": "I want to wake up at...",
     "calculateBedtimeButton": "Calculate Bedtime",
     "goToBedNowLabel": "If I go to bed now...",
@@ -35,7 +33,17 @@
     "errorSelectWakeUpTime": "Please select a valid wake-up time.",
     "errorInvalidTimePicker": "Invalid time format from picker. Please re-select.",
     "errorInvalidTimeFormat": "Invalid time format selected. Please adjust the picker.",
-    "errorBedtimeCalculation": "Could not calculate bedtime due to a time processing error."
+    "errorBedtimeCalculation": "Could not calculate bedtime due to a time processing error.",
+    "sleepPlan": {
+      "title": "Sleep Plan",
+      "subtitleWakeUp": "To wake up at {targetTime}, consider these bedtimes:",
+      "subtitleGoToBed": "If you go to bed around {targetTime}, aim to wake up at:",
+      "goToBedLabel": "Go to bed",
+      "wakeUpLabel": "Wake up",
+      "cyclesInfo": "{count, plural, one {# sleep cycle} other {# sleep cycles}} ({hours}h {minutes}m actual sleep). (+{timeToFallAsleep}m to fall asleep)",
+      "fallAsleepLegendLabel": "Fall Asleep",
+      "cycleLegendLabel": "Cycle"
+    }
   },
   "NapOptimizer": {
     "title": "Nap Optimizer",

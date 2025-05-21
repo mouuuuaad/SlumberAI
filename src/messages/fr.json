@@ -20,13 +20,11 @@
     "aiCoachTitle": "Coach IA du sommeil",
     "dreamJournalTitle": "Journal des rêves",
     "sleepScienceTitle": "Explorez la science du sommeil",
-    "sleepScienceSubtitle": "Découvrez comment fonctionne le sommeil et comment améliorer le vôtre.",
     "sleepScienceLinkText": "Plongez dans la science du sommeil",
     "footerCopyright": "© {year} SlumberAI. Tous droits réservés. Conçu avec 💜"
   },
   "SleepCalculatorForm": {
     "title": "Calculateur de Cycle de Sommeil",
-    "description": "Calcule les heures de sommeil optimales basées sur des cycles de sommeil de 90 minutes. Suppose 15 minutes pour s'endormir.",
     "wakeUpAtLabel": "Je veux me réveiller à...",
     "calculateBedtimeButton": "Calculer l'heure du coucher",
     "goToBedNowLabel": "Si je vais me coucher maintenant...",
@@ -35,7 +33,17 @@
     "errorSelectWakeUpTime": "Veuillez sélectionner une heure de réveil valide.",
     "errorInvalidTimePicker": "Format d'heure du sélecteur invalide. Veuillez resélectionner.",
     "errorInvalidTimeFormat": "Format d'heure sélectionné invalide. Veuillez ajuster le sélecteur.",
-    "errorBedtimeCalculation": "Impossible de calculer l'heure du coucher en raison d'une erreur de traitement de l'heure."
+    "errorBedtimeCalculation": "Impossible de calculer l'heure du coucher en raison d'une erreur de traitement de l'heure.",
+    "sleepPlan": {
+      "title": "Plan de Sommeil",
+      "subtitleWakeUp": "Pour vous réveiller à {targetTime}, considérez ces heures de coucher :",
+      "subtitleGoToBed": "Si vous vous couchez vers {targetTime}, visez un réveil à :",
+      "goToBedLabel": "Se coucher",
+      "wakeUpLabel": "Se réveiller",
+      "cyclesInfo": "{count, plural, one {# cycle de sommeil} other {# cycles de sommeil}} ({hours}h {minutes}m de sommeil réel). (+{timeToFallAsleep}m pour s'endormir)",
+      "fallAsleepLegendLabel": "S'endormir",
+      "cycleLegendLabel": "Cycle"
+    }
   },
   "NapOptimizer": {
     "title": "Optimiseur de sieste",

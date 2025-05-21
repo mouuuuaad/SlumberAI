@@ -1,50 +1,56 @@
 
 'use client';
 
-const TIME_TO_FALL_ASLEEP = 15; // minutes
-const SLEEP_CYCLE_DURATION = 90; // minutes
+import { useTranslations } from 'next-intl';
 
-interface CycleTimelineChartProps {
-  cycles: number;
-  totalSleepDuration: number; // in minutes, this is actual sleep (cycles * 90)
-  isBedtimeSuggestion: boolean; // True if calculating bedtime, false if calculating wake-up time
-  suggestedTime: string; // The bedtime or wake-up time being suggested
-  targetTime: string; // The user's desired wake-up time or current time if "go to bed now"
-}
+const TIME_TO_FALL_ASLEEP = 15; // minutes
 
 interface LegendSegment {
   name: string;
   fill: string;
 }
 
+interface CycleTimelineChartProps {
+  cycles: number;
+  totalSleepDuration: number; // in minutes, this is actual sleep (cycles * 90)
+  isBedtimeSuggestion: boolean; // True if calculating bedtime, false if calculating wake-up time
+  suggestedTime: string; // The bedtime or wake-up time being suggested
+}
+
 export default function CycleTimelineChart({ cycles, totalSleepDuration, isBedtimeSuggestion, suggestedTime }: CycleTimelineChartProps) {
+  const t = useTranslations('SleepCalculatorForm.sleepPlan');
   const legendSegments: LegendSegment[] = [];
 
-  // Use muted-foreground for a lighter grey dot in dark mode, more visible
-  const fallAsleepColor = 'hsl(var(--muted-foreground))'; 
-  // Use primary color for all cycle dots for consistency as per image
+  const fallAsleepColor = 'hsl(var(--muted-foreground))';
   const cycleColor = 'hsl(var(--primary))';
 
-  legendSegments.push({ name: 'Fall Asleep', fill: fallAsleepColor });
+  legendSegments.push({ name: t('fallAsleepLegendLabel'), fill: fallAsleepColor });
 
   for (let i = 0; i < cycles; i++) {
-    legendSegments.push({ name: `Cycle ${i + 1}`, fill: cycleColor });
+    legendSegments.push({ name: `${t('cycleLegendLabel')} ${i + 1}`, fill: cycleColor });
   }
 
+  const hours = Math.floor(totalSleepDuration / 60);
+  const minutes = totalSleepDuration % 60;
+
   return (
-    <div className="py-4 px-4 sm:px-6 border-t first:border-t-0 border-border/30">
+    <div className="py-5 px-4 sm:px-6 border-t first:border-t-0 border-border/30">
       <p className="text-lg md:text-xl font-bold text-foreground mb-1">
         {isBedtimeSuggestion ?
-          `Go to bed: ${suggestedTime}` :
-          `Wake up: ${suggestedTime}`
+          `${t('goToBedLabel')}: ${suggestedTime}` :
+          `${t('wakeUpLabel')}: ${suggestedTime}`
         }
       </p>
       <p className="text-sm text-foreground/80 mb-3">
-        {cycles} sleep cycles ({Math.floor(totalSleepDuration / 60)}h {totalSleepDuration % 60}m actual sleep).
-        {isBedtimeSuggestion && ` (+${TIME_TO_FALL_ASLEEP}m to fall asleep)`}
+        {t('cyclesInfo', {
+            count: cycles,
+            hours: hours,
+            minutes: minutes,
+            timeToFallAsleep: TIME_TO_FALL_ASLEEP
+          })}
       </p>
       
-      {/* Custom Legend */}
+      {/* Custom Legend for text-based list */}
       <div className="flex flex-wrap justify-start gap-x-4 gap-y-2 text-xs text-foreground/70">
         {legendSegments.map((segment) => (
             <div key={`legend-${segment.name}`} className="flex items-center gap-1.5">
@@ -56,4 +62,3 @@ export default function CycleTimelineChart({ cycles, totalSleepDuration, isBedti
     </div>
   );
 }
-
