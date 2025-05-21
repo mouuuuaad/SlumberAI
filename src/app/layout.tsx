@@ -31,7 +31,7 @@ export const metadata: Metadata = {
   title: 'SlumberAI - Optimize Your Sleep',
   description: 'Calculate optimal sleep times, get nap advice, and chat with an AI sleep assistant.',
   manifest: '/manifest.json',
-  themeColor: 'hsl(var(--primary))', // Updated to use HSL variable
+  themeColor: 'hsl(var(--primary))',
 };
 
 export default function RootLayout({
