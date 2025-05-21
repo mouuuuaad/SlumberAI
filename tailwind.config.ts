@@ -11,7 +11,7 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        // Roboto is now the primary sans-serif font
+        // Roboto is now the primary sans-serif font for Latin scripts
         sans: ["var(--font-roboto)", "Arial", "Helvetica", "sans-serif"],
       },
   		colors: {
@@ -100,7 +100,7 @@ export default {
   		animation: {
   			'accordion-down': 'accordion-down 0.2s ease-out',
   			'accordion-up': 'accordion-up 0.2s ease-out',
-        'hero-glow': 'hero-glow-animation 3s ease-in-out infinite', // Added hero-glow
+        'hero-glow': 'hero-glow-animation 3s ease-in-out infinite',
   		}
   	}
   },

@@ -1,14 +1,13 @@
 
 import type { Metadata } from 'next';
 import './globals.css'; // Root global styles
-import { Tajawal } from 'next/font/google';
-import { Montserrat, Roboto } from 'next/font/google';
+import { Tajawal, Montserrat, Roboto } from 'next/font/google';
 
 // Initialize Tajawal font for Arabic
 const tajawal = Tajawal({
   variable: '--font-tajawal',
   subsets: ['arabic'],
-  weight: ['400', '700'],
+  weight: ['400', '700'], // Common weights
   display: 'swap',
 });
 
@@ -16,7 +15,7 @@ const tajawal = Tajawal({
 const roboto = Roboto({
   variable: '--font-roboto',
   subsets: ['latin'],
-  weight: ['400', '700'],
+  weight: ['400', '700'], // Regular and Bold
   display: 'swap',
 });
 
@@ -24,7 +23,7 @@ const roboto = Roboto({
 const montserrat = Montserrat({
   variable: '--font-montserrat',
   subsets: ['latin'],
-  weight: ['400', '500', '600', '700'],
+  weight: ['400', '500', '600', '700'], // Various weights for headings
   display: 'swap',
 });
 
@@ -32,7 +31,7 @@ export const metadata: Metadata = {
   title: 'SlumberAI - Optimize Your Sleep',
   description: 'Calculate optimal sleep times, get nap advice, and chat with an AI sleep assistant.',
   manifest: '/manifest.json',
-  themeColor: 'hsl(var(--primary))',
+  themeColor: 'hsl(var(--primary))', // Updated to use HSL variable
 };
 
 export default function RootLayout({

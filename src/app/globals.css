@@ -16,10 +16,11 @@
   }
 
   h1, h2, h3, h4, h5, h6 {
+    /* Apply Montserrat for headings in non-Arabic languages */
     font-family: var(--font-montserrat), var(--font-roboto), sans-serif;
   }
 
-  /* Apply Tajawal font for Arabic language, overriding defaults */
+  /* Apply Tajawal font for Arabic language, overriding defaults for both body and headings */
   html[lang="ar"] body,
   html[lang="ar"] h1,
   html[lang="ar"] h2,
