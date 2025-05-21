@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import './globals.css'; // Root global styles
 import { Geist } from 'next/font/google'; // Import Geist font
+import { Tajawal } from 'next/font/google'; // Import Tajawal font
 
 // Initialize Geist Sans font
 const geistSans = Geist({
@@ -8,11 +9,18 @@ const geistSans = Geist({
   subsets: ['latin'],
 });
 
+// Initialize Tajawal font for Arabic
+const tajawal = Tajawal({
+  variable: '--font-tajawal',
+  subsets: ['arabic'],
+  weight: ['400', '700'], // Specify weights you intend to use
+});
+
 export const metadata: Metadata = {
-  title: 'SlumberAI', // Generic title, can be overridden by locale-specific layouts
-  description: 'Your personal sleep companion, available in multiple languages.',
+  title: 'SlumberAI - Optimize Your Sleep',
+  description: 'Calculate optimal sleep times, get nap advice, and chat with an AI sleep assistant.',
   manifest: '/manifest.json',
-  // themeColor can be set here if static, or in [locale]/layout.tsx via viewport export
+  themeColor: 'hsl(var(--primary))', // Updated to use HSL variable
 };
 
 export default function RootLayout({
@@ -25,7 +33,7 @@ export default function RootLayout({
   return (
     <html suppressHydrationWarning>
       <body 
-        className={`${geistSans.variable} font-sans antialiased`} 
+        className={`${geistSans.variable} ${tajawal.variable} font-sans antialiased`} 
         suppressHydrationWarning
       >
         {children}

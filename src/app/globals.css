@@ -7,6 +7,11 @@ body {
   font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
 }
 
+/* Apply Tajawal font for Arabic language */
+html[lang="ar"] body {
+  font-family: var(--font-tajawal), var(--font-geist-sans), sans-serif;
+}
+
 html {
   scroll-behavior: smooth;
 }
@@ -203,20 +208,3 @@ html {
 .animate-hero-glow h1 {
   animation: hero-glow-animation 3s ease-in-out infinite;
 }
-
-/* Section entrance animation - already present in AnimatedSection component via Tailwind classes */
-/* If needed, a keyframe based one could be:
-@keyframes section-entrance-animation {
-  from {
-    opacity: 0;
-    transform: translateY(20px) scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-.animate-section-entrance {
-  animation: section-entrance-animation 0.7s ease-out forwards;
-}
-*/
