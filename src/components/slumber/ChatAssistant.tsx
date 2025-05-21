@@ -21,14 +21,58 @@ interface Message {
   isGreeting?: boolean; // To identify the initial greeting
 }
 
-// Helper function to render text with **bold** tags
-const renderBoldText = (text: string) => {
-  return text.split(/(\*\*.*?\*\*)/g).map((part, index) => {
-    if (part.startsWith('**') && part.endsWith('**')) {
-      return <strong key={index}>{part.slice(2, -2)}</strong>;
+// Helper function to render Markdown-like text to HTML
+const renderMarkdownMessage = (text: string) => {
+  const blocks = text.split(/\n\s*\n/); // Split by one or more blank lines
+  const elements: JSX.Element[] = [];
+  let currentListItems: string[] = [];
+
+  const flushList = () => {
+    if (currentListItems.length > 0) {
+      elements.push(
+        <ul key={`ul-${elements.length}`} className="list-disc list-inside space-y-1 my-2 pl-2">
+          {currentListItems.map((item, idx) => (
+            <li key={`li-${idx}`} className="text-sm">
+              {item.split(/(\*\*.*?\*\*)/g).map((part, i) => 
+                part.startsWith('**') && part.endsWith('**') ? <strong key={i}>{part.slice(2, -2)}</strong> : <Fragment key={i}>{part}</Fragment>
+              )}
+            </li>
+          ))}
+        </ul>
+      );
+      currentListItems = [];
     }
-    return <Fragment key={index}>{part}</Fragment>;
+  };
+
+  blocks.forEach((block, index) => {
+    const lines = block.split('\n');
+    lines.forEach((line) => {
+      if (line.startsWith('## ')) {
+        flushList();
+        elements.push(
+          <h2 key={`h2-${index}-${elements.length}`} className="text-lg font-semibold mt-3 mb-1.5 text-foreground">
+            {line.substring(3)}
+          </h2>
+        );
+      } else if (line.startsWith('* ')) {
+        currentListItems.push(line.substring(2));
+      } else {
+        flushList();
+        if (line.trim()) { // Avoid empty paragraphs
+          elements.push(
+            <p key={`p-${index}-${elements.length}`} className="text-sm my-1 whitespace-pre-wrap break-words">
+               {line.split(/(\*\*.*?\*\*)/g).map((part, i) => 
+                part.startsWith('**') && part.endsWith('**') ? <strong key={i}>{part.slice(2, -2)}</strong> : <Fragment key={i}>{part}</Fragment>
+              )}
+            </p>
+          );
+        }
+      }
+    });
   });
+
+  flushList(); // Ensure any trailing list is rendered
+  return <>{elements}</>;
 };
 
 
@@ -194,8 +238,8 @@ export default function ChatAssistant() {
                   )}
                 >
                   {message.role === 'assistant' && <Bot className="h-5 w-5 sm:h-6 sm:w-6 text-accent flex-shrink-0 mt-0.5" />}
-                  <div className="flex-1 text-sm whitespace-pre-wrap break-words">
-                    {message.isGreeting ? renderBoldText(message.content) : message.content}
+                  <div className="flex-1 text-sm"> {/* Removed whitespace-pre-wrap and break-words, handled by Markdown renderer */}
+                    {message.role === 'user' ? message.content : renderMarkdownMessage(message.content)}
                   </div>
                   {message.role === 'user' && <User className="h-5 w-5 sm:h-6 sm:w-6 text-primary-foreground flex-shrink-0 mt-0.5" />}
                 </div>
