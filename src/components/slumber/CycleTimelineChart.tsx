@@ -23,7 +23,7 @@ interface ChartSegment {
 export default function CycleTimelineChart({ cycles, totalSleepDuration, isBedtimeSuggestion, suggestedTime, targetTime }: CycleTimelineChartProps) {
   const chartDataSegments: ChartSegment[] = [];
 
-  const fallAsleepColor = 'hsl(var(--muted-foreground))'; // A neutral grey for fall asleep
+  const fallAsleepColor = 'hsl(var(--muted))'; // A neutral grey for fall asleep, matching image
   const cycleColors = [
     'hsl(var(--chart-1))',
     'hsl(var(--chart-2))',
@@ -54,23 +54,23 @@ export default function CycleTimelineChart({ cycles, totalSleepDuration, isBedti
   };
 
   return (
-    <div className="pt-4 pb-4 px-4 sm:px-5 flex flex-col sm:flex-row items-center justify-between gap-4 border-t first:border-t-0 border-border/30">
+    <div className="py-5 px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-6 border-t first:border-t-0 border-border/30">
       {/* Left Column: Text Details & Legend */}
       <div className="flex-grow w-full sm:w-auto order-2 sm:order-1">
-        <div className="mb-2">
-          <p className="text-base sm:text-lg font-semibold leading-tight text-foreground mb-1">
+        <div className="mb-3">
+          <p className="text-lg md:text-xl font-bold text-foreground mb-1">
             {isBedtimeSuggestion ?
               `Go to bed: ${suggestedTime}` :
               `Wake up: ${suggestedTime}`
             }
           </p>
-          <p className="text-xs sm:text-sm text-muted-foreground">
+          <p className="text-sm text-foreground/80">
             {cycles} sleep cycles ({Math.floor(totalSleepDuration / 60)}h {totalSleepDuration % 60}m actual sleep).
             {isBedtimeSuggestion && ` (+${TIME_TO_FALL_ASLEEP}m to fall asleep)`}
           </p>
         </div>
         {/* Custom Legend */}
-        <div className="flex flex-wrap justify-start gap-x-3 gap-y-1.5 text-xs text-muted-foreground mt-3">
+        <div className="flex flex-wrap justify-start gap-x-4 gap-y-2 text-xs text-foreground/70">
           {chartDataSegments.map((segment) => (
               <div key={`legend-${segment.name}`} className="flex items-center gap-1.5">
                   <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: segment.fill }} />
@@ -81,8 +81,8 @@ export default function CycleTimelineChart({ cycles, totalSleepDuration, isBedti
       </div>
 
       {/* Right Column: Chart */}
-      <div className="w-full sm:flex-shrink-0 sm:w-36 md:w-40 order-1 sm:order-2">
-        <div className="h-32 md:h-36 w-full"> 
+      <div className="w-full sm:w-40 md:w-44 flex-shrink-0 order-1 sm:order-2">
+        <div className="h-36 md:h-40 w-full"> 
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
               <Tooltip content={<CustomTooltip />} trigger="hover" />
@@ -90,13 +90,13 @@ export default function CycleTimelineChart({ cycles, totalSleepDuration, isBedti
                 data={chartDataSegments}
                 cx="50%"
                 cy="50%"
-                innerRadius="60%" 
-                outerRadius="90%" 
+                innerRadius="65%" 
+                outerRadius="100%" 
                 paddingAngle={2}
                 dataKey="value"
                 nameKey="name"
                 animationDuration={500}
-                stroke="none" // Cleaner look for segments
+                stroke="none"
               >
                 {chartDataSegments.map((entry, index) => (
                   <Cell key={`cell-${index}`} fill={entry.fill} />
@@ -109,4 +109,3 @@ export default function CycleTimelineChart({ cycles, totalSleepDuration, isBedti
     </div>
   );
 }
-
