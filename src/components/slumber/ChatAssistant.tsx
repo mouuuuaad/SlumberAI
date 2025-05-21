@@ -60,7 +60,6 @@ export default function ChatAssistant() {
           scrollViewport.scrollTop = scrollViewport.scrollHeight;
         });
       } else {
-        // Fallback for older Radix or different structure, though viewport selector is typical
         requestAnimationFrame(() => {
           scrollAreaRef.current!.scrollTop = scrollAreaRef.current!.scrollHeight;
         });
@@ -86,7 +85,6 @@ export default function ChatAssistant() {
       role: 'user',
       content: inputValue.trim(),
     };
-    // If the only message is the greeting, replace it, otherwise append
     setMessages((prev) => prev.length === 1 && prev[0].isGreeting ? [userMessage] : [...prev, userMessage]);
     const currentQuery = inputValue.trim();
     setInputValue('');
@@ -132,7 +130,7 @@ export default function ChatAssistant() {
   }, []); 
 
   return (
-    <div className="w-full h-[600px] md:h-[600px] flex flex-col"> {/* Removed overflow-hidden */}
+    <div className="w-full h-[600px] md:h-[600px] flex flex-col">
       <div className="flex-grow flex flex-col bg-card/80 border border-border/30 rounded-lg shadow-inner">
         <Accordion type="single" collapsible className="px-4 md:px-6 pt-2 pb-1 border-b border-border/30">
           <AccordionItem value="profile" className="border-b-0">
@@ -196,7 +194,7 @@ export default function ChatAssistant() {
                   )}
                 >
                   {message.role === 'assistant' && <Bot className="h-5 w-5 sm:h-6 sm:w-6 text-accent flex-shrink-0 mt-0.5" />}
-                  <div className="text-sm whitespace-pre-wrap break-words">
+                  <div className="flex-1 text-sm whitespace-pre-wrap break-words">
                     {message.isGreeting ? renderBoldText(message.content) : message.content}
                   </div>
                   {message.role === 'user' && <User className="h-5 w-5 sm:h-6 sm:w-6 text-primary-foreground flex-shrink-0 mt-0.5" />}
@@ -245,3 +243,4 @@ export default function ChatAssistant() {
     </div>
   );
 }
+
