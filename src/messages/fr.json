@@ -22,12 +22,7 @@
     "sleepScienceTitle": "Explorez la science du sommeil",
     "sleepScienceSubtitle": "Comprenez les besoins de votre corps et apprenez à optimiser votre repos pour une meilleure santé et un plus grand bien-être.",
     "sleepScienceLinkText": "Plongez dans la science du sommeil",
-    "footerCopyright": "© {year} SlumberAI. Tous droits réservés. Conçu avec 💜",
-    "sleepCyclesTab": "Cycles de Sommeil",
-    "napOptimizerTab": "Optimiseur de Sieste",
-    "aiCoachTab": "Coach IA",
-    "dreamJournalTab": "Journal des Rêves",
-    "sleepScienceTab": "Science du Sommeil"
+    "footerCopyright": "© {year} SlumberAI. Tous droits réservés. Conçu avec 💜"
   },
   "SleepCalculatorForm": {
     "title": "Calculateur de Cycle de Sommeil",
@@ -114,7 +109,9 @@
     "settings": "Paramètres",
     "clearHistory": "Effacer la Conversation",
     "confirmClearHistory": "Êtes-vous sûr de vouloir effacer l'historique de la conversation actuelle ? Cette action est irréversible.",
-    "newChatFeaturePlaceholder": "Démarrer un nouveau chat avec un historique distinct sera bientôt disponible !"
+    "newChatFeaturePlaceholder": "Démarrer un nouveau chat avec un historique distinct sera bientôt disponible !",
+    "sidebarCollapse": "Réduire la barre latérale",
+    "sidebarExpand": "Étendre la barre latérale"
   },
   "DreamJournal": {
     "title": "Journal des rêves",
