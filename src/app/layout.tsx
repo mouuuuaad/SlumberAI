@@ -1,7 +1,6 @@
 
 import type { Metadata } from 'next';
 import './globals.css'; // Root global styles
-// Removed Geist_Sans import
 import { Tajawal } from 'next/font/google';
 import { Montserrat, Roboto } from 'next/font/google';
 
@@ -10,6 +9,7 @@ const tajawal = Tajawal({
   variable: '--font-tajawal',
   subsets: ['arabic'],
   weight: ['400', '700'],
+  display: 'swap',
 });
 
 // Initialize Roboto font for English/French body

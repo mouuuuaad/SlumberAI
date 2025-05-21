@@ -3,27 +3,39 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Apply Tajawal font for Arabic language */
-html[lang="ar"] body,
-html[lang="ar"] h1,
-html[lang="ar"] h2,
-html[lang="ar"] h3,
-html[lang="ar"] h4,
-html[lang="ar"] h5,
-html[lang="ar"] h6 {
-  font-family: var(--font-tajawal), sans-serif;
-}
+/* Base body and heading font styles for non-Arabic languages */
+@layer base {
+  body {
+    @apply bg-background text-foreground antialiased;
+    /* font-family is primarily set by Tailwind's `font-sans` utility,
+       which uses `var(--font-roboto)` due to `tailwind.config.ts`
+       and the `font-sans` class on the `<body>` in `layout.tsx`. */
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
 
-/* Apply Montserrat for headings in non-Arabic languages (English, French, etc.) */
-/* Roboto is the body font for these languages via tailwind.config.ts 'sans' definition */
-h1, h2, h3, h4, h5, h6 {
-  font-family: var(--font-montserrat), var(--font-roboto), sans-serif;
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-montserrat), var(--font-roboto), sans-serif;
+  }
+
+  /* Apply Tajawal font for Arabic language, overriding defaults */
+  html[lang="ar"] body,
+  html[lang="ar"] h1,
+  html[lang="ar"] h2,
+  html[lang="ar"] h3,
+  html[lang="ar"] h4,
+  html[lang="ar"] h5,
+  html[lang="ar"] h6 {
+    font-family: var(--font-tajawal), sans-serif;
+  }
 }
 
 html {
   scroll-behavior: smooth;
 }
 
+/* Color Theme Definitions */
 @layer base {
   :root {
     /* Soft Lavender Theme */
@@ -119,12 +131,6 @@ html {
   * {
     @apply border-border;
   }
-  body {
-    @apply bg-background text-foreground antialiased; /* Added antialiased here */
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-  }
   main {
     flex-grow: 1;
   }
@@ -202,18 +208,10 @@ html {
 
 
 /* Hero text glow animation */
-@keyframes hero-glow-animation {
-  0%, 100% {
-    text-shadow: 0 0 8px hsl(var(--primary)/0.5), 0 0 15px hsl(var(--primary)/0.4), 0 0 25px hsl(var(--primary)/0.3);
-  }
-  50% {
-    text-shadow: 0 0 15px hsl(var(--primary)/0.7), 0 0 30px hsl(var(--primary)/0.5), 0 0 45px hsl(var(--primary)/0.4);
-  }
-}
-
-.animate-hero-glow h1 {
+.animate-hero-glow h1 { /* Apply directly to h1 inside sections with this class */
   animation: hero-glow-animation 3s ease-in-out infinite;
 }
+
 
 /* Specific sidebar scrollbar to match image (very subtle) */
 .sidebar-scrollbar::-webkit-scrollbar {
