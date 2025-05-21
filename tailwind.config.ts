@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -10,7 +11,8 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans: ["var(--font-geist-sans)", "sans-serif"],
+        // Roboto is now the primary sans-serif font
+        sans: ["var(--font-roboto)", "Arial", "Helvetica", "sans-serif"],
       },
   		colors: {
   			background: 'hsl(var(--background))',

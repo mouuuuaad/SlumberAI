@@ -1,26 +1,38 @@
+
 import type { Metadata } from 'next';
 import './globals.css'; // Root global styles
-import { Geist } from 'next/font/google'; // Import Geist font
-import { Tajawal } from 'next/font/google'; // Import Tajawal font
-
-// Initialize Geist Sans font
-const geistSans = Geist({
-  variable: '--font-geist-sans',
-  subsets: ['latin'],
-});
+// Removed Geist_Sans import
+import { Tajawal } from 'next/font/google';
+import { Montserrat, Roboto } from 'next/font/google';
 
 // Initialize Tajawal font for Arabic
 const tajawal = Tajawal({
   variable: '--font-tajawal',
   subsets: ['arabic'],
-  weight: ['400', '700'], // Specify weights you intend to use
+  weight: ['400', '700'],
+});
+
+// Initialize Roboto font for English/French body
+const roboto = Roboto({
+  variable: '--font-roboto',
+  subsets: ['latin'],
+  weight: ['400', '700'],
+  display: 'swap',
+});
+
+// Initialize Montserrat font for English/French headings
+const montserrat = Montserrat({
+  variable: '--font-montserrat',
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700'],
+  display: 'swap',
 });
 
 export const metadata: Metadata = {
   title: 'SlumberAI - Optimize Your Sleep',
   description: 'Calculate optimal sleep times, get nap advice, and chat with an AI sleep assistant.',
   manifest: '/manifest.json',
-  themeColor: 'hsl(var(--primary))', // Updated to use HSL variable
+  themeColor: 'hsl(var(--primary))',
 };
 
 export default function RootLayout({
@@ -28,12 +40,10 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  // Next.js with next-intl will handle the `lang` and `dir` attributes on <html>
-  // based on the active locale.
   return (
     <html suppressHydrationWarning>
-      <body 
-        className={`${geistSans.variable} ${tajawal.variable} font-sans antialiased`} 
+      <body
+        className={`${tajawal.variable} ${roboto.variable} ${montserrat.variable} font-sans antialiased`}
         suppressHydrationWarning
       >
         {children}

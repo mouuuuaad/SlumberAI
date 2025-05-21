@@ -3,13 +3,21 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+/* Apply Tajawal font for Arabic language */
+html[lang="ar"] body,
+html[lang="ar"] h1,
+html[lang="ar"] h2,
+html[lang="ar"] h3,
+html[lang="ar"] h4,
+html[lang="ar"] h5,
+html[lang="ar"] h6 {
+  font-family: var(--font-tajawal), sans-serif;
 }
 
-/* Apply Tajawal font for Arabic language */
-html[lang="ar"] body {
-  font-family: var(--font-tajawal), var(--font-geist-sans), sans-serif;
+/* Apply Montserrat for headings in non-Arabic languages (English, French, etc.) */
+/* Roboto is the body font for these languages via tailwind.config.ts 'sans' definition */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-montserrat), var(--font-roboto), sans-serif;
 }
 
 html {
@@ -112,7 +120,7 @@ html {
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground antialiased; /* Added antialiased here */
     min-height: 100vh;
     display: flex;
     flex-direction: column;
