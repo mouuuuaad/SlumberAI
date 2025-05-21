@@ -20,6 +20,7 @@
     "aiCoachTitle": "مدرب الذكاء الاصطناعي للنوم",
     "dreamJournalTitle": "مفكرة الأحلام",
     "sleepScienceTitle": "استكشف علم النوم",
+    "sleepScienceSubtitle": "افهم احتياجات جسمك وتعلم كيف تحسن راحتك لصحة وحيوية أفضل.",
     "sleepScienceLinkText": "الغوص في علم النوم",
     "footerCopyright": "© {year} SlumberAI. جميع الحقوق محفوظة. صنع بـ 💜"
   },
@@ -40,7 +41,7 @@
       "subtitleGoToBed": "إذا ذهبت إلى الفراش حوالي {targetTime}، استهدف الاستيقاظ في:",
       "goToBedLabel": "اذهب إلى الفراش",
       "wakeUpLabel": "استيقظ",
-      "cyclesInfo": "{count, plural, one {# دورة نوم} few {# دورات نوم} many {# دورة نوم} other {# دورات نوم}} ({hours}س {minutes}د نوم فعلي). (+{timeToFallAsleep}د للخلود إلى النوم)",
+      "cyclesInfo": "{count, plural, zero {لا توجد دورات نوم} one {# دورة نوم} two {# دورتي نوم} few {# دورات نوم} many {# دورة نوم} other {# دورات نوم}} ({hours}س {minutes}د نوم فعلي). (+{timeToFallAsleep}د للخلود إلى النوم)",
       "fallAsleepLegendLabel": "الخلود للنوم",
       "cycleLegendLabel": "دورة"
     }
