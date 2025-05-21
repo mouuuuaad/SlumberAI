@@ -10,13 +10,13 @@
 
 /* Enhanced focus and active states for picker items if needed */
 .custom-time-picker-no-scrollbar > div > div:focus-visible { /* Target the actual items */
-  outline: 2px solid hsl(var(--ring));
-  outline-offset: 2px;
+  /* outline: 2px solid hsl(var(--ring));
+  outline-offset: 2px; */
   border-radius: var(--radius);
-  background-color: hsl(var(--accent) / 0.1); /* Subtle focus background */
+  /* background-color: hsl(var(--accent) / 0.1); */ /* Subtle focus background - might interfere with roller style */
 }
 
 /* Ensure smooth scrolling for touch devices if not already handled by snap */
 .custom-time-picker-no-scrollbar {
-  scroll-behavior: smooth;
+  scroll-behavior: smooth; /* Already set, but good to confirm */
 }
