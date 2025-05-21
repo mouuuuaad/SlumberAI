@@ -18,6 +18,7 @@ type Period = typeof periodsArray[number];
 
 const from24HourFormat = (timeStr: string): { hour: number; minute: number; period: Period } => {
   if (!timeStr || !timeStr.includes(':')) {
+    console.warn("Invalid time string passed to from24HourFormat:", timeStr);
     return { hour: 12, minute: 0, period: 'AM' }; // Default for invalid format
   }
   const [hStr, mStr] = timeStr.split(':');
@@ -25,7 +26,7 @@ const from24HourFormat = (timeStr: string): { hour: number; minute: number; peri
   const m = parseInt(mStr, 10);
 
   if (isNaN(h) || isNaN(m) || h < 0 || h > 23 || m < 0 || m > 59) {
-    // Invalid numbers or out of range
+    console.warn("Invalid hour or minute in from24HourFormat:", {hStr, mStr, h, m});
     return { hour: 12, minute: 0, period: 'AM' };
   }
 
@@ -65,13 +66,13 @@ const ScrollableColumn: React.FC<{
       const selectedIndex = values.findIndex(v => String(v) === String(selectedValue));
       if (selectedIndex !== -1) {
         isProgrammaticScroll.current = true;
-        requestAnimationFrame(() => {
+        requestAnimationFrame(() => { // Ensure scroll happens after DOM is ready
           if (scrollRef.current) {
             const targetScrollTop = (selectedIndex * itemHeight);
             scrollRef.current.scrollTop = targetScrollTop;
             setTimeout(() => {
                 isProgrammaticScroll.current = false;
-            }, 50); // Increased delay slightly
+            }, 100); // Increased delay to allow scroll to settle
           }
         });
       }
@@ -89,17 +90,19 @@ const ScrollableColumn: React.FC<{
     debounceTimeoutRef.current = setTimeout(() => {
       if (scrollRef.current) {
         const currentScrollTop = scrollRef.current.scrollTop;
+        // Calculate the index of the item that is visually in the center
         const snappedIndex = Math.round(currentScrollTop / itemHeight);
 
         if (snappedIndex >= 0 && snappedIndex < values.length) {
             const newSelectedValue = values[snappedIndex];
             // Only call onSelect if the value actually changed by scrolling
+            // This check is important to prevent loops if parent re-renders and selectedValue prop is the same
             if (String(newSelectedValue) !== String(selectedValue)) {
-                onSelect(newSelectedValue);
+                 onSelect(newSelectedValue);
             }
         }
       }
-    }, 150);
+    }, 150); // Debounce time
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [itemHeight, onSelect, selectedValue, values]);
 
@@ -113,7 +116,8 @@ const ScrollableColumn: React.FC<{
       ref={scrollRef}
       onScroll={handleScroll}
     >
-      <div style={{ height: `calc(50% - ${itemHeight / 2}px)` }} className="snap-center"></div>
+      {/* Spacer divs for snapping the first and last items to the center */}
+      <div style={{ height: `calc(50% - ${itemHeight / 2}px)` }} className="snap-center"></div> {/* Top spacer */}
       {values.map((val, index) => (
         <div
           key={`${columnId}-${index}`}
@@ -121,15 +125,15 @@ const ScrollableColumn: React.FC<{
           className={cn(
             'flex items-center justify-center cursor-default transition-all duration-200 ease-out snap-center',
             String(val) === String(selectedValue)
-              ? 'text-foreground font-bold text-5xl'
-              : 'text-muted-foreground text-3xl opacity-50 scale-90',
+              ? 'text-foreground font-bold text-5xl' // Style for selected item
+              : 'text-muted-foreground text-3xl opacity-50 scale-90', // Style for unselected items
           )}
           style={{ height: `${itemHeight}px` }}
         >
           {columnId === 'minutes' ? String(val).padStart(2, '0') : String(val)}
         </div>
       ))}
-      <div style={{ height: `calc(50% - ${itemHeight / 2}px)` }} className="snap-center"></div>
+      <div style={{ height: `calc(50% - ${itemHeight / 2}px)` }} className="snap-center"></div> {/* Bottom spacer */}
     </div>
   );
 };
@@ -142,21 +146,13 @@ export default function CustomTimePicker({ value, onChange }: CustomTimePickerPr
   const [displayPeriod, setDisplayPeriod] = useState<Period>(initialParts.period);
 
   // Effect 1: Sync internal display state FROM the `value` prop.
-  // This runs when the `value` prop changes externally.
+  // This runs ONLY when the `value` prop changes externally.
   useEffect(() => {
     const parts = from24HourFormat(value);
-    // Only update if the parsed parts are different from current display state
-    // to avoid unnecessary re-renders if parent sends back the same logical time.
-    if (parts.hour !== displayHour) {
-      setDisplayHour(parts.hour);
-    }
-    if (parts.minute !== displayMinute) {
-      setDisplayMinute(parts.minute);
-    }
-    if (parts.period !== displayPeriod) {
-      setDisplayPeriod(parts.period);
-    }
-  }, [value, displayHour, displayMinute, displayPeriod]); // Listen to display states too to prevent race conditions if internal state changes faster.
+    setDisplayHour(parts.hour);
+    setDisplayMinute(parts.minute);
+    setDisplayPeriod(parts.period);
+  }, [value]);
 
   // Effect 2: Sync internal display state TO the parent via `onChange`.
   // This runs when displayHour, displayMinute, or displayPeriod change (e.g., due to user scrolling).
@@ -170,15 +166,16 @@ export default function CustomTimePicker({ value, onChange }: CustomTimePickerPr
   }, [displayHour, displayMinute, displayPeriod, onChange, value]);
 
 
-  const itemH = 64;
+  const itemH = 64; // Height of each item in the scrollable column
 
   return (
     <div className="bg-transparent p-3 rounded-lg w-fit mx-auto relative my-4">
+      {/* Highlight window for the selected time */}
       <div
         className="absolute top-1/2 left-3 right-3 -translate-y-1/2 pointer-events-none z-0"
         style={{ height: `${itemH}px` }}
       >
-        <div className="h-full w-full border border-border rounded-md"></div>
+        <div className="h-full w-full border border-border rounded-md"></div> {/* Changed from border-accent */}
       </div>
       <div className="flex justify-center items-center space-x-1 sm:space-x-2 relative z-10">
         <ScrollableColumn
@@ -210,3 +207,4 @@ export default function CustomTimePicker({ value, onChange }: CustomTimePickerPr
     </div>
   );
 }
+
