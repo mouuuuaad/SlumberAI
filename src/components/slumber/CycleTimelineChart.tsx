@@ -25,14 +25,14 @@ interface ChartSegment {
 export default function CycleTimelineChart({ cycles, totalSleepDuration, isBedtimeSuggestion, suggestedTime, targetTime }: CycleTimelineChartProps) {
   const chartDataSegments: ChartSegment[] = [];
 
-  const fallAsleepColor = 'hsl(var(--muted-foreground))'; // Using a theme color for grey
+  const fallAsleepColor = 'hsl(var(--muted-foreground))';
   const cycleColors = [
     'hsl(var(--chart-1))',
     'hsl(var(--chart-2))',
     'hsl(var(--chart-3))',
     'hsl(var(--chart-4))',
     'hsl(var(--chart-5))',
-    'hsl(var(--chart-1))', // Repeat for more than 5 cycles
+    'hsl(var(--chart-1))', 
   ];
 
   chartDataSegments.push({ name: 'Fall Asleep', value: TIME_TO_FALL_ASLEEP, fill: fallAsleepColor });
@@ -56,9 +56,9 @@ export default function CycleTimelineChart({ cycles, totalSleepDuration, isBedti
   return (
     <div className="pt-4 pb-4 px-4 sm:px-5 flex flex-col sm:flex-row items-center justify-between gap-4 border-t first:border-t-0 border-border/30">
       {/* Left Column: Text Details & Legend */}
-      <div className="flex-grow sm:max-w-[calc(100%-170px)] w-full sm:w-auto order-2 sm:order-1"> {/* Adjusted max-width, order for mobile */}
+      <div className="flex-grow w-full sm:w-auto order-2 sm:order-1"> {/* Adjusted flex properties */}
         <div className="mb-2">
-          <CardTitle className="text-base sm:text-lg font-semibold leading-tight text-foreground mb-1"> {/* More prominent title */}
+          <CardTitle className="text-base sm:text-lg font-semibold leading-tight text-foreground mb-1">
             {isBedtimeSuggestion ?
               `Go to bed: ${suggestedTime}` :
               `Wake up: ${suggestedTime}`
@@ -81,7 +81,7 @@ export default function CycleTimelineChart({ cycles, totalSleepDuration, isBedti
       </div>
 
       {/* Right Column: Chart */}
-      <div className="w-full sm:w-auto sm:flex-shrink-0 sm:w-36 md:w-40 order-1 sm:order-2"> {/* order for mobile */}
+      <div className="w-full sm:flex-shrink-0 sm:w-36 md:w-40 order-1 sm:order-2"> {/* Adjusted flex properties */}
         <div className="h-32 md:h-36 w-full"> 
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>

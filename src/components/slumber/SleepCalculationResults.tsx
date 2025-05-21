@@ -1,9 +1,10 @@
+
 'use client';
 
-import type { CalculationResult } from '../../app/page'; // Adjusted import path
+import type { CalculationResult } from '../../app/[locale]/calculator/page'; // Adjusted import path
 import CycleTimelineChart from './CycleTimelineChart';
 import { Card, CardDescription, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import { Zap, Bed, Sunrise } from 'lucide-react';
+import { Zap, Bed, Sunrise } from 'lucide-react'; // Added Zap
 
 interface SleepCalculationResultsProps {
   results: CalculationResult | null;
@@ -21,10 +22,7 @@ export default function SleepCalculationResults({ results }: SleepCalculationRes
       <Card className="bg-card/50 text-left">
         <CardHeader className="pb-3 pt-5 px-4 sm:px-6">
           <CardTitle className="flex items-center gap-2 text-base sm:text-lg font-semibold">
-            {type === 'bedtime' ? 
-              <Bed className="h-5 w-5 text-primary" /> : 
-              <Sunrise className="h-5 w-5 text-primary" />
-            }
+            <Zap className="h-5 w-5 text-primary" /> {/* Changed Icon */}
             Sleep Plan
           </CardTitle>
           <CardDescription className="text-xs sm:text-sm">
