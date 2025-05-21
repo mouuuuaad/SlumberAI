@@ -60,8 +60,9 @@ export default function ChatAssistant() {
           scrollViewport.scrollTop = scrollViewport.scrollHeight;
         });
       } else {
+        // Fallback for older Radix or different structure, though viewport selector is typical
         requestAnimationFrame(() => {
-          scrollAreaRef.current.scrollTop = scrollAreaRef.current.scrollHeight;
+          scrollAreaRef.current!.scrollTop = scrollAreaRef.current!.scrollHeight;
         });
       }
     }
@@ -131,7 +132,7 @@ export default function ChatAssistant() {
   }, []); 
 
   return (
-    <div className="w-full h-[600px] md:h-[600px] flex flex-col overflow-hidden">
+    <div className="w-full h-[600px] md:h-[600px] flex flex-col"> {/* Removed overflow-hidden */}
       <div className="flex-grow flex flex-col bg-card/80 border border-border/30 rounded-lg shadow-inner">
         <Accordion type="single" collapsible className="px-4 md:px-6 pt-2 pb-1 border-b border-border/30">
           <AccordionItem value="profile" className="border-b-0">
@@ -188,7 +189,7 @@ export default function ChatAssistant() {
               <div key={message.id} className="flex flex-col">
                 <div
                   className={cn(
-                    'flex items-start gap-3 p-3 rounded-lg max-w-[85%] shadow-md', // Added shadow-md
+                    'flex items-start gap-3 p-3 rounded-lg max-w-[85%] shadow-md', 
                     message.role === 'user'
                       ? 'ml-auto bg-primary text-primary-foreground'
                       : 'bg-card text-card-foreground border'
