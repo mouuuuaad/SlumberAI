@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react'; // Added useCallback
 import { Button } from '@/components/ui/button';
 import CustomTimePicker from './CustomTimePicker';
 import { Label } from '@/components/ui/label';
@@ -88,7 +88,9 @@ export default function SleepCalculatorForm({ onCalculate }: SleepCalculatorForm
     }
     setTimeError(null);
     try {
-      const [hours, minutes] = selectedTime.split(':').map(Number);
+      const [hoursStr, minutesStr] = selectedTime.split(':');
+      const hours = parseInt(hoursStr, 10);
+      const minutes = parseInt(minutesStr, 10);
 
       if (isNaN(hours) || isNaN(minutes) || hours < 0 || hours > 23 || minutes < 0 || minutes > 59) {
         setTimeError(t('errorInvalidTimePicker'));
@@ -118,6 +120,12 @@ export default function SleepCalculatorForm({ onCalculate }: SleepCalculatorForm
     setShowGoToBedNowResults(true);
   };
 
+  const handleTimeChange = useCallback((newTime: string) => {
+    setSelectedTime(newTime);
+    if (timeError) setTimeError(null);
+    setShowGoToBedNowResults(false);
+  }, [timeError]); // Dependencies for useCallback
+
   return (
     <div className="w-full space-y-8">
       <div className="space-y-4">
@@ -126,11 +134,7 @@ export default function SleepCalculatorForm({ onCalculate }: SleepCalculatorForm
         </Label>
         <CustomTimePicker
           value={selectedTime}
-          onChange={(newTime) => {
-            setSelectedTime(newTime);
-            if (timeError) setTimeError(null);
-            setShowGoToBedNowResults(false);
-          }}
+          onChange={handleTimeChange} // Use memoized handler
         />
         {timeError && !showGoToBedNowResults && (
           <p className="text-sm text-destructive flex items-center gap-1 pt-1 justify-center">

@@ -1,7 +1,7 @@
 
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import './CustomTimePicker.css';
 import { cn } from '@/lib/utils';
 
@@ -18,22 +18,30 @@ type Period = typeof periodsArray[number];
 
 const from24HourFormat = (timeStr: string): { hour: number; minute: number; period: Period } => {
   if (!timeStr || !timeStr.includes(':')) {
+    return { hour: 12, minute: 0, period: 'AM' }; // Default for invalid format
+  }
+  const [hStr, mStr] = timeStr.split(':');
+  const h = parseInt(hStr, 10);
+  const m = parseInt(mStr, 10);
+
+  if (isNaN(h) || isNaN(m) || h < 0 || h > 23 || m < 0 || m > 59) {
+    // Invalid numbers or out of range
     return { hour: 12, minute: 0, period: 'AM' };
   }
-  const [h, m] = timeStr.split(':').map(Number);
+
   const currentPeriod = h >= 12 ? 'PM' : 'AM';
   let currentHour = h % 12;
-  if (currentHour === 0) {
+  if (currentHour === 0) { // 00:xx is 12 AM, 12:xx is 12 PM
     currentHour = 12;
   }
   return { hour: currentHour, minute: m, period: currentPeriod };
 };
 
 const to24HourFormat = (hour: number, minute: number, period: Period): string => {
-  let h = hour;
+  let h = hour; // hour is 1-12
   if (period === 'PM' && h !== 12) {
     h += 12;
-  } else if (period === 'AM' && h === 12) {
+  } else if (period === 'AM' && h === 12) { // 12 AM is 00 hours
     h = 0;
   }
   return `${String(h).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
@@ -56,27 +64,22 @@ const ScrollableColumn: React.FC<{
     if (scrollRef.current) {
       const selectedIndex = values.findIndex(v => String(v) === String(selectedValue));
       if (selectedIndex !== -1) {
-        isProgrammaticScroll.current = true; // Flag programmatic scroll
+        isProgrammaticScroll.current = true;
         requestAnimationFrame(() => {
           if (scrollRef.current) {
             const targetScrollTop = (selectedIndex * itemHeight);
             scrollRef.current.scrollTop = targetScrollTop;
-            // Allow handleScroll to run after programmatic scroll settles
             setTimeout(() => {
                 isProgrammaticScroll.current = false;
-            }, 10); // Small delay
+            }, 50); // Increased delay slightly
           }
         });
       }
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedValue, values, itemHeight]);
 
-  const handleScroll = () => {
+  const handleScroll = useCallback(() => {
     if (isProgrammaticScroll.current) {
-        // If scroll was triggered by selectedValue change, don't re-trigger onSelect immediately
-        // But we need to clear the flag after a short delay if it was indeed programmatic
-        // The useEffect above will set this, and this check prevents feedback loops
         return;
     }
 
@@ -90,13 +93,15 @@ const ScrollableColumn: React.FC<{
 
         if (snappedIndex >= 0 && snappedIndex < values.length) {
             const newSelectedValue = values[snappedIndex];
+            // Only call onSelect if the value actually changed by scrolling
             if (String(newSelectedValue) !== String(selectedValue)) {
                 onSelect(newSelectedValue);
             }
         }
       }
-    }, 150); // Debounce delay: adjust as needed
-  };
+    }, 150);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [itemHeight, onSelect, selectedValue, values]);
 
 
   return (
@@ -106,16 +111,15 @@ const ScrollableColumn: React.FC<{
          className
       )}
       ref={scrollRef}
-      onScroll={handleScroll} // Added onScroll handler
+      onScroll={handleScroll}
     >
       <div style={{ height: `calc(50% - ${itemHeight / 2}px)` }} className="snap-center"></div>
       {values.map((val, index) => (
         <div
           key={`${columnId}-${index}`}
           id={`${columnId}-item-${index}`}
-          // Removed onClick handler
           className={cn(
-            'flex items-center justify-center cursor-default transition-all duration-200 ease-out snap-center', // cursor-pointer changed to cursor-default
+            'flex items-center justify-center cursor-default transition-all duration-200 ease-out snap-center',
             String(val) === String(selectedValue)
               ? 'text-foreground font-bold text-5xl'
               : 'text-muted-foreground text-3xl opacity-50 scale-90',
@@ -137,30 +141,34 @@ export default function CustomTimePicker({ value, onChange }: CustomTimePickerPr
   const [displayMinute, setDisplayMinute] = useState<number>(initialParts.minute);
   const [displayPeriod, setDisplayPeriod] = useState<Period>(initialParts.period);
 
+  // Effect 1: Sync internal display state FROM the `value` prop.
+  // This runs when the `value` prop changes externally.
   useEffect(() => {
     const parts = from24HourFormat(value);
-    let changed = false;
+    // Only update if the parsed parts are different from current display state
+    // to avoid unnecessary re-renders if parent sends back the same logical time.
     if (parts.hour !== displayHour) {
-        setDisplayHour(parts.hour);
-        changed = true;
+      setDisplayHour(parts.hour);
     }
     if (parts.minute !== displayMinute) {
-        setDisplayMinute(parts.minute);
-        changed = true;
+      setDisplayMinute(parts.minute);
     }
     if (parts.period !== displayPeriod) {
-        setDisplayPeriod(parts.period);
-        changed = true;
+      setDisplayPeriod(parts.period);
     }
-  }, [value, displayHour, displayMinute, displayPeriod]);
+  }, [value, displayHour, displayMinute, displayPeriod]); // Listen to display states too to prevent race conditions if internal state changes faster.
 
+  // Effect 2: Sync internal display state TO the parent via `onChange`.
+  // This runs when displayHour, displayMinute, or displayPeriod change (e.g., due to user scrolling).
   useEffect(() => {
     const new24HourTime = to24HourFormat(displayHour, displayMinute, displayPeriod);
+    // Only call onChange if the newly calculated time is different from the current `value` prop.
+    // This prevents a loop if the parent component echoes back the same time value.
     if (new24HourTime !== value) {
       onChange(new24HourTime);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [displayHour, displayMinute, displayPeriod]);
+  }, [displayHour, displayMinute, displayPeriod, onChange, value]);
+
 
   const itemH = 64;
 
