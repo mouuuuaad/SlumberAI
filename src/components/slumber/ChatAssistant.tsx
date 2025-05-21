@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Bot, User, Send, Settings2, Sparkles, Loader2 } from 'lucide-react';
+import { Bot, User, Send, Settings2, Loader2 } from 'lucide-react'; // Removed Sparkles
 import { aiSleepCoach, type AiSleepCoachInput, type AiSleepCoachOutput } from '@/ai/flows/ai-sleep-coach';
 import { cn } from '@/lib/utils';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
@@ -21,19 +21,18 @@ export interface Message {
   isGreeting?: boolean;
 }
 
-// Helper function to render Markdown-like text to HTML
 const renderMarkdownMessage = (text: string) => {
-  const blocks = text.split(/\\n\\s*\\n/); // Split by one or more blank lines
+  const blocks = text.split(/\\n\\s*\\n|\\n/); // Split by one or more blank lines OR single newlines
   const elements: JSX.Element[] = [];
   let currentListItems: string[] = [];
 
   const flushList = () => {
     if (currentListItems.length > 0) {
       elements.push(
-        <ul key={`ul-${elements.length}`} className="list-disc list-inside space-y-1 my-2 pl-2">
+        <ul key={`ul-${elements.length}`} className="list-disc list-inside space-y-1 my-2 pl-4"> {/* Increased pl */}
           {currentListItems.map((item, idx) => (
             <li key={`li-${idx}`} className="text-sm">
-              {item.split(/(\\*\\*.*?\\*\\*)/g).map((part, i) => 
+              {item.split(/(\*\*.*?\*\*)/g).map((part, i) => 
                 part.startsWith('**') && part.endsWith('**') ? <strong key={i}>{part.slice(2, -2)}</strong> : <Fragment key={i}>{part}</Fragment>
               )}
             </li>
@@ -43,49 +42,52 @@ const renderMarkdownMessage = (text: string) => {
       currentListItems = [];
     }
   };
+  
+  blocks.forEach((block, blockIndex) => {
+    // Trim block to avoid empty paragraphs from multiple newlines
+    const trimmedBlock = block.trim();
+    if (!trimmedBlock) return;
 
-  blocks.forEach((block, index) => {
-    const lines = block.split('\\n');
-    lines.forEach((line) => {
-      if (line.startsWith('## ')) {
-        flushList();
-        elements.push(
-          <h2 key={`h2-${index}-${elements.length}`} className="text-lg font-semibold mt-3 mb-1.5 text-foreground">
-            {line.substring(3)}
-          </h2>
-        );
-      } else if (line.startsWith('* ')) {
-        currentListItems.push(line.substring(2));
-      } else {
-        flushList();
-        if (line.trim()) { 
-          elements.push(
-            <p key={`p-${index}-${elements.length}`} className="text-sm my-1 whitespace-pre-wrap break-words">
-               {line.split(/(\\*\\*.*?\\*\\*)/g).map((part, i) => 
-                part.startsWith('**') && part.endsWith('**') ? <strong key={i}>{part.slice(2, -2)}</strong> : <Fragment key={i}>{part}</Fragment>
-              )}
-            </p>
-          );
-        }
-      }
-    });
+    if (trimmedBlock.startsWith('## ')) {
+      flushList();
+      elements.push(
+        <h2 key={`h2-${blockIndex}-${elements.length}`} className="text-lg font-semibold mt-4 mb-2 text-foreground flex items-center"> {/* Added flex items-center */}
+          {/* Allow emoji at the start of the heading */}
+          {trimmedBlock.substring(3).split(/(\*\*.*?\*\*)/g).map((part, i) =>
+            part.startsWith('**') && part.endsWith('**') ? <strong key={i} className="ml-1">{part.slice(2, -2)}</strong> : <span key={i} className={part.includes(" ") ? "" : "mr-1"}>{part}</span> // Add margin for emoji
+          )}
+        </h2>
+      );
+    } else if (trimmedBlock.startsWith('* ')) {
+      currentListItems.push(trimmedBlock.substring(2));
+    } else {
+      flushList();
+      elements.push(
+        <p key={`p-${blockIndex}-${elements.length}`} className="text-sm my-1.5 whitespace-pre-wrap break-words">
+           {trimmedBlock.split(/(\*\*.*?\*\*)/g).map((part, i) => 
+            part.startsWith('**') && part.endsWith('**') ? <strong key={i}>{part.slice(2, -2)}</strong> : <Fragment key={i}>{part}</Fragment>
+          )}
+        </p>
+      );
+    }
   });
 
-  flushList();
+  flushList(); // Ensure any trailing list items are rendered
   return <>{elements}</>;
 };
+
 
 const LOCAL_STORAGE_CHAT_KEY = 'slumberAiCurrentChat';
 
 export default function ChatAssistant() {
   const t = useTranslations('AiSleepCoach');
   
-  const initialGreetingMessage: Message = {
+  const getInitialMessage = (): Message => ({
     id: 'greeting-0',
     role: 'assistant',
     content: t('initialBotGreeting'),
     isGreeting: true,
-  };
+  });
 
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState('');
@@ -93,14 +95,12 @@ export default function ChatAssistant() {
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const [isClient, setIsClient] = useState(false);
 
-  // User Profile State
   const [age, setAge] = useState<string>('');
   const [lifestyle, setLifestyle] = useState<string>('');
   const [stressLevel, setStressLevel] = useState<string>('');
 
   useEffect(() => {
     setIsClient(true);
-    // Load messages from localStorage on initial client mount
     const storedMessages = localStorage.getItem(LOCAL_STORAGE_CHAT_KEY);
     if (storedMessages) {
       try {
@@ -108,74 +108,84 @@ export default function ChatAssistant() {
         if (Array.isArray(parsedMessages) && parsedMessages.length > 0) {
             setMessages(parsedMessages);
         } else {
-            setMessages([initialGreetingMessage]);
+            setMessages([getInitialMessage()]);
         }
       } catch (error) {
         console.error("Error parsing stored chat messages:", error);
-        setMessages([initialGreetingMessage]);
+        setMessages([getInitialMessage()]);
       }
     } else {
-      setMessages([initialGreetingMessage]);
+      setMessages([getInitialMessage()]);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, []); // Runs once on mount
 
-  // Save messages to localStorage whenever they change
   useEffect(() => {
     if (isClient && messages.length > 0) {
-      // Don't save if it's just the initial greeting and no interaction yet
       if (messages.length === 1 && messages[0].isGreeting) {
-        // If user clears local storage and reloads, we don't want to save the greeting alone
-        // unless they explicitly start a new chat after that.
+        // Avoid saving just the initial greeting if localStorage was cleared
+        // and user hasn't interacted yet.
+        const stored = localStorage.getItem(LOCAL_STORAGE_CHAT_KEY);
+        if(stored) { // only save if there was something before (i.e. user explicitly started new chat)
+             localStorage.setItem(LOCAL_STORAGE_CHAT_KEY, JSON.stringify(messages));
+        }
       } else {
         localStorage.setItem(LOCAL_STORAGE_CHAT_KEY, JSON.stringify(messages));
       }
+    } else if (isClient && messages.length === 0) {
+        // If messages become empty (e.g. after a clear that doesn't immediately set greeting)
+        // ensure localStorage is also empty.
+        localStorage.removeItem(LOCAL_STORAGE_CHAT_KEY);
     }
   }, [messages, isClient]);
 
   const scrollToBottom = () => {
     if (scrollAreaRef.current) {
       const scrollViewport = scrollAreaRef.current.querySelector('div[data-radix-scroll-area-viewport]');
-      if (scrollViewport) {
-        requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        if (scrollViewport) {
           scrollViewport.scrollTop = scrollViewport.scrollHeight;
-        });
-      } else {
-         requestAnimationFrame(() => {
-          scrollAreaRef.current!.scrollTop = scrollAreaRef.current!.scrollHeight;
-        });
-      }
+        } else if (scrollAreaRef.current) {
+          scrollAreaRef.current.scrollTop = scrollAreaRef.current.scrollHeight;
+        }
+      });
     }
   };
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages, isLoading]); // Trigger scroll on new messages and loading state change
+  }, [messages, isLoading]); 
 
   const handleFollowUpClick = (question: string) => {
     setInputValue(question);
-    // Consider triggering submit or just populating input
+    // Auto-submit follow-up question
+    // Need to ensure handleSubmit can be called without form event
+    handleSubmit(undefined, question);
   };
 
-  const handleSubmit = async (e?: FormEvent) => {
+  const handleSubmit = async (e?: FormEvent, followUpQuery?: string) => {
     if (e) e.preventDefault();
-    if (!inputValue.trim() || isLoading) return;
+    const query = followUpQuery || inputValue;
+    if (!query.trim() || isLoading) return;
 
     const userMessage: Message = {
       id: Date.now().toString(),
       role: 'user',
-      content: inputValue.trim(),
+      content: query.trim(),
     };
     
     setMessages((prev) => {
-      const updatedMessages = prev.length === 1 && prev[0].isGreeting 
-                             ? [userMessage] 
-                             : [...prev, userMessage];
-      return updatedMessages;
+      // If current messages only contain the initial greeting, replace it
+      if (prev.length === 1 && prev[0].isGreeting) {
+        return [userMessage];
+      }
+      return [...prev, userMessage];
     });
 
-    const currentQuery = inputValue.trim();
-    setInputValue('');
+    const currentQuery = query.trim();
+    if (!followUpQuery) {
+      setInputValue('');
+    }
     setIsLoading(true);
 
     try {
@@ -187,6 +197,7 @@ export default function ChatAssistant() {
       const input: AiSleepCoachInput = {
         currentQuery,
         userProfile: Object.keys(userProfileInput).length > 0 ? userProfileInput : undefined,
+        // sleepHistory: [] // TODO: Integrate sleep history when available
       };
       const result: AiSleepCoachOutput = await aiSleepCoach(input);
 
@@ -211,7 +222,7 @@ export default function ChatAssistant() {
   };
 
   return (
-    <div className="w-full h-full flex flex-col bg-transparent"> {/* Removed fixed height */}
+    <div className="w-full h-full flex flex-col bg-transparent"> 
       <Accordion type="single" collapsible className="px-1 pt-0 pb-1 border-b border-border/30 mb-3">
         <AccordionItem value="profile" className="border-b-0">
           <AccordionTrigger className="text-sm hover:no-underline text-foreground/90 py-2.5">
@@ -261,16 +272,16 @@ export default function ChatAssistant() {
         </AccordionItem>
       </Accordion>
 
-      <ScrollArea className="flex-grow min-h-0 pr-2" ref={scrollAreaRef}> {/* Added min-h-0 */}
-        <div className="space-y-6 pb-4"> {/* Increased space-y and added pb for input field */}
+      <ScrollArea className="flex-grow min-h-0 pr-3" ref={scrollAreaRef}> {/* Added min-h-0 and pr-3 for scrollbar space */}
+        <div className="space-y-6 pb-4"> 
           {messages.map((message) => (
             <div key={message.id} className={cn("flex flex-col", message.role === 'user' ? 'items-end' : 'items-start')}>
               <div
                 className={cn(
-                  'flex items-start gap-2.5 p-3 rounded-lg max-w-[85%] shadow-md break-words', // Added break-words
+                  'flex items-start gap-2.5 p-3 rounded-lg max-w-[85%] shadow-md break-words', 
                   message.role === 'user'
-                    ? 'bg-primary text-primary-foreground rounded-br-none' // User bubble
-                    : 'bg-card/90 text-card-foreground border border-border/50 rounded-bl-none' // Assistant bubble
+                    ? 'bg-primary text-primary-foreground rounded-br-none' 
+                    : 'bg-card/90 text-card-foreground border border-border/50 rounded-bl-none' 
                 )}
               >
                 {message.role === 'assistant' && <Bot className="h-5 w-5 text-accent flex-shrink-0 mt-0.5" />}
@@ -307,7 +318,7 @@ export default function ChatAssistant() {
           )}
         </div>
       </ScrollArea>
-      <form onSubmit={handleSubmit} className="p-3 border-t border-border/50 bg-background">
+      <form onSubmit={(e) => handleSubmit(e)} className="p-3 border-t border-border/50 bg-background">
         <div className="flex items-center gap-2.5 bg-input/50 rounded-xl p-1.5 border border-border/40 focus-within:ring-1 focus-within:ring-primary">
           <Input
             type="text"
@@ -317,9 +328,9 @@ export default function ChatAssistant() {
             disabled={isLoading}
             className="flex-grow bg-transparent border-none focus:ring-0 h-10 text-sm placeholder:text-muted-foreground/80"
             onKeyDown={(e) => {
-              if (e.key === 'Enter' && !e.shiftKey) {
+              if (e.key === 'Enter' && !e.shiftKey && !isLoading && inputValue.trim()) {
                 e.preventDefault();
-                handleSubmit();
+                handleSubmit(e);
               }
             }}
           />

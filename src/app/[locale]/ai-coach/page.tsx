@@ -9,15 +9,17 @@ import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { PanelLeftClose, PanelLeftOpen } from 'lucide-react';
 
+const LOCAL_STORAGE_CHAT_KEY = 'slumberAiCurrentChat'; // Ensure this key is consistent
+
 export default function AiCoachPage() {
-  const t = useTranslations('HomePage'); // For footer structure
+  const t = useTranslations('HomePage'); // For footer structure, though footer is removed on this page
   const coachT = useTranslations('AiSleepCoach');
   const [isClient, setIsClient] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [chatSessionKey, setChatSessionKey] = useState(Date.now()); // Key to reset ChatAssistant
 
   useEffect(() => {
     setIsClient(true);
-    // Optionally, set sidebar state based on screen size
     if (window.innerWidth < 768) { // md breakpoint
       setIsSidebarOpen(false);
     }
@@ -27,6 +29,21 @@ export default function AiCoachPage() {
     setIsSidebarOpen(!isSidebarOpen);
   };
 
+  const handleNewChatSession = () => {
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem(LOCAL_STORAGE_CHAT_KEY);
+    }
+    setChatSessionKey(Date.now()); // Change key to force ChatAssistant re-mount
+  };
+
+  const handleClearChatSession = () => {
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem(LOCAL_STORAGE_CHAT_KEY);
+    }
+    setChatSessionKey(Date.now()); // Change key to force ChatAssistant re-mount
+  };
+
+
   if (!isClient) {
     return (
       <div className="flex flex-col h-screen bg-background text-foreground">
@@ -34,9 +51,7 @@ export default function AiCoachPage() {
         <main className="flex-grow flex items-center justify-center">
           {/* Placeholder or loading spinner */}
         </main>
-        <footer className="py-8 text-center text-xs sm:text-sm text-muted-foreground border-t border-border/30">
-          <p>{t('footerCopyright', { year: new Date().getFullYear() })}</p>
-        </footer>
+        {/* Footer is removed on this page for full chat app feel */}
       </div>
     );
   }
@@ -45,7 +60,13 @@ export default function AiCoachPage() {
     <div className="flex flex-col h-screen bg-background text-foreground overflow-hidden">
       <Header />
       <div className="flex flex-grow overflow-hidden">
-        <ConversationSidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
+        <ConversationSidebar 
+          isOpen={isSidebarOpen} 
+          toggleSidebar={toggleSidebar}
+          onNewChat={handleNewChatSession}
+          onClearConversation={handleClearChatSession}
+          chatSessionKey={chatSessionKey} // Pass key to allow sidebar to react if needed
+        />
         <main className="flex-grow flex flex-col relative">
           <Button
             variant="ghost"
@@ -57,11 +78,10 @@ export default function AiCoachPage() {
             {isSidebarOpen ? <PanelLeftClose className="h-5 w-5" /> : <PanelLeftOpen className="h-5 w-5" />}
           </Button>
           <div className="flex-grow p-4 md:p-6 overflow-y-auto"> {/* Added padding here */}
-            <ChatAssistant />
+            <ChatAssistant key={chatSessionKey} /> {/* Use key here */}
           </div>
         </main>
       </div>
-      {/* Footer is removed to maximize chat area, similar to typical chat apps */}
     </div>
   );
 }

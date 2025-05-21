@@ -3,12 +3,12 @@
 
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { MessageSquarePlus, PanelLeftClose, PanelLeftOpen, Trash2, Settings } from 'lucide-react';
+import { MessageSquarePlus, PanelLeftClose, Trash2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
-import type { Message } from './ChatAssistant'; // Assuming Message type is exported
+import type { Message } from './ChatAssistant'; 
 
-const LOCAL_STORAGE_CHAT_KEY = 'slumberAiCurrentChat'; // Consistent key
+const LOCAL_STORAGE_CHAT_KEY = 'slumberAiCurrentChat';
 
 interface ConversationItem {
   id: string;
@@ -20,19 +20,23 @@ interface ConversationItem {
 interface ConversationSidebarProps {
   isOpen: boolean;
   toggleSidebar: () => void;
-  // onSelectConversation: (messages: Message[]) => void; // For loading a specific conversation
-  // onNewConversation: () => void;
+  onNewChat: () => void;
+  onClearConversation: () => void;
+  chatSessionKey: number; // To react to chat resets
 }
 
-export default function ConversationSidebar({ isOpen, toggleSidebar }: ConversationSidebarProps) {
+export default function ConversationSidebar({ 
+  isOpen, 
+  toggleSidebar, 
+  onNewChat, 
+  onClearConversation,
+  chatSessionKey 
+}: ConversationSidebarProps) {
   const t = useTranslations('AiSleepCoachSidebar');
   const [conversations, setConversations] = useState<ConversationItem[]>([]);
   const [isClient, setIsClient] = useState(false);
 
-  useEffect(() => {
-    setIsClient(true);
-    // For now, we'll just load the *current* chat as one "session"
-    // A more advanced history would load an array of distinct conversations
+  const loadCurrentConversationTitle = () => {
     const storedMessagesRaw = localStorage.getItem(LOCAL_STORAGE_CHAT_KEY);
     if (storedMessagesRaw) {
       try {
@@ -42,41 +46,44 @@ export default function ConversationSidebar({ isOpen, toggleSidebar }: Conversat
             {
               id: 'current_session',
               title: storedMessages[0]?.content.substring(0, 30) + (storedMessages[0]?.content.length > 30 ? '...' : '') || t('currentSessionTitle'),
-              timestamp: Date.now(), // Or a stored timestamp if available
+              timestamp: Date.now(), 
               messageCount: storedMessages.length,
             },
           ]);
+        } else {
+          setConversations([]); // Clear if only greeting or empty
         }
       } catch (error) {
         console.error("Error loading conversation for sidebar:", error);
+        setConversations([]);
       }
-    }
-  }, []);
-
-  // Placeholder for future:
-  // const handleNewChat = () => {
-  //   onNewConversation();
-  //   // Potentially clear current chat and start fresh
-  // };
-
-  // const handleSelectChat = (id: string) => {
-  //  // Load messages for this chat id and call onSelectConversation
-  // };
-  
-  const handleClearHistory = () => {
-    if (confirm(t('confirmClearHistory'))) {
-      localStorage.removeItem(LOCAL_STORAGE_CHAT_KEY);
+    } else {
       setConversations([]);
-      // Potentially trigger a new chat state in the parent
-      window.location.reload(); // Simple way to reset chat for now
     }
   };
 
+  useEffect(() => {
+    setIsClient(true);
+    loadCurrentConversationTitle();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [chatSessionKey]); // Reload when chatSessionKey changes (new/clear chat)
+
+  const handleNewChatClick = () => {
+    onNewChat(); 
+    // The useEffect reacting to chatSessionKey will handle clearing sidebar conversations
+  };
+  
+  const handleClearHistoryClick = () => {
+    if (confirm(t('confirmClearHistory'))) {
+      onClearConversation();
+      // The useEffect reacting to chatSessionKey will handle clearing sidebar conversations
+    }
+  };
 
   if (!isClient) {
     return (
       <aside className={cn(
-        "bg-sidebar text-sidebar-foreground flex flex-col transition-all duration-300 ease-in-out",
+        "bg-sidebar-background text-sidebar-foreground flex flex-col transition-all duration-300 ease-in-out", // Updated class name
         isOpen ? "w-64 md:w-72 p-4" : "w-0 p-0"
       )} />
     );
@@ -84,8 +91,8 @@ export default function ConversationSidebar({ isOpen, toggleSidebar }: Conversat
 
   return (
     <aside className={cn(
-      "bg-sidebar text-sidebar-foreground flex-shrink-0 flex flex-col transition-all duration-300 ease-in-out border-r border-border/20",
-      "h-full", // Ensure sidebar takes full height of its flex container
+      "bg-sidebar-background text-sidebar-foreground flex-shrink-0 flex flex-col transition-all duration-300 ease-in-out border-r border-sidebar-border", // Updated class names
+      "h-full", 
       isOpen ? "w-60 md:w-72 p-3" : "w-0 p-0 overflow-hidden"
     )}>
       {isOpen && (
@@ -94,7 +101,7 @@ export default function ConversationSidebar({ isOpen, toggleSidebar }: Conversat
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => { /* onNewConversation() */ alert(t('newChatFeaturePlaceholder')); }}
+              onClick={handleNewChatClick}
               className="w-full justify-start text-sm text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
             >
               <MessageSquarePlus className="mr-2 h-4 w-4" />
@@ -111,16 +118,13 @@ export default function ConversationSidebar({ isOpen, toggleSidebar }: Conversat
             </Button>
           </div>
 
-          <div className="flex-grow overflow-y-auto space-y-1 pr-1 custom-scrollbar-thin">
-            {/* Placeholder for conversation list rendering logic */}
-            {/* For now, showing the concept based on the 'current' chat */}
+          <div className="flex-grow overflow-y-auto space-y-1 pr-1 custom-scrollbar-thin sidebar-scrollbar">
             {conversations.length > 0 ? (
               conversations.map(convo => (
                 <Button
                   key={convo.id}
                   variant="ghost"
                   className="w-full justify-start text-left h-auto py-2 px-2.5 text-sm text-sidebar-foreground/80 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground truncate"
-                  // onClick={() => handleSelectChat(convo.id)}
                 >
                   <span className="truncate">{convo.title}</span>
                 </Button>
@@ -130,34 +134,24 @@ export default function ConversationSidebar({ isOpen, toggleSidebar }: Conversat
             )}
             
             {/* Example static grouping - replace with dynamic rendering */}
-            <div className="mt-3">
+            {/* <div className="mt-3">
               <h3 className="text-xs font-semibold text-sidebar-foreground/50 px-2.5 mb-1.5">{t('today')}</h3>
-              {/* Map actual 'today' conversations here */}
             </div>
              <div className="mt-3">
               <h3 className="text-xs font-semibold text-sidebar-foreground/50 px-2.5 mb-1.5">{t('previous7Days')}</h3>
-               {/* Map actual 'previous 7 days' conversations here */}
-            </div>
+            </div> */}
           </div>
           
-          <div className="pt-3 border-t border-border/20 mt-auto space-y-1.5">
+          <div className="pt-3 border-t border-sidebar-border mt-auto space-y-1.5"> {/* Updated class name */}
             <Button
               variant="ghost"
               size="sm"
-              onClick={handleClearHistory}
+              onClick={handleClearHistoryClick}
               className="w-full justify-start text-sm text-sidebar-foreground/80 hover:bg-destructive/20 hover:text-destructive"
             >
               <Trash2 className="mr-2 h-4 w-4" />
               {t('clearHistory')}
             </Button>
-            {/* <Button
-              variant="ghost"
-              size="sm"
-              className="w-full justify-start text-sm text-sidebar-foreground/80 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
-            >
-              <Settings className="mr-2 h-4 w-4" />
-              {t('settings')}
-            </Button> */}
           </div>
         </>
       )}

@@ -60,7 +60,7 @@ html {
     --sidebar-foreground: 225 15% 88%; /* Off-white e.g. #D7DBE3 */
     --sidebar-accent: 225 20% 18%;    /* Slightly lighter Dark Blue/Gray for hover e.g. #252938 */
     --sidebar-accent-foreground: 225 15% 95%; /* Brighter white for hover text */
-    --sidebar-border: 225 20% 25%; /* Border for sidebar elements */
+    --sidebar-border: 225 15% 20%; /* Updated to match dark theme sidebar border */
   }
 
   .dark { 
@@ -98,8 +98,7 @@ html {
     --chart-4: 195 30% 75%; 
     --chart-5: 276 30% 65%;
 
-    /* Override sidebar vars for dark mode if they should be different from light mode's interpretation */
-    /* The provided sidebar vars are already dark-themed, so they work well here. */
+    /* Sidebar colors remain as they are already dark-themed */
     --sidebar-background: 225 20% 12%; /* #1A1D26 */
     --sidebar-foreground: 225 15% 88%; /* #D7DBE3 */
     --sidebar-accent: 225 20% 18%;    /* #252938 */
