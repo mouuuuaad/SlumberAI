@@ -20,25 +20,20 @@ interface LegendSegment {
 export default function CycleTimelineChart({ cycles, totalSleepDuration, isBedtimeSuggestion, suggestedTime }: CycleTimelineChartProps) {
   const legendSegments: LegendSegment[] = [];
 
-  const fallAsleepColor = 'hsl(var(--muted))';
-  const cycleColors = [
-    'hsl(var(--chart-1))',
-    'hsl(var(--chart-2))',
-    'hsl(var(--chart-3))',
-    'hsl(var(--chart-4))',
-    'hsl(var(--chart-5))',
-    'hsl(var(--chart-1))', // Cycle through colors if more than 5 cycles
-  ];
+  // Use muted-foreground for a lighter grey dot in dark mode, more visible
+  const fallAsleepColor = 'hsl(var(--muted-foreground))'; 
+  // Use primary color for all cycle dots for consistency as per image
+  const cycleColor = 'hsl(var(--primary))';
 
   legendSegments.push({ name: 'Fall Asleep', fill: fallAsleepColor });
 
   for (let i = 0; i < cycles; i++) {
-    legendSegments.push({ name: `Cycle ${i + 1}`, fill: cycleColors[i % cycleColors.length] });
+    legendSegments.push({ name: `Cycle ${i + 1}`, fill: cycleColor });
   }
 
   return (
     <div className="py-4 px-4 sm:px-6 border-t first:border-t-0 border-border/30">
-      <p className="text-lg md:text-xl font-semibold text-foreground mb-1">
+      <p className="text-lg md:text-xl font-bold text-foreground mb-1">
         {isBedtimeSuggestion ?
           `Go to bed: ${suggestedTime}` :
           `Wake up: ${suggestedTime}`
@@ -50,7 +45,7 @@ export default function CycleTimelineChart({ cycles, totalSleepDuration, isBedti
       </p>
       
       {/* Custom Legend */}
-      <div className="flex flex-wrap justify-start gap-x-4 gap-y-2 text-sm text-foreground/80">
+      <div className="flex flex-wrap justify-start gap-x-4 gap-y-2 text-xs text-foreground/70">
         {legendSegments.map((segment) => (
             <div key={`legend-${segment.name}`} className="flex items-center gap-1.5">
                 <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: segment.fill }} />
@@ -61,3 +56,4 @@ export default function CycleTimelineChart({ cycles, totalSleepDuration, isBedti
     </div>
   );
 }
+
