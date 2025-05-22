@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Bot, User, Send, Settings2, Loader2 } from 'lucide-react'; // Removed Sparkles
+import { Bot, User, Send, Settings2, Loader2 } from 'lucide-react';
 import { aiSleepCoach, type AiSleepCoachInput, type AiSleepCoachOutput } from '@/ai/flows/ai-sleep-coach';
 import { cn } from '@/lib/utils';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
@@ -22,17 +22,17 @@ export interface Message {
 }
 
 const renderMarkdownMessage = (text: string) => {
-  const blocks = text.split(/\\n\\s*\\n|\\n/); // Split by one or more blank lines OR single newlines
+  const blocks = text.split(/\\n\\s*\\n|\\n/);
   const elements: JSX.Element[] = [];
   let currentListItems: string[] = [];
 
   const flushList = () => {
     if (currentListItems.length > 0) {
       elements.push(
-        <ul key={`ul-${elements.length}`} className="list-disc list-inside space-y-1 my-2 pl-4"> {/* Increased pl */}
+        <ul key={`ul-${elements.length}`} className="list-disc list-inside space-y-1 my-2 pl-4">
           {currentListItems.map((item, idx) => (
             <li key={`li-${idx}`} className="text-sm">
-              {item.split(/(\*\*.*?\*\*)/g).map((part, i) => 
+              {item.split(/(\*\*.*?\*\*)/g).map((part, i) =>
                 part.startsWith('**') && part.endsWith('**') ? <strong key={i}>{part.slice(2, -2)}</strong> : <Fragment key={i}>{part}</Fragment>
               )}
             </li>
@@ -42,19 +42,17 @@ const renderMarkdownMessage = (text: string) => {
       currentListItems = [];
     }
   };
-  
+
   blocks.forEach((block, blockIndex) => {
-    // Trim block to avoid empty paragraphs from multiple newlines
     const trimmedBlock = block.trim();
     if (!trimmedBlock) return;
 
     if (trimmedBlock.startsWith('## ')) {
       flushList();
       elements.push(
-        <h2 key={`h2-${blockIndex}-${elements.length}`} className="text-lg font-semibold mt-4 mb-2 text-foreground flex items-center"> {/* Added flex items-center */}
-          {/* Allow emoji at the start of the heading */}
+        <h2 key={`h2-${blockIndex}-${elements.length}`} className="text-lg font-semibold mt-4 mb-2 text-foreground flex items-center">
           {trimmedBlock.substring(3).split(/(\*\*.*?\*\*)/g).map((part, i) =>
-            part.startsWith('**') && part.endsWith('**') ? <strong key={i} className="ml-1">{part.slice(2, -2)}</strong> : <span key={i} className={part.includes(" ") ? "" : "mr-1"}>{part}</span> // Add margin for emoji
+            part.startsWith('**') && part.endsWith('**') ? <strong key={i} className="ml-1">{part.slice(2, -2)}</strong> : <span key={i} className={part.includes(" ") ? "" : "mr-1"}>{part}</span>
           )}
         </h2>
       );
@@ -64,7 +62,7 @@ const renderMarkdownMessage = (text: string) => {
       flushList();
       elements.push(
         <p key={`p-${blockIndex}-${elements.length}`} className="text-sm my-1.5 whitespace-pre-wrap break-words">
-           {trimmedBlock.split(/(\*\*.*?\*\*)/g).map((part, i) => 
+          {trimmedBlock.split(/(\*\*.*?\*\*)/g).map((part, i) =>
             part.startsWith('**') && part.endsWith('**') ? <strong key={i}>{part.slice(2, -2)}</strong> : <Fragment key={i}>{part}</Fragment>
           )}
         </p>
@@ -72,16 +70,20 @@ const renderMarkdownMessage = (text: string) => {
     }
   });
 
-  flushList(); // Ensure any trailing list items are rendered
+  flushList();
   return <>{elements}</>;
 };
 
-
 const LOCAL_STORAGE_CHAT_KEY = 'slumberAiCurrentChat';
 
-export default function ChatAssistant() {
+interface ChatAssistantProps {
+  startFresh: boolean;
+  onActualChatInteraction: () => void;
+}
+
+export default function ChatAssistant({ startFresh, onActualChatInteraction }: ChatAssistantProps) {
   const t = useTranslations('AiSleepCoach');
-  
+
   const getInitialMessage = (): Message => ({
     id: 'greeting-0',
     role: 'assistant',
@@ -101,43 +103,42 @@ export default function ChatAssistant() {
 
   useEffect(() => {
     setIsClient(true);
-    const storedMessages = localStorage.getItem(LOCAL_STORAGE_CHAT_KEY);
-    if (storedMessages) {
-      try {
-        const parsedMessages = JSON.parse(storedMessages);
-        if (Array.isArray(parsedMessages) && parsedMessages.length > 0) {
+    if (startFresh) {
+      setMessages([getInitialMessage()]);
+    } else {
+      const storedMessages = localStorage.getItem(LOCAL_STORAGE_CHAT_KEY);
+      if (storedMessages) {
+        try {
+          const parsedMessages = JSON.parse(storedMessages);
+          if (Array.isArray(parsedMessages) && parsedMessages.length > 0) {
             setMessages(parsedMessages);
-        } else {
+          } else {
             setMessages([getInitialMessage()]);
+          }
+        } catch (error) {
+          console.error("Error parsing stored chat messages:", error);
+          setMessages([getInitialMessage()]);
         }
-      } catch (error) {
-        console.error("Error parsing stored chat messages:", error);
+      } else {
         setMessages([getInitialMessage()]);
       }
-    } else {
-      setMessages([getInitialMessage()]);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // Runs once on mount
+  }, [startFresh]); // Effect runs when startFresh changes or on initial mount (due to key change)
 
   useEffect(() => {
     if (isClient && messages.length > 0) {
-      if (messages.length === 1 && messages[0].isGreeting) {
-        // Avoid saving just the initial greeting if localStorage was cleared
-        // and user hasn't interacted yet.
-        const stored = localStorage.getItem(LOCAL_STORAGE_CHAT_KEY);
-        if(stored) { // only save if there was something before (i.e. user explicitly started new chat)
-             localStorage.setItem(LOCAL_STORAGE_CHAT_KEY, JSON.stringify(messages));
-        }
+      if (startFresh && messages.length === 1 && messages[0].isGreeting) {
+        // Do not save to localStorage if it's a fresh start and only the greeting is present.
+        // This preserves the old chat in localStorage until the user types a new message.
       } else {
         localStorage.setItem(LOCAL_STORAGE_CHAT_KEY, JSON.stringify(messages));
       }
-    } else if (isClient && messages.length === 0) {
-        // If messages become empty (e.g. after a clear that doesn't immediately set greeting)
-        // ensure localStorage is also empty.
-        localStorage.removeItem(LOCAL_STORAGE_CHAT_KEY);
+    } else if (isClient && messages.length === 0 && !startFresh) {
+      // If messages become empty and it's not a fresh start scenario, clear localStorage.
+      localStorage.removeItem(LOCAL_STORAGE_CHAT_KEY);
     }
-  }, [messages, isClient]);
+  }, [messages, isClient, startFresh]);
 
   const scrollToBottom = () => {
     if (scrollAreaRef.current) {
@@ -154,12 +155,10 @@ export default function ChatAssistant() {
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages, isLoading]); 
+  }, [messages, isLoading]);
 
   const handleFollowUpClick = (question: string) => {
     setInputValue(question);
-    // Auto-submit follow-up question
-    // Need to ensure handleSubmit can be called without form event
     handleSubmit(undefined, question);
   };
 
@@ -168,14 +167,17 @@ export default function ChatAssistant() {
     const query = followUpQuery || inputValue;
     if (!query.trim() || isLoading) return;
 
+    if (startFresh) {
+      onActualChatInteraction(); // Signal to parent that interaction has begun in this "fresh" chat
+    }
+
     const userMessage: Message = {
       id: Date.now().toString(),
       role: 'user',
       content: query.trim(),
     };
-    
+
     setMessages((prev) => {
-      // If current messages only contain the initial greeting, replace it
       if (prev.length === 1 && prev[0].isGreeting) {
         return [userMessage];
       }
@@ -197,7 +199,6 @@ export default function ChatAssistant() {
       const input: AiSleepCoachInput = {
         currentQuery,
         userProfile: Object.keys(userProfileInput).length > 0 ? userProfileInput : undefined,
-        // sleepHistory: [] // TODO: Integrate sleep history when available
       };
       const result: AiSleepCoachOutput = await aiSleepCoach(input);
 
@@ -222,7 +223,7 @@ export default function ChatAssistant() {
   };
 
   return (
-    <div className="w-full h-full flex flex-col bg-transparent"> 
+    <div className="w-full h-full flex flex-col bg-transparent">
       <Accordion type="single" collapsible className="px-1 pt-0 pb-1 border-b border-border/30 mb-3">
         <AccordionItem value="profile" className="border-b-0">
           <AccordionTrigger className="text-sm hover:no-underline text-foreground/90 py-2.5">
@@ -272,16 +273,16 @@ export default function ChatAssistant() {
         </AccordionItem>
       </Accordion>
 
-      <ScrollArea className="flex-grow min-h-0 pr-3" ref={scrollAreaRef}> {/* Added min-h-0 and pr-3 for scrollbar space */}
-        <div className="space-y-6 pb-4"> 
+      <ScrollArea className="flex-grow min-h-0 pr-3" ref={scrollAreaRef}>
+        <div className="space-y-6 pb-4">
           {messages.map((message) => (
             <div key={message.id} className={cn("flex flex-col", message.role === 'user' ? 'items-end' : 'items-start')}>
               <div
                 className={cn(
-                  'flex items-start gap-2.5 p-3 rounded-lg max-w-[85%] shadow-md break-words', 
+                  'flex items-start gap-2.5 p-3 rounded-lg max-w-[85%] shadow-md break-words',
                   message.role === 'user'
-                    ? 'bg-primary text-primary-foreground rounded-br-none' 
-                    : 'bg-card/90 text-card-foreground border border-border/50 rounded-bl-none' 
+                    ? 'bg-primary text-primary-foreground rounded-br-none'
+                    : 'bg-card/90 text-card-foreground border border-border/50 rounded-bl-none'
                 )}
               >
                 {message.role === 'assistant' && <Bot className="h-5 w-5 text-accent flex-shrink-0 mt-0.5" />}

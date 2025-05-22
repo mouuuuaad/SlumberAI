@@ -6,7 +6,7 @@ import { cn } from '@/lib/utils';
 import { MessageSquarePlus, PanelLeftClose, Trash2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
-import type { Message } from './ChatAssistant'; 
+import type { Message } from './ChatAssistant';
 
 const LOCAL_STORAGE_CHAT_KEY = 'slumberAiCurrentChat';
 
@@ -25,18 +25,19 @@ interface ConversationSidebarProps {
   chatSessionKey: number; // To react to chat resets
 }
 
-export default function ConversationSidebar({ 
-  isOpen, 
-  toggleSidebar, 
-  onNewChat, 
+export default function ConversationSidebar({
+  isOpen,
+  toggleSidebar,
+  onNewChat,
   onClearConversation,
-  chatSessionKey 
+  chatSessionKey
 }: ConversationSidebarProps) {
   const t = useTranslations('AiSleepCoachSidebar');
   const [conversations, setConversations] = useState<ConversationItem[]>([]);
   const [isClient, setIsClient] = useState(false);
 
   const loadCurrentConversationTitle = () => {
+    if (typeof window === 'undefined') return;
     const storedMessagesRaw = localStorage.getItem(LOCAL_STORAGE_CHAT_KEY);
     if (storedMessagesRaw) {
       try {
@@ -46,12 +47,12 @@ export default function ConversationSidebar({
             {
               id: 'current_session',
               title: storedMessages[0]?.content.substring(0, 30) + (storedMessages[0]?.content.length > 30 ? '...' : '') || t('currentSessionTitle'),
-              timestamp: Date.now(), 
+              timestamp: Date.now(),
               messageCount: storedMessages.length,
             },
           ]);
         } else {
-          setConversations([]); // Clear if only greeting or empty
+          setConversations([]);
         }
       } catch (error) {
         console.error("Error loading conversation for sidebar:", error);
@@ -66,24 +67,24 @@ export default function ConversationSidebar({
     setIsClient(true);
     loadCurrentConversationTitle();
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [chatSessionKey]); // Reload when chatSessionKey changes (new/clear chat)
+  }, [chatSessionKey]);
 
   const handleNewChatClick = () => {
-    onNewChat(); 
-    // The useEffect reacting to chatSessionKey will handle clearing sidebar conversations
+    onNewChat();
+    setConversations([]); // Immediately clear the sidebar display
   };
-  
+
   const handleClearHistoryClick = () => {
     if (confirm(t('confirmClearHistory'))) {
       onClearConversation();
-      // The useEffect reacting to chatSessionKey will handle clearing sidebar conversations
+      setConversations([]); // Immediately clear the sidebar display
     }
   };
 
   if (!isClient) {
     return (
       <aside className={cn(
-        "bg-sidebar-background text-sidebar-foreground flex flex-col transition-all duration-300 ease-in-out", // Updated class name
+        "bg-sidebar-background text-sidebar-foreground flex flex-col transition-all duration-300 ease-in-out",
         isOpen ? "w-64 md:w-72 p-4" : "w-0 p-0"
       )} />
     );
@@ -91,8 +92,8 @@ export default function ConversationSidebar({
 
   return (
     <aside className={cn(
-      "bg-sidebar-background text-sidebar-foreground flex-shrink-0 flex flex-col transition-all duration-300 ease-in-out border-r border-sidebar-border", // Updated class names
-      "h-full", 
+      "bg-sidebar-background text-sidebar-foreground flex-shrink-0 flex flex-col transition-all duration-300 ease-in-out border-r border-sidebar-border",
+      "h-full",
       isOpen ? "w-60 md:w-72 p-3" : "w-0 p-0 overflow-hidden"
     )}>
       {isOpen && (
@@ -132,17 +133,9 @@ export default function ConversationSidebar({
             ) : (
               <p className="text-xs text-sidebar-foreground/60 px-2.5 py-2">{t('noHistory')}</p>
             )}
-            
-            {/* Example static grouping - replace with dynamic rendering */}
-            {/* <div className="mt-3">
-              <h3 className="text-xs font-semibold text-sidebar-foreground/50 px-2.5 mb-1.5">{t('today')}</h3>
-            </div>
-             <div className="mt-3">
-              <h3 className="text-xs font-semibold text-sidebar-foreground/50 px-2.5 mb-1.5">{t('previous7Days')}</h3>
-            </div> */}
           </div>
-          
-          <div className="pt-3 border-t border-sidebar-border mt-auto space-y-1.5"> {/* Updated class name */}
+
+          <div className="pt-3 border-t border-sidebar-border mt-auto space-y-1.5">
             <Button
               variant="ghost"
               size="sm"

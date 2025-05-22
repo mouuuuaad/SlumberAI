@@ -13,40 +13,44 @@ import { PanelLeftClose, PanelLeftOpen } from 'lucide-react';
 const LOCAL_STORAGE_CHAT_KEY = 'slumberAiCurrentChat';
 
 export default function AiCoachPage() {
-  const t = useTranslations('HomePage'); // For footer, though footer is removed on this page
+  const t = useTranslations('HomePage');
   const coachT = useTranslations('AiSleepCoach');
   const [isClient, setIsClient] = useState(false);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false); // Initialize to false
-  const [chatSessionKey, setChatSessionKey] = useState(Date.now());
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [chatKey, setChatKey] = useState(Date.now()); // Renamed from chatSessionKey
+  const [startFreshChat, setStartFreshChat] = useState(true); // New state
 
   useEffect(() => {
     setIsClient(true);
-    // Adjust sidebar based on screen width only after client is confirmed
-    if (window.innerWidth >= 768) { // md breakpoint
+    if (window.innerWidth >= 768) {
       setIsSidebarOpen(true);
     } else {
       setIsSidebarOpen(false);
     }
-  }, []); // Runs once on mount
+  }, []);
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
 
   const handleNewChatSession = () => {
-    if (typeof window !== 'undefined') {
-      localStorage.removeItem(LOCAL_STORAGE_CHAT_KEY);
-    }
-    setChatSessionKey(Date.now()); 
+    // Does NOT remove from localStorage here.
+    // ChatAssistant will handle overwriting localStorage upon new user interaction.
+    setStartFreshChat(true);
+    setChatKey(Date.now());
   };
 
   const handleClearChatSession = () => {
     if (typeof window !== 'undefined') {
       localStorage.removeItem(LOCAL_STORAGE_CHAT_KEY);
     }
-    setChatSessionKey(Date.now()); 
+    setStartFreshChat(true);
+    setChatKey(Date.now());
   };
 
+  const handleUserFirstInteractionInNewChat = () => {
+    setStartFreshChat(false);
+  };
 
   if (!isClient) {
     return (
@@ -63,17 +67,13 @@ export default function AiCoachPage() {
     <div className="flex flex-col h-screen bg-background text-foreground overflow-hidden">
       <Header />
       <div className="flex flex-grow overflow-hidden">
-        <ConversationSidebar 
-          isOpen={isSidebarOpen} 
+        <ConversationSidebar
+          isOpen={isSidebarOpen}
           toggleSidebar={toggleSidebar}
           onNewChat={handleNewChatSession}
           onClearConversation={handleClearChatSession}
-          chatSessionKey={chatSessionKey}
+          chatSessionKey={chatKey} // Pass the renamed chatKey
         />
-        {/* The AnimatedSection wrapper was here previously, 
-            but for a full-page chat app, the main content is the chat assistant itself.
-            Animations can be applied internally if needed.
-        */}
         <main className="flex-grow flex flex-col relative">
           <Button
             variant="ghost"
@@ -84,8 +84,12 @@ export default function AiCoachPage() {
           >
             {isSidebarOpen ? <PanelLeftClose className="h-5 w-5" /> : <PanelLeftOpen className="h-5 w-5" />}
           </Button>
-          <div className="flex-grow p-0 md:p-0 overflow-y-auto min-h-0 bg-background"> {/* Removed padding for edge-to-edge chat */}
-            <ChatAssistant key={chatSessionKey} />
+          <div className="flex-grow p-0 md:p-0 overflow-y-auto min-h-0 bg-background">
+            <ChatAssistant
+              key={chatKey}
+              startFresh={startFreshChat}
+              onActualChatInteraction={handleUserFirstInteractionInNewChat}
+            />
           </div>
         </main>
       </div>
