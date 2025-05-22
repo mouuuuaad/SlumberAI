@@ -47,7 +47,7 @@ export default function CalculatorPage() {
     <div className="flex flex-col min-h-screen bg-background text-foreground">
       <Header />
       <main className="flex-grow container mx-auto px-4 py-10 md:py-16 flex flex-col items-center space-y-12 md:space-y-16">
-        <AnimatedSection 
+        <AnimatedSection
           delay="100ms"
           className="w-full max-w-2xl lg:max-w-3xl glassmorphic rounded-xl shadow-2xl p-6 md:p-8"
         >
@@ -57,7 +57,7 @@ export default function CalculatorPage() {
           </div>
           <SleepCalculatorForm onCalculate={handleSleepCalculation} />
         </AnimatedSection>
-        
+
         {sleepResults && (
           <div id="sleep-results-display-calculator" className="w-full max-w-2xl lg:max-w-3xl">
              <SleepCalculationResults results={sleepResults} />

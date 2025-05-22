@@ -29,7 +29,7 @@ interface SleepCalculatorFormProps {
 
 export default function SleepCalculatorForm({ onCalculate }: SleepCalculatorFormProps) {
   const t = useTranslations('SleepCalculatorForm');
-  const [selectedTime, setSelectedTime] = useState('07:00'); 
+  const [selectedTime, setSelectedTime] = useState('07:00');
   const [timeError, setTimeError] = useState<string | null>(null);
   const [showGoToBedNowResults, setShowGoToBedNowResults] = useState(false);
   const [currentTimeForBedNow, setCurrentTimeForBedNow] = useState('');
@@ -38,8 +38,8 @@ export default function SleepCalculatorForm({ onCalculate }: SleepCalculatorForm
     const updateCurrentTime = () => {
       setCurrentTimeForBedNow(format(new Date(), 'hh:mm a'));
     };
-    updateCurrentTime(); 
-    const timer = setInterval(updateCurrentTime, 60000); 
+    updateCurrentTime();
+    const timer = setInterval(updateCurrentTime, 60000);
     return () => clearInterval(timer);
   }, []);
 
@@ -98,7 +98,7 @@ export default function SleepCalculatorForm({ onCalculate }: SleepCalculatorForm
         return;
       }
 
-      const referenceDateForCalc = new Date(2000, 0, 1); 
+      const referenceDateForCalc = new Date(2000, 0, 1);
       const parsedWakeUpTime = set(referenceDateForCalc, { hours, minutes, seconds: 0, milliseconds: 0 });
 
       if (isNaN(parsedWakeUpTime.getTime())) {
@@ -124,8 +124,7 @@ export default function SleepCalculatorForm({ onCalculate }: SleepCalculatorForm
     setSelectedTime(newTime);
     if (timeError) setTimeError(null);
     setShowGoToBedNowResults(false);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [timeError, setSelectedTime, setTimeError, setShowGoToBedNowResults]);
+  }, [timeError]);
 
   return (
     <div className="w-full space-y-8">

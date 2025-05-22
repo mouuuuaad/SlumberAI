@@ -19,34 +19,32 @@ type Period = typeof periodsArray[number];
 const from24HourFormat = (timeStr: string): { hour: number; minute: number; period: Period } => {
   if (!timeStr || !timeStr.includes(':')) {
     console.warn("Invalid time string passed to from24HourFormat:", timeStr);
-    return { hour: 12, minute: 0, period: 'AM' }; // Default for invalid format
+    return { hour: 12, minute: 0, period: 'AM' };
   }
   const [hStr, mStr] = timeStr.split(':');
   let h = parseInt(hStr, 10);
   let m = parseInt(mStr, 10);
 
   if (isNaN(h) || h < 0 || h > 23) {
-    console.warn("Invalid hour in from24HourFormat:", {hStr, h});
-    h = 12; // default hour
+    h = 12;
   }
   if (isNaN(m) || m < 0 || m > 59) {
-    console.warn("Invalid minute in from24HourFormat:", {mStr, m});
-    m = 0; // default minute
+    m = 0;
   }
 
   const currentPeriod = h >= 12 ? 'PM' : 'AM';
   let currentHour = h % 12;
-  if (currentHour === 0) { // 00:xx is 12 AM, 12:xx is 12 PM
+  if (currentHour === 0) {
     currentHour = 12;
   }
   return { hour: currentHour, minute: m, period: currentPeriod };
 };
 
 const to24HourFormat = (hour: number, minute: number, period: Period): string => {
-  let h = hour; // hour is 1-12
+  let h = hour;
   if (period === 'PM' && h !== 12) {
     h += 12;
-  } else if (period === 'AM' && h === 12) { // 12 AM is 00 hours
+  } else if (period === 'AM' && h === 12) {
     h = 0;
   }
   return `${String(h).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
@@ -70,13 +68,13 @@ const ScrollableColumn: React.FC<{
       const selectedIndex = values.findIndex(v => String(v) === String(selectedValue));
       if (selectedIndex !== -1) {
         isProgrammaticScroll.current = true;
-        requestAnimationFrame(() => { 
+        requestAnimationFrame(() => {
           if (scrollRef.current) {
             const targetScrollTop = (selectedIndex * itemHeight);
             scrollRef.current.scrollTop = targetScrollTop;
             setTimeout(() => {
                 isProgrammaticScroll.current = false;
-            }, 100); 
+            }, 100);
           }
         });
       }
@@ -103,17 +101,16 @@ const ScrollableColumn: React.FC<{
             }
         }
       }
-    }, 150); 
+    }, 150);
   }, [itemHeight, onSelect, selectedValue, values]);
 
   useEffect(() => {
-    // Cleanup timeout on component unmount
     return () => {
       if (debounceTimeoutRef.current) {
         clearTimeout(debounceTimeoutRef.current);
       }
     };
-  }, []); // Empty dependency array, so cleanup runs only on unmount
+  }, []);
 
 
   return (
@@ -155,10 +152,16 @@ export default function CustomTimePicker({ value, onChange }: CustomTimePickerPr
 
   useEffect(() => {
     const parts = from24HourFormat(value);
-    setDisplayHour(parts.hour);
-    setDisplayMinute(parts.minute);
-    setDisplayPeriod(parts.period);
-  }, [value]);
+    if (parts.hour !== displayHour) {
+        setDisplayHour(parts.hour);
+    }
+    if (parts.minute !== displayMinute) {
+      setDisplayMinute(parts.minute);
+    }
+    if (parts.period !== displayPeriod) {
+      setDisplayPeriod(parts.period);
+    }
+  }, [value, displayHour, displayMinute, displayPeriod]);
 
   useEffect(() => {
     const new24HourTime = to24HourFormat(displayHour, displayMinute, displayPeriod);
@@ -168,7 +171,7 @@ export default function CustomTimePicker({ value, onChange }: CustomTimePickerPr
   }, [displayHour, displayMinute, displayPeriod, onChange, value]);
 
 
-  const itemH = 64; 
+  const itemH = 64;
 
   return (
     <div className="bg-transparent p-3 rounded-lg w-fit mx-auto relative my-4">
