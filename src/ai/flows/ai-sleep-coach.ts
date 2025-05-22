@@ -96,7 +96,6 @@ export async function aiSleepCoach(input: AiSleepCoachInput): Promise<AiSleepCoa
       ]
     };
   }
-
   return aiSleepCoachFlow(input);
 }
 
