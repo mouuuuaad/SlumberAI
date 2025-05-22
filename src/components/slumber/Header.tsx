@@ -1,7 +1,7 @@
 
 'use client';
 
-import { Moon, Sun, BedDouble, Languages, Calculator, Coffee, MessageSquare, BookOpen, BrainIcon, Gamepad2 } from 'lucide-react';
+import { Moon, Sun, BedDouble, Languages, Calculator, Coffee, MessageSquare, BookOpen, Gamepad2 } from 'lucide-react'; // Removed BrainIcon
 import { Button } from '@/components/ui/button';
 import { useEffect, useState } from 'react';
 import { useTranslations, useLocale } from 'next-intl';
@@ -14,14 +14,15 @@ interface NavItem {
   href: string;
   labelKey: string;
   icon: React.ElementType;
-  id?: string;
+  id?: string; // For anchor links on the homepage
+  isPageLink?: boolean; // To differentiate between anchor and page links
 }
 
 export default function Header() {
   const t = useTranslations('Header');
   const currentLocale = useLocale();
   const router = useRouter();
-  const currentPathname = usePathname(); // from next/navigation
+  const currentPathname = usePathname();
 
   const [mounted, setMounted] = useState(false);
   const [isDark, setIsDark] = useState(false);
@@ -64,7 +65,7 @@ export default function Header() {
     if (basePath.startsWith(`/${currentLocale}`)) {
       basePath = basePath.substring(`/${currentLocale}`.length) || '/';
     }
-     if (basePath === "") basePath = "/";
+    if (basePath === "") basePath = "/"; // Ensure base path is at least "/"
 
     router.push(`/${newLocale}${basePath}`);
   };
@@ -72,17 +73,13 @@ export default function Header() {
   const ThemeIcon = isDark ? Sun : Moon;
 
   const navItems: NavItem[] = [
-    { href: '/calculator', labelKey: 'navCalculator', icon: Calculator, id: 'sleep-cycle-calculator' },
-    { href: '/nap-optimizer', labelKey: 'navNapOptimizer', icon: Coffee, id: 'nap-optimizer' },
-    { href: '/ai-coach', labelKey: 'navAiCoach', icon: MessageSquare, id: 'ai-sleep-coach' },
-    { href: '/dream-journal', labelKey: 'navDreamJournal', icon: BookOpen, id: 'dream-journal' },
-    { href: '/sleep-science', labelKey: 'navSleepScience', icon: BrainIcon, id: 'sleep-science-explorer' },
-    { href: '/sleep-game', labelKey: 'navSleepGame', icon: Gamepad2, id: 'sleep-game' },
+    { href: '/calculator', labelKey: 'navCalculator', icon: Calculator, isPageLink: true },
+    { href: '/nap-optimizer', labelKey: 'navNapOptimizer', icon: Coffee, isPageLink: true },
+    { href: '/ai-coach', labelKey: 'navAiCoach', icon: MessageSquare, isPageLink: true },
+    { href: '/dream-journal', labelKey: 'navDreamJournal', icon: BookOpen, isPageLink: true },
+    { href: '/sleep-game', labelKey: 'navSleepGame', icon: Gamepad2, isPageLink: true },
+    // { href: '/sleep-science', labelKey: 'navSleepScience', icon: BrainIcon, isPageLink: true }, // Removed Sleep Science
   ];
-
-  // Check if the current path is the homepage to decide link behavior
-  const isHomePage = currentPathname === `/${currentLocale}` || currentPathname === `/${currentLocale}/`;
-
 
   return (
     <header className="sticky top-0 z-50 py-3 sm:py-4 px-4 md:px-8 border-b border-border/30 shadow-sm bg-background/80 backdrop-blur-md">
@@ -133,7 +130,8 @@ export default function Header() {
           <ul className="flex items-center justify-start sm:justify-center gap-x-3 sm:gap-x-5 text-sm">
             {navItems.map((item) => {
               const IconComponent = item.icon;
-              const linkHref = isHomePage && item.id && !item.href.startsWith('/') ? `#${item.id}` : item.href;
+              // All links are now page links
+              const linkHref = item.href;
               return (
                 <li key={item.labelKey} className="whitespace-nowrap">
                   <NextLink href={linkHref} passHref legacyBehavior>

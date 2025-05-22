@@ -9,25 +9,12 @@
     "navNapOptimizer": "Sieste",
     "navAiCoach": "Coach IA",
     "navDreamJournal": "Journal",
-    "navSleepScience": "Science",
     "navSleepGame": "Jeu de Sommeil"
   },
   "HomePage": {
     "heroTitle": "Débloquez des nuits reposantes et des journées pleines d'énergie",
     "heroSubtitle": "Votre guide personnel pour comprendre et améliorer vos habitudes de sommeil pour une vie plus saine et dynamique.",
-    "sleepCycleCalculatorTitle": "Calculateur de cycle de sommeil",
-    "napOptimizerTitle": "Optimiseur de sieste",
-    "aiCoachTitle": "Coach IA du sommeil",
-    "dreamJournalTitle": "Journal des rêves",
-    "sleepScienceTitle": "Explorez la science du sommeil",
-    "sleepScienceSubtitle": "Comprenez les besoins de votre corps et apprenez à optimiser votre repos pour une meilleure santé et un plus grand bien-être.",
-    "sleepScienceLinkText": "Plongez dans la science du sommeil",
-    "footerCopyright": "© {year} SlumberAI. Tous droits réservés. Conçu avec 💜",
-    "sleepCyclesTab": "Cycles de Sommeil",
-    "napOptimizerTab": "Optimiseur de Sieste",
-    "aiCoachTab": "Coach IA",
-    "dreamJournalTab": "Journal des Rêves",
-    "sleepScienceTab": "Science du Sommeil"
+    "footerCopyright": "© {year} SlumberAI. Tous droits réservés. Conçu avec 💜"
   },
   "SleepCalculatorForm": {
     "title": "Calculateur de Cycle de Sommeil",
@@ -41,14 +28,11 @@
     "errorInvalidTimeFormat": "Format d'heure sélectionné invalide. Veuillez ajuster le sélecteur.",
     "errorBedtimeCalculation": "Impossible de calculer l'heure du coucher en raison d'une erreur de traitement de l'heure.",
     "sleepPlan": {
-      "title": "Plan de Sommeil",
-      "subtitleWakeUp": "Pour vous réveiller à {targetTime}, considérez ces heures de coucher :",
-      "subtitleGoToBed": "Si vous vous couchez vers {targetTime}, visez un réveil à :",
+      "fallAsleepLegendLabel": "S'endormir",
+      "cycleLegendLabel": "Cycle",
       "goToBedLabel": "Se coucher",
       "wakeUpLabel": "Se réveiller",
-      "cyclesInfo": "{count, plural, one {# cycle de sommeil} other {# cycles de sommeil}} ({hours}h {minutes}m de sommeil réel). (+{timeToFallAsleep}m pour s'endormir)",
-      "fallAsleepLegendLabel": "S'endormir",
-      "cycleLegendLabel": "Cycle"
+      "cyclesInfo": "{count, plural, one {# cycle de sommeil} other {# cycles de sommeil}} ({hours}h {minutes}m de sommeil réel). (+{timeToFallAsleep}m pour s'endormir)"
     }
   },
   "NapOptimizer": {
@@ -140,11 +124,6 @@
     "pdfAiSentimentLabel": "Sentiment IA :",
     "pdfAiAnalysisLabel": "Analyse Détaillée IA :",
     "pdfNoText": "Aucun texte de rêve enregistré."
-  },
-  "SleepSciencePage": {
-    "title": "Explorateur de la Science du Sommeil",
-    "subtitle": "Plongez dans la science fascinante du sommeil. Comprenez les besoins de votre corps et apprenez à optimiser votre repos pour une meilleure santé et un plus grand bien-être.",
-    "backToMainLink": "Retour à la page principale"
   },
   "SleepGamePage": {
     "title": "Jeu Attrape-Étoiles",

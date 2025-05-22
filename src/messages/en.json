@@ -9,25 +9,12 @@
     "navNapOptimizer": "Nap",
     "navAiCoach": "AI Coach",
     "navDreamJournal": "Journal",
-    "navSleepScience": "Science",
     "navSleepGame": "Sleep Game"
   },
   "HomePage": {
     "heroTitle": "Unlock Restful Nights & Energized Days",
     "heroSubtitle": "Your personal guide to understanding and improving your sleep patterns for a healthier, more vibrant life.",
-    "sleepCycleCalculatorTitle": "Sleep Cycle Calculator",
-    "napOptimizerTitle": "Nap Optimizer",
-    "aiCoachTitle": "AI Sleep Coach",
-    "dreamJournalTitle": "Dream Journal",
-    "sleepScienceTitle": "Explore the Science of Sleep",
-    "sleepScienceSubtitle": "Understand your body's needs and learn how to optimize your rest for better health and well-being.",
-    "sleepScienceLinkText": "Dive into Sleep Science",
-    "footerCopyright": "© {year} SlumberAI. All rights reserved. Crafted with 💜",
-    "sleepCyclesTab": "Sleep Cycles",
-    "napOptimizerTab": "Nap Optimizer",
-    "aiCoachTab": "AI Coach",
-    "dreamJournalTab": "Dream Journal",
-    "sleepScienceTab": "Sleep Science"
+    "footerCopyright": "© {year} SlumberAI. All rights reserved. Crafted with 💜"
   },
   "SleepCalculatorForm": {
     "title": "Sleep Cycle Calculator",
@@ -41,14 +28,11 @@
     "errorInvalidTimeFormat": "Invalid time format selected. Please adjust the picker.",
     "errorBedtimeCalculation": "Could not calculate bedtime due to a time processing error.",
     "sleepPlan": {
-      "title": "Sleep Plan",
-      "subtitleWakeUp": "To wake up at {targetTime}, consider these bedtimes:",
-      "subtitleGoToBed": "If you go to bed around {targetTime}, aim to wake up at:",
+      "fallAsleepLegendLabel": "Fall Asleep",
+      "cycleLegendLabel": "Cycle",
       "goToBedLabel": "Go to bed",
       "wakeUpLabel": "Wake up",
-      "cyclesInfo": "{count, plural, one {# sleep cycle} other {# sleep cycles}} ({hours}h {minutes}m actual sleep). (+{timeToFallAsleep}m to fall asleep)",
-      "fallAsleepLegendLabel": "Fall Asleep",
-      "cycleLegendLabel": "Cycle"
+      "cyclesInfo": "{count, plural, one {# sleep cycle} other {# sleep cycles}} ({hours}h {minutes}m actual sleep). (+{timeToFallAsleep}m to fall asleep)"
     }
   },
   "NapOptimizer": {
@@ -140,11 +124,6 @@
     "pdfAiSentimentLabel": "AI Sentiment:",
     "pdfAiAnalysisLabel": "AI Detailed Analysis:",
     "pdfNoText": "No dream text recorded."
-  },
-  "SleepSciencePage": {
-    "title": "Sleep Science Explorer",
-    "subtitle": "Dive into the fascinating science behind sleep. Understand your body's needs and learn how to optimize your rest for better health and well-being.",
-    "backToMainLink": "Back to Main Page"
   },
   "SleepGamePage": {
     "title": "Star Catcher Game",
