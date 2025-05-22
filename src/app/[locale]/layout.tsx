@@ -1,3 +1,4 @@
+
 import type { Metadata, Viewport } from 'next';
 import '../globals.css';
 import { Toaster } from '@/components/ui/toaster';
@@ -5,25 +6,22 @@ import ThemeProvider from '@/components/ThemeProvider';
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages, getLocale } from 'next-intl/server';
 
-// ✅ Fix: Avoid destructuring params directly
 export async function generateMetadata(
   props: { params: { locale: string } }
 ): Promise<Metadata> {
-  const locale = props.params.locale;
+  // const locale = props.params.locale; // locale can be used if needed for metadata
 
   return {
-    title: 'SlumberAI - Optimize Your Sleep',
+    title: 'SlumberAI - Optimize Your Sleep', // This can be translated if needed using getMessages here
     description: 'Calculate optimal sleep times, get nap advice, and chat with an AI sleep assistant.',
     manifest: '/manifest.json',
   };
 }
 
-// ✅ Move themeColor to `viewport` (this is fine as-is)
 export const viewport: Viewport = {
-  themeColor: '#0A0C1E',
+  themeColor: '#D0B4DE', // Static light theme primary color (Soft Lavender), consistent with root layout
 };
 
-// ✅ Fix: Don't destructure locale directly from params
 export default async function LocaleLayout({
   children,
   params,
@@ -32,7 +30,7 @@ export default async function LocaleLayout({
   params: { locale: string };
 }) {
   const messages = await getMessages();
-  const resolvedLocale = await getLocale();
+  const resolvedLocale = params.locale; 
 
   return (
     <NextIntlClientProvider locale={resolvedLocale} messages={messages}>
