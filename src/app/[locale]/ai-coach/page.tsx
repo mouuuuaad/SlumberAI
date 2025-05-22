@@ -4,19 +4,20 @@
 import Header from '@/components/slumber/Header';
 import ChatAssistant from '@/components/slumber/ChatAssistant';
 import ConversationSidebar from '@/components/slumber/ConversationSidebar';
+import AnimatedSection from '@/components/slumber/AnimatedSection'; // Added import
 import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { PanelLeftClose, PanelLeftOpen } from 'lucide-react';
 
-const LOCAL_STORAGE_CHAT_KEY = 'slumberAiCurrentChat'; // Ensure this key is consistent
+const LOCAL_STORAGE_CHAT_KEY = 'slumberAiCurrentChat';
 
 export default function AiCoachPage() {
-  const t = useTranslations('HomePage'); // For footer structure, though footer is removed on this page
+  const t = useTranslations('HomePage');
   const coachT = useTranslations('AiSleepCoach');
   const [isClient, setIsClient] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-  const [chatSessionKey, setChatSessionKey] = useState(Date.now()); // Key to reset ChatAssistant
+  const [chatSessionKey, setChatSessionKey] = useState(Date.now());
 
   useEffect(() => {
     setIsClient(true);
@@ -33,14 +34,14 @@ export default function AiCoachPage() {
     if (typeof window !== 'undefined') {
       localStorage.removeItem(LOCAL_STORAGE_CHAT_KEY);
     }
-    setChatSessionKey(Date.now()); // Change key to force ChatAssistant re-mount
+    setChatSessionKey(Date.now()); 
   };
 
   const handleClearChatSession = () => {
     if (typeof window !== 'undefined') {
       localStorage.removeItem(LOCAL_STORAGE_CHAT_KEY);
     }
-    setChatSessionKey(Date.now()); // Change key to force ChatAssistant re-mount
+    setChatSessionKey(Date.now()); 
   };
 
 
@@ -51,7 +52,6 @@ export default function AiCoachPage() {
         <main className="flex-grow flex items-center justify-center">
           {/* Placeholder or loading spinner */}
         </main>
-        {/* Footer is removed on this page for full chat app feel */}
       </div>
     );
   }
@@ -65,9 +65,13 @@ export default function AiCoachPage() {
           toggleSidebar={toggleSidebar}
           onNewChat={handleNewChatSession}
           onClearConversation={handleClearChatSession}
-          chatSessionKey={chatSessionKey} // Pass key to allow sidebar to react if needed
+          chatSessionKey={chatSessionKey}
         />
-        <main className="flex-grow flex flex-col relative">
+        <AnimatedSection 
+          tag="main" 
+          className="flex-grow flex flex-col relative" // Pass existing classes
+          delay="100ms" // Optional: add a slight delay
+        >
           <Button
             variant="ghost"
             size="icon"
@@ -77,10 +81,10 @@ export default function AiCoachPage() {
           >
             {isSidebarOpen ? <PanelLeftClose className="h-5 w-5" /> : <PanelLeftOpen className="h-5 w-5" />}
           </Button>
-          <div className="flex-grow p-4 md:p-6 overflow-y-auto"> {/* Added padding here */}
-            <ChatAssistant key={chatSessionKey} /> {/* Use key here */}
+          <div className="flex-grow p-4 md:p-6 overflow-y-auto min-h-0"> {/* Added min-h-0 for flex scroll */}
+            <ChatAssistant key={chatSessionKey} />
           </div>
-        </main>
+        </AnimatedSection>
       </div>
     </div>
   );
