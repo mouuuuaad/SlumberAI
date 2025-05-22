@@ -10,7 +10,7 @@ import { useEffect, useState } from 'react';
 
 export default function NapOptimizerPage() {
   const t = useTranslations('HomePage'); // For footer and consistent page structure
-  const napT = useTranslations('NapOptimizer'); // For fallback title
+  const napT = useTranslations('NapOptimizer'); // For page title and content
   const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
@@ -41,7 +41,7 @@ export default function NapOptimizerPage() {
         >
           <div className="flex items-center mb-6">
             <Coffee className="h-7 w-7 text-primary mr-3" />
-            <h2 className="text-2xl md:text-3xl font-semibold text-foreground">{t('napOptimizerTitle') || napT('title')}</h2>
+            <h2 className="text-2xl md:text-3xl font-semibold text-foreground">{napT('title')}</h2>
           </div>
           <NapCalculator />
         </AnimatedSection>
