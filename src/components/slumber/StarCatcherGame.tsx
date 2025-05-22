@@ -69,6 +69,25 @@ export default function StarCatcherGame() {
     updateGameAreaSize();
     window.addEventListener('resize', updateGameAreaSize);
     
+    // Add simple ping animation for bonus text
+    // Moved into useEffect to ensure client-side execution
+    const styleId = "star-catcher-animations";
+    if (!document.getElementById(styleId)) {
+        const style = document.createElement('style');
+        style.id = styleId;
+        style.innerHTML = `
+          @keyframes ping-once {
+            0% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+            70%, 100% { transform: translate(-50%, -50%) scale(1.8); opacity: 0; }
+          }
+          .animate-ping-once {
+            animation: ping-once 1s cubic-bezier(0, 0, 0.2, 1) forwards;
+          }
+        `;
+        document.head.appendChild(style);
+    }
+
+
     return () => {
       window.removeEventListener('resize', updateGameAreaSize);
       if (animationFrameId.current) {
@@ -355,19 +374,4 @@ export default function StarCatcherGame() {
       </div>
     </div>
   );
-}
-
-// Add simple ping animation for bonus text
-const style = document.createElement('style');
-style.innerHTML = `
-  @keyframes ping-once {
-    0% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
-    70%, 100% { transform: translate(-50%, -50%) scale(1.8); opacity: 0; }
-  }
-  .animate-ping-once {
-    animation: ping-once 1s cubic-bezier(0, 0, 0.2, 1) forwards;
-  }
-`;
-if (typeof window !== 'undefined') {
-    document.head.appendChild(style);
 }
