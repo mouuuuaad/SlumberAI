@@ -1,361 +1,332 @@
 
 'use client';
 
-import { useState, useRef, useEffect, type FormEvent, Fragment } from 'react';
-import { Button } from '@/components/ui/button';
+import { useEffect, useRef, useState, FormEvent, useCallback } from 'react';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Card, CardContent } from '@/components/ui/card'; // Main card removed, but individual message cards remain
 import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { useToast } from '@/hooks/use-toast';
+import { Loader2, SendHorizonal, Copy, Brain, Sparkles } from 'lucide-react'; // Added Brain, Sparkles
+import { AiSleepCoachInput, AiSleepCoachOutput, aiSleepCoach } from '@/ai/flows/ai-sleep-coach';
+import { useTranslations } from 'next-intl';
+import { cn } from '@/lib/utils';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { Bot, User, Send, Settings2, Loader2, Copy, AlertTriangle } from 'lucide-react';
-import { aiSleepCoach, type AiSleepCoachInput, type AiSleepCoachOutput } from '@/ai/flows/ai-sleep-coach';
-import { cn } from '@/lib/utils';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { useTranslations } from 'next-intl';
-import { useToast } from "@/hooks/use-toast";
+
+
+const LOCAL_STORAGE_CHAT_KEY = 'slumberAiCurrentChat';
 
 export interface Message {
   id: string;
   role: 'user' | 'assistant';
   content: string;
-  fullText?: string; // For AI messages, to store the complete response before typing
-  isTyping?: boolean; // To indicate this message is currently being typed
+  fullText?: string;
+  isTyping?: boolean;
   followUpQuestions?: string[];
   isGreeting?: boolean;
 }
-
-const renderMarkdownMessage = (text: string) => {
-  // Escape the blinking cursor if it's present, so it's not misinterpreted by markdown logic
-  const cleanText = text.replace(/<span class="animate-blink">▌<\/span>$/, '');
-
-  const blocks = cleanText.split(/\\n\\n|\\n(?! )/);
-  const elements: JSX.Element[] = [];
-  let currentListItems: string[] = [];
-
-  const flushList = () => {
-    if (currentListItems.length > 0) {
-      elements.push(
-        <ul key={`ul-${elements.length}-${Math.random()}`} className="list-disc list-inside space-y-1 my-2 pl-4">
-          {currentListItems.map((item, idx) => (
-            <li key={`li-${idx}-${Math.random()}`} className="text-sm">
-              {item.split(/(\*\*.*?\*\*)/g).map((part, i) =>
-                part.startsWith('**') && part.endsWith('**') ? <strong key={i}>{part.slice(2, -2)}</strong> : <Fragment key={i}>{part}</Fragment>
-              )}
-            </li>
-          ))}
-        </ul>
-      );
-      currentListItems = [];
-    }
-  };
-
-  blocks.forEach((block, blockIndex) => {
-    let trimmedBlock = block.trim();
-
-    const listBlockMatch = trimmedBlock.match(/^(\* .*(\n\* .*)?)/s);
-    if (listBlockMatch && listBlockMatch[0].startsWith('* ')) {
-        flushList();
-        const items = listBlockMatch[0].split('\n').map(item => item.trim().substring(2).trim()).filter(Boolean);
-        items.forEach(item => currentListItems.push(item));
-        flushList();
-        return;
-    }
-
-    if (!trimmedBlock) return;
-
-    if (trimmedBlock.startsWith('## ')) {
-      flushList();
-      elements.push(
-        <h2 key={`h2-${blockIndex}-${elements.length}-${Math.random()}`} className="text-lg font-semibold mt-4 mb-2 text-foreground flex items-center">
-          {trimmedBlock.substring(3).split(/(\*\*.*?\*\*)/g).map((part, i) => {
-            if (part.startsWith('**') && part.endsWith('**')) {
-              return <strong key={i} className="ml-1">{part.slice(2, -2)}</strong>;
-            }
-            const emojiMatch = part.match(/^(\S\s)/);
-            if (emojiMatch && part.length > 2) {
-                return <Fragment key={i}><span className="mr-1.5">{emojiMatch[1].trim()}</span>{part.substring(emojiMatch[1].length)}</Fragment>;
-            } else if (emojiMatch && part.length <=2 ) {
-                 return <span key={i} className="mr-1.5">{part.trim()}</span>
-            }
-            return <span key={i}>{part}</span>;
-          })}
-        </h2>
-      );
-    } else {
-      flushList();
-      elements.push(
-        <p key={`p-${blockIndex}-${elements.length}-${Math.random()}`} className="text-sm my-1.5 whitespace-pre-wrap break-words">
-          {trimmedBlock.split(/(\*\*.*?\*\*)/g).map((part, i) =>
-            part.startsWith('**') && part.endsWith('**') ? <strong key={i}>{part.slice(2, -2)}</strong> : <Fragment key={i}>{part}</Fragment>
-          )}
-        </p>
-      );
-    }
-  });
-
-  flushList();
-  return <>{elements}</>;
-};
-
-const LOCAL_STORAGE_CHAT_KEY = 'slumberAiCurrentChat';
-const TYPING_SPEED_MS = 50;
 
 interface ChatAssistantProps {
   startFresh: boolean;
   onUserFirstInteractionInNewChat: () => void;
 }
 
+// Helper to render markdown-like content
+const renderMarkdownMessage = (text: string) => {
+  if (!text) return null;
+
+  // Split by newlines, then process each block
+  const blocks = text.split(/\\n\\n|\n\n/); // Handles both escaped and literal double newlines for paragraphs
+
+  return blocks.map((block, blockIndex) => {
+    // Handle Headings: ## Emoji **Bold Text**
+    if (block.startsWith('## ')) {
+      const headingText = block.substring(3).trim(); // Remove '## '
+      const emojiMatch = headingText.match(/^(\p{Emoji_Presentation}|\p{Emoji})\s*/u);
+      let emoji = '';
+      let titleText = headingText;
+
+      if (emojiMatch) {
+        emoji = emojiMatch[0];
+        titleText = titleText.substring(emoji.length).trim();
+      }
+      
+      // Bold handling within the title
+      titleText = titleText.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+      
+      return (
+        <h2 key={blockIndex} className="text-xl font-semibold mt-4 mb-2 text-foreground flex items-center">
+          <span role="img" aria-label="heading-emoji" className="mr-2">{emoji.trim()}</span>
+          <span dangerouslySetInnerHTML={{ __html: titleText }} />
+        </h2>
+      );
+    }
+
+    // Handle Bullet Points: * Item
+    // Allow multi-line bullet points if subsequent lines are part of the same item
+    if (block.startsWith('* ')) {
+      const listItems = block.split(/\n\*\s|\r\n\*\s/).map(item => item.replace(/^\*\s?/, '').trim());
+      return (
+        <ul key={blockIndex} className="list-disc list-inside space-y-1 my-2 pl-4 text-foreground/90">
+          {listItems.map((item, itemIndex) => {
+            // Bold handling within list items
+            const formattedItem = item.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+            return <li key={itemIndex} dangerouslySetInnerHTML={{ __html: formattedItem }} />;
+          })}
+        </ul>
+      );
+    }
+    
+    // Handle Paragraphs (and bold text within them)
+    // Default to paragraph if not a heading or list
+    const formattedBlock = block.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+    return (
+      <p key={blockIndex} className="my-1 text-foreground/90 whitespace-pre-line" dangerouslySetInnerHTML={{ __html: formattedBlock }} />
+    );
+  });
+};
+
+
 export default function ChatAssistant({ startFresh, onUserFirstInteractionInNewChat }: ChatAssistantProps) {
   const t = useTranslations('AiSleepCoach');
+  const [inputValue, setInputValue] = useState('');
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
-  const getInitialMessage = (): Message => ({
-    id: 'greeting-0',
-    role: 'assistant',
-    content: t('initialBotGreeting'),
-    fullText: t('initialBotGreeting'),
-    isGreeting: true,
-    isTyping: false, // Greetings are not typed out
+  const [userProfile, setUserProfile] = useState<{ age?: string; stressLevel?: string; lifestyle?: string }>({
+    age: '',
+    stressLevel: '',
+    lifestyle: '',
   });
 
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [inputValue, setInputValue] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const scrollAreaRef = useRef<HTMLDivElement>(null);
-  const [isClient, setIsClient] = useState(false);
+  const [currentlyTypingMessageId, setCurrentlyTypingMessageId] = useState<string | null>(null);
+  const typingIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
-  const [age, setAge] = useState<string>('');
-  const [lifestyle, setLifestyle] = useState<string>('');
-  const [stressLevel, setStressLevel] = useState<string>('');
-  
-  const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const getInitialMessage = useCallback((): Message => ({
+    id: 'initial-greeting',
+    role: 'assistant',
+    content: t('initialBotGreeting'),
+    isGreeting: true,
+  }), [t]);
 
   useEffect(() => {
-    setIsClient(true);
     if (startFresh) {
       setMessages([getInitialMessage()]);
     } else {
-      if (typeof window !== 'undefined') {
+      try {
         const storedMessagesRaw = localStorage.getItem(LOCAL_STORAGE_CHAT_KEY);
         if (storedMessagesRaw) {
-          try {
-            const parsedMessages: Message[] = JSON.parse(storedMessagesRaw).map((msg: Message) => ({
-              ...msg,
-              isTyping: false, // Ensure isTyping is reset on load
-              content: msg.fullText || msg.content, // Ensure content is full text on load
-            }));
-            if (Array.isArray(parsedMessages) && parsedMessages.length > 0) {
-              setMessages(parsedMessages);
-            } else {
-              setMessages([getInitialMessage()]);
-            }
-          } catch (error) {
-            console.error("Error parsing stored chat messages:", error);
+          const storedMessages = JSON.parse(storedMessagesRaw);
+          if (Array.isArray(storedMessages) && storedMessages.length > 0) {
+            setMessages(storedMessages);
+          } else {
             setMessages([getInitialMessage()]);
           }
         } else {
           setMessages([getInitialMessage()]);
         }
-      } else {
-         setMessages([getInitialMessage()]);
+      } catch (error) {
+        console.error("Error loading messages from localStorage:", error);
+        setMessages([getInitialMessage()]);
       }
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [startFresh, t]);
+  }, [startFresh, t]); // Added t to dependency array
+
 
   useEffect(() => {
-    if (isClient && typeof window !== 'undefined') {
+    if (messages.length > 0) {
       if (startFresh && messages.length === 1 && messages[0].isGreeting) {
-        // Do not save
-      } else if (messages.length > 0) {
-         // Save only non-typing messages or fully typed messages
-        const messagesToSave = messages.map(msg => ({
-          ...msg,
-          content: msg.fullText || msg.content, // Save full content
-          isTyping: undefined // Don't save typing state
-        }));
-        localStorage.setItem(LOCAL_STORAGE_CHAT_KEY, JSON.stringify(messagesToSave));
-      } else if (messages.length === 0 && !startFresh) {
-        localStorage.removeItem(LOCAL_STORAGE_CHAT_KEY);
+        // Don't save to localStorage if it's a fresh start with only the greeting
+        return;
       }
+      localStorage.setItem(LOCAL_STORAGE_CHAT_KEY, JSON.stringify(messages));
+    } else if (!startFresh) { // Only remove if not a fresh start and messages are empty
+      localStorage.removeItem(LOCAL_STORAGE_CHAT_KEY);
     }
-  }, [messages, isClient, startFresh]);
-
-  useEffect(() => {
-    const messageToType = messages.find(msg => msg.isTyping && msg.role === 'assistant');
-    if (messageToType && messageToType.fullText) {
-      if (typingTimeoutRef.current) {
-        clearTimeout(typingTimeoutRef.current);
-      }
-
-      let currentTypedLength = messageToType.content.replace(/<span class="animate-blink">▌<\/span>$/, '').length;
-
-      if (currentTypedLength < messageToType.fullText.length) {
-        typingTimeoutRef.current = setTimeout(() => {
-          setMessages(prevMessages =>
-            prevMessages.map(msg =>
-              msg.id === messageToType.id
-                ? {
-                    ...msg,
-                    content: msg.fullText!.substring(0, currentTypedLength + 1) + (currentTypedLength + 1 < msg.fullText!.length ? '<span class="animate-blink">▌</span>' : ''),
-                  }
-                : msg
-            )
-          );
-        }, TYPING_SPEED_MS);
-      } else {
-        // Typing finished
-        setMessages(prevMessages =>
-          prevMessages.map(msg =>
-            msg.id === messageToType.id ? { ...msg, isTyping: false, content: msg.fullText! } : msg
-          )
-        );
-      }
-    }
-    return () => {
-      if (typingTimeoutRef.current) {
-        clearTimeout(typingTimeoutRef.current);
-      }
-    };
-  }, [messages]);
+  }, [messages, startFresh]);
 
 
-  const scrollToBottom = () => {
-    if (scrollAreaRef.current) {
-      const scrollViewport = scrollAreaRef.current.querySelector('div[data-radix-scroll-area-viewport]');
+  const handleProfileChange = (field: keyof typeof userProfile, value: string) => {
+    setUserProfile((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const scrollToBottom = useCallback(() => {
+    if (messagesEndRef.current) {
       requestAnimationFrame(() => {
-        if (scrollViewport) {
-          scrollViewport.scrollTop = scrollViewport.scrollHeight;
-        } else if (scrollAreaRef.current) {
-          scrollAreaRef.current.scrollTop = scrollAreaRef.current.scrollHeight;
+        if (messagesEndRef.current) {
+            messagesEndRef.current.scrollIntoView({ behavior: 'smooth', block: 'end' });
         }
       });
     }
-  };
+  }, []);
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages, isLoading]); // Scroll on messages change and when loading indicator appears/disappears
+  }, [messages, scrollToBottom]);
 
-  const handleFollowUpClick = (question: string) => {
-    setInputValue(question);
-    handleSubmit(undefined, question);
-  };
 
-  const handleSubmit = async (e?: FormEvent, followUpQuery?: string) => {
-    if (e) e.preventDefault();
-    const query = followUpQuery || inputValue;
-    if (!query.trim() || isLoading) return;
-
-    if (startFresh) {
-      onUserFirstInteractionInNewChat();
+  // Typewriter Effect
+  useEffect(() => {
+    if (typingIntervalRef.current) {
+      clearInterval(typingIntervalRef.current);
     }
 
-    const userMessage: Message = {
-      id: Date.now().toString(),
-      role: 'user',
-      content: query.trim(),
-    };
+    const messageToType = messages.find(msg => msg.id === currentlyTypingMessageId && msg.isTyping);
 
-    setMessages((prev) => {
-      if (prev.length === 1 && prev[0].isGreeting) {
-        return [userMessage];
+    if (messageToType && messageToType.fullText) {
+      let currentTextIndex = messageToType.content?.length || 0;
+      typingIntervalRef.current = setInterval(() => {
+        if (currentTextIndex < (messageToType.fullText?.length || 0) ) {
+          setMessages(prevMessages =>
+            prevMessages.map(msg =>
+              msg.id === currentlyTypingMessageId
+                ? { ...msg, content: (msg.fullText || "").substring(0, currentTextIndex + 1) }
+                : msg
+            )
+          );
+          currentTextIndex++;
+        } else {
+          if (typingIntervalRef.current) clearInterval(typingIntervalRef.current);
+          setMessages(prevMessages =>
+            prevMessages.map(msg =>
+              msg.id === currentlyTypingMessageId ? { ...msg, isTyping: false } : msg
+            )
+          );
+          setCurrentlyTypingMessageId(null);
+        }
+      }, 30); // Adjust typing speed here
+    }
+
+    return () => {
+      if (typingIntervalRef.current) {
+        clearInterval(typingIntervalRef.current);
       }
-      return [...prev, userMessage];
-    });
+    };
+  }, [messages, currentlyTypingMessageId]);
 
-    const currentQuery = query.trim();
-    if (!followUpQuery) {
-      setInputValue('');
-    }
-    setIsLoading(true);
-
-    try {
-      const userProfileInput: AiSleepCoachInput['userProfile'] = {};
-      if (age) userProfileInput.age = parseInt(age, 10);
-      if (lifestyle.trim()) userProfileInput.lifestyle = lifestyle.trim();
-      if (stressLevel) userProfileInput.stressLevel = stressLevel;
-
-      const input: AiSleepCoachInput = {
-        currentQuery,
-        userProfile: Object.keys(userProfileInput).length > 0 ? userProfileInput : undefined,
-      };
-      const result: AiSleepCoachOutput = await aiSleepCoach(input);
-      setIsLoading(false);
-
-      const assistantMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        role: 'assistant',
-        content: '<span class="animate-blink">▌</span>', // Initial content with cursor
-        fullText: result.advice,
-        isTyping: true,
-        followUpQuestions: result.followUpQuestions,
-      };
-      setMessages((prev) => [...prev, assistantMessage]);
-    } catch (error) {
-      setIsLoading(false);
-      console.error('Error calling AI Sleep Coach:', error);
-      const errorMessageContent = t('errorResponse');
-      const errorMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        role: 'assistant',
-        content: errorMessageContent,
-        fullText: errorMessageContent,
-        isTyping: false, // Errors are not typed out
-      };
-      setMessages((prev) => [...prev, errorMessage]);
-       toast({
-        variant: "destructive",
-        title: t('errorToastTitle'),
-        description: t('errorResponse'),
-      });
-    }
-  };
-
-  const handleCopy = async (textToCopy: string) => {
+  const handleCopyMessage = async (textToCopy: string) => {
     try {
       await navigator.clipboard.writeText(textToCopy);
       toast({
         title: t('copySuccessTitle'),
         description: t('copySuccessDescription'),
+        duration: 2000,
       });
     } catch (err) {
-      console.error('Failed to copy text: ', err);
       toast({
-        variant: "destructive",
         title: t('copyErrorTitle'),
         description: t('copyErrorDescription'),
+        variant: 'destructive',
+        duration: 2000,
       });
     }
   };
 
+
+  const handleSubmit = async (e: FormEvent, suggestedQuery?: string) => {
+    e.preventDefault();
+    const query = suggestedQuery || inputValue.trim();
+    if (!query) return;
+
+    if (startFresh) {
+      onUserFirstInteractionInNewChat();
+    }
+
+    const newUserMessage: Message = {
+      id: Date.now().toString() + '-user',
+      role: 'user',
+      content: query,
+    };
+
+    setMessages((prev) => [...prev, newUserMessage]);
+    if (!suggestedQuery) {
+      setInputValue('');
+    }
+    setIsLoading(true);
+
+    const coachInput: AiSleepCoachInput = {
+      currentQuery: query,
+      userProfile: {
+        age: userProfile.age ? parseInt(userProfile.age, 10) : undefined,
+        stressLevel: userProfile.stressLevel || undefined,
+        lifestyle: userProfile.lifestyle || undefined,
+      },
+    };
+
+    try {
+      const aiResponse = await aiSleepCoach(coachInput);
+      const newAssistantMessage: Message = {
+        id: Date.now().toString() + '-assistant',
+        role: 'assistant',
+        content: '', // Start empty for typewriter
+        fullText: aiResponse.advice,
+        isTyping: true,
+        followUpQuestions: aiResponse.followUpQuestions,
+      };
+      setMessages((prev) => [...prev, newAssistantMessage]);
+      setCurrentlyTypingMessageId(newAssistantMessage.id);
+    } catch (error) {
+      console.error('Error fetching AI response:', error);
+      const errorResponseMessage: Message = {
+        id: Date.now().toString() + '-error',
+        role: 'assistant',
+        content: t('errorResponse'),
+      };
+      setMessages((prev) => [...prev, errorResponseMessage]);
+       toast({
+        title: t('errorToastTitle'),
+        description: t('errorResponse'),
+        variant: 'destructive',
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  
+  const handleFollowUpClick = (question: string) => {
+    // Simulate submitting the follow-up question
+    // Need a dummy event or refactor handleSubmit
+    const dummyEvent = { preventDefault: () => {} } as FormEvent;
+    handleSubmit(dummyEvent, question);
+  };
+
+
   return (
-    <div className="w-full h-full flex flex-col bg-transparent">
-      <Accordion type="single" collapsible className="px-1 pt-0 pb-1 border-b border-border/30 mb-3">
-        <AccordionItem value="profile" className="border-b-0">
-          <AccordionTrigger className="text-sm hover:no-underline text-foreground/90 py-2.5">
-            <div className="flex items-center gap-2">
-              <Settings2 className="h-4 w-4" />
+    <div className="flex flex-col h-full w-full bg-transparent text-foreground"> {/* Removed overflow-hidden */}
+      <Accordion type="single" collapsible className="px-3 py-2 border-b border-border/30">
+        <AccordionItem value="personalize" className="border-b-0">
+          <AccordionTrigger className="text-sm text-muted-foreground hover:no-underline py-2.5">
+            <div className='flex items-center'>
+              <Sparkles className="h-4 w-4 mr-2 text-primary" />
               {t('personalizeAdviceLabel')}
             </div>
           </AccordionTrigger>
-          <AccordionContent className="pt-3 pb-2 space-y-4">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="space-y-1.5">
-                <Label htmlFor="age" className="text-xs">{t('ageLabel')}</Label>
+          <AccordionContent className="pt-3 pb-1">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
+              <div>
+                <Label htmlFor="age" className="text-xs text-muted-foreground">{t('ageLabel')}</Label>
                 <Input
                   id="age"
                   type="number"
                   placeholder={t('agePlaceholder')}
-                  value={age}
-                  onChange={(e) => setAge(e.target.value)}
-                  className="bg-input/70 text-foreground placeholder:text-muted-foreground/70 h-9"
+                  value={userProfile.age}
+                  onChange={(e) => handleProfileChange('age', e.target.value)}
+                  className="mt-1 h-9 text-sm bg-input/70 placeholder:text-muted-foreground/60"
                 />
               </div>
-              <div className="space-y-1.5">
-                <Label htmlFor="stressLevel" className="text-xs">{t('stressLevelLabel')}</Label>
-                <Select value={stressLevel} onValueChange={setStressLevel}>
-                  <SelectTrigger id="stressLevel" className="bg-input/70 text-foreground placeholder:text-muted-foreground/70 h-9">
+              <div>
+                <Label htmlFor="stressLevel" className="text-xs text-muted-foreground">{t('stressLevelLabel')}</Label>
+                <Select
+                  value={userProfile.stressLevel}
+                  onValueChange={(value) => handleProfileChange('stressLevel', value)}
+                >
+                  <SelectTrigger id="stressLevel" className="mt-1 h-9 text-sm bg-input/70 text-muted-foreground data-[placeholder]:text-muted-foreground/60">
                     <SelectValue placeholder={t('stressLevelPlaceholder')} />
                   </SelectTrigger>
                   <SelectContent>
@@ -365,60 +336,70 @@ export default function ChatAssistant({ startFresh, onUserFirstInteractionInNewC
                   </SelectContent>
                 </Select>
               </div>
-            </div>
-            <div className="space-y-1.5">
-              <Label htmlFor="lifestyle" className="text-xs">{t('lifestyleLabel')}</Label>
-              <Input
-                id="lifestyle"
-                placeholder={t('lifestylePlaceholder')}
-                value={lifestyle}
-                onChange={(e) => setLifestyle(e.target.value)}
-                className="bg-input/70 text-foreground placeholder:text-muted-foreground/70 h-9"
-              />
+              <div>
+                <Label htmlFor="lifestyle" className="text-xs text-muted-foreground">{t('lifestyleLabel')}</Label>
+                <Input
+                  id="lifestyle"
+                  placeholder={t('lifestylePlaceholder')}
+                  value={userProfile.lifestyle}
+                  onChange={(e) => handleProfileChange('lifestyle', e.target.value)}
+                  className="mt-1 h-9 text-sm bg-input/70 placeholder:text-muted-foreground/60"
+                />
+              </div>
             </div>
           </AccordionContent>
         </AccordionItem>
       </Accordion>
 
-      <ScrollArea className="flex-grow min-h-0 pr-3" ref={scrollAreaRef}>
-        <div className="space-y-6 pb-4">
-          {messages.map((message) => (
-            <div key={message.id} className={cn("flex flex-col group", message.role === 'user' ? 'items-end' : 'items-start')}>
-              <div
-                className={cn(
-                  'flex items-start gap-2.5 p-3 rounded-lg max-w-[85%] shadow-md break-words relative',
-                  message.role === 'user'
-                    ? 'bg-primary text-primary-foreground rounded-br-none'
-                    : 'bg-card/90 text-card-foreground border border-border/50 rounded-bl-none'
-                )}
-              >
-                {message.role === 'assistant' && <Bot className="h-5 w-5 text-accent flex-shrink-0 mt-0.5" />}
-                <div className="flex-1 text-sm">
-                  {message.role === 'user' ? message.content : renderMarkdownMessage(message.content)}
-                   {/* Blinking cursor is now part of the content string during typing */}
-                </div>
-                {message.role === 'user' && <User className="h-5 w-5 text-primary-foreground flex-shrink-0 mt-0.5" />}
-                {message.role === 'assistant' && !message.isTyping && message.fullText && (
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => handleCopy(message.fullText!)}
-                    className="absolute -top-2 -right-2 h-6 w-6 p-1 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity bg-card/90 hover:bg-accent/30 rounded-full"
-                    aria-label={t('copyAction')}
-                  >
-                    <Copy className="h-3.5 w-3.5" />
-                  </Button>
-                )}
+      <ScrollArea className="flex-grow p-3 sm:p-4 space-y-4 min-h-0"> {/* Ensure min-h-0 for flex scroll */}
+        {messages.map((msg, index) => (
+          <div
+            key={msg.id}
+            className={cn(
+              'flex items-end gap-2.5 w-full',
+              msg.role === 'user' ? 'justify-end' : 'justify-start'
+            )}
+          >
+            {msg.role === 'assistant' && (
+              <Avatar className="h-7 w-7 self-start shrink-0">
+                <AvatarImage src="/bot-avatar.png" alt="SlumberAI" data-ai-hint="robot happy" />
+                <AvatarFallback><Brain className="h-4 w-4 text-primary"/></AvatarFallback>
+              </Avatar>
+            )}
+            <div
+              className={cn(
+                'p-3 rounded-lg max-w-[85%] shadow-md group relative', // Added group for copy button positioning
+                msg.role === 'user'
+                  ? 'bg-primary text-primary-foreground rounded-br-none'
+                  : 'bg-card text-card-foreground border border-border/50 rounded-bl-none'
+              )}
+            >
+              <div className="flex-1 min-w-0"> {/* Ensure text container takes up space */}
+                {renderMarkdownMessage(msg.content)}
+                {msg.isTyping && <span className="animate-blink">▌</span>}
               </div>
-              {message.role === 'assistant' && message.followUpQuestions && message.followUpQuestions.length > 0 && !message.isTyping && (
-                <div className="mt-2.5 flex flex-wrap gap-2 max-w-[85%] self-start">
-                  {message.followUpQuestions.map((q, index) => (
+
+              {msg.role === 'assistant' && !msg.isTyping && !msg.isGreeting && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => handleCopyMessage(msg.fullText || msg.content)}
+                  className="absolute -top-2 -right-2 h-6 w-6 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity bg-card hover:bg-accent rounded-full p-1"
+                  aria-label={t('copyMessageAriaLabel')}
+                >
+                  <Copy className="h-3.5 w-3.5" />
+                </Button>
+              )}
+            
+              {msg.role === 'assistant' && msg.followUpQuestions && msg.followUpQuestions.length > 0 && !msg.isTyping && (
+                <div className="mt-2.5 pt-2.5 border-t border-border/50 space-y-1.5">
+                  {msg.followUpQuestions.map((q, i) => (
                     <Button
-                      key={index}
+                      key={i}
                       variant="outline"
                       size="sm"
+                      className="text-xs h-auto py-1 px-2.5 border-primary/30 text-primary/80 hover:bg-primary/10 hover:text-primary"
                       onClick={() => handleFollowUpClick(q)}
-                      className="text-xs bg-card/50 hover:bg-card/80 border-border/50 text-foreground rounded-full px-3 py-1"
                     >
                       {q}
                     </Button>
@@ -426,40 +407,47 @@ export default function ChatAssistant({ startFresh, onUserFirstInteractionInNewC
                 </div>
               )}
             </div>
-          ))}
-          {isLoading && ( // Only show this when AI is fetching, not during typing
-             <div className="flex items-start gap-3 p-3 rounded-lg bg-muted/70 max-w-[85%] shadow-sm self-start">
-              <Bot className="h-5 w-5 text-accent flex-shrink-0 mt-0.5" />
-              <div className="flex items-center space-x-1.5">
-                <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
-                <p className="text-sm text-muted-foreground">{t('loadingResponse')}</p>
-              </div>
-            </div>
-          )}
-        </div>
+
+             {msg.role === 'user' && (
+                <Avatar className="h-7 w-7 self-start shrink-0">
+                    <AvatarImage src="/user-avatar.png" alt="User" data-ai-hint="person generic" />
+                    <AvatarFallback>U</AvatarFallback>
+                </Avatar>
+            )}
+          </div>
+        ))}
+        <div ref={messagesEndRef} />
       </ScrollArea>
-      <form onSubmit={(e) => handleSubmit(e)} className="p-3 border-t border-border/50 bg-background">
-        <div className="flex items-center gap-2.5 bg-input/50 rounded-xl p-1.5 border border-border/40 focus-within:ring-1 focus-within:ring-primary">
-          <Input
-            type="text"
-            placeholder={t('inputPlaceholder')}
-            value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
-            disabled={isLoading || messages.some(msg => msg.isTyping)} // Disable input while loading or typing
-            className="flex-grow bg-transparent border-none focus:ring-0 h-10 text-sm placeholder:text-muted-foreground/80"
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' && !e.shiftKey && !isLoading && !messages.some(msg => msg.isTyping) && inputValue.trim()) {
-                e.preventDefault();
-                handleSubmit(e);
-              }
-            }}
-          />
-          <Button type="submit" disabled={isLoading || messages.some(msg => msg.isTyping) || !inputValue.trim()} size="icon" className="bg-primary hover:bg-primary/90 rounded-lg w-9 h-9">
-            <Send className="h-4 w-4 text-primary-foreground" />
-          </Button>
-        </div>
+
+      <form
+        onSubmit={handleSubmit}
+        className="flex items-center gap-2 p-3 border-t border-border/30 bg-background"
+      >
+        <Input
+          value={inputValue}
+          onChange={(e) => setInputValue(e.target.value)}
+          placeholder={t('inputPlaceholder')}
+          className="flex-grow h-11 rounded-xl bg-input/80 focus:ring-primary focus-visible:ring-primary placeholder:text-muted-foreground/70"
+          disabled={isLoading || !!currentlyTypingMessageId}
+        />
+        <Button 
+            type="submit" 
+            size="icon" 
+            className="h-11 w-11 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 shrink-0"
+            disabled={isLoading || !inputValue.trim() || !!currentlyTypingMessageId}
+            aria-label={t('sendMessageAriaLabel')}
+        >
+          {isLoading ? (
+            <Loader2 className="h-5 w-5 animate-spin" />
+          ) : (
+            <SendHorizonal className="h-5 w-5" />
+          )}
+        </Button>
       </form>
     </div>
   );
 }
 
+    
+
+    
