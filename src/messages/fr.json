@@ -22,7 +22,12 @@
     "sleepScienceTitle": "Explorez la science du sommeil",
     "sleepScienceSubtitle": "Comprenez les besoins de votre corps et apprenez à optimiser votre repos pour une meilleure santé et un plus grand bien-être.",
     "sleepScienceLinkText": "Plongez dans la science du sommeil",
-    "footerCopyright": "© {year} SlumberAI. Tous droits réservés. Conçu avec 💜"
+    "footerCopyright": "© {year} SlumberAI. Tous droits réservés. Conçu avec 💜",
+    "sleepCyclesTab": "Cycles de Sommeil",
+    "napOptimizerTab": "Optimiseur de Sieste",
+    "aiCoachTab": "Coach IA",
+    "dreamJournalTab": "Journal des Rêves",
+    "sleepScienceTab": "Science du Sommeil"
   },
   "SleepCalculatorForm": {
     "title": "Calculateur de Cycle de Sommeil",
@@ -51,8 +56,9 @@
     "description": "Calculez le meilleur moment pour vous réveiller de votre sieste pour un rafraîchissement optimal.",
     "napTypeLabel": "Type de Sieste :",
     "selectNapTypePlaceholder": "Sélectionner le type de sieste",
-    "startTimeLabel": "Heure de début de la sieste (HH:MM) :",
+    "startTimeLabel": "Heure de début de la sieste :",
     "calculateButton": "Calculer la Sieste",
+    "useCurrentTimeButton": "Utiliser l'heure actuelle",
     "errorEnterStartTime": "Veuillez entrer une heure de début pour votre sieste.",
     "errorInvalidTimeFormat": "Format d'heure invalide. Veuillez utiliser HH:MM (format 24 heures).",
     "errorProcessTime": "Impossible de traiter l'heure. Veuillez vous assurer qu'elle est au format HH:MM valide.",
@@ -93,7 +99,7 @@
     "lifestylePlaceholder": "ex: Employé de bureau sédentaire, Athlète actif, Étudiant",
     "loadingResponse": "SlumberAI réfléchit...",
     "errorResponse": "Désolé, j'ai eu un petit problème pour me connecter à mes connaissances de coaching. Veuillez réessayer dans un instant.",
-    "initialBotGreeting": "Bonjour ! Je suis SlumberAI, votre guide personnel du sommeil. Comment puis-je vous aider à améliorer votre sommeil aujourd'hui ?",
+    "initialBotGreeting": "Bonjour ! Je suis SlumberAI, votre guide personnel du sommeil. Comment puis-je vous aider à améliorer votre sommeil aujourd'hui ?\n\nPar exemple, vous pouvez me dire :\n* \"Je me sens fatigué tout le temps.\"\n* \"J'ai du mal à m'endormir.\"\n* \"Quelles sont les bonnes routines avant de dormir ?\"\n\nSi vous le souhaitez, vous pouvez également fournir quelques détails optionnels ci-dessus comme votre âge, votre niveau de stress et votre style de vie afin que je puisse encore mieux adapter mes conseils !",
     "inputPlaceholder": "Interrogez SlumberAI sur votre sommeil...",
     "sidebarCollapse": "Réduire la barre latérale",
     "sidebarExpand": "Étendre la barre latérale"
@@ -109,7 +115,6 @@
     "settings": "Paramètres",
     "clearHistory": "Effacer la Conversation",
     "confirmClearHistory": "Êtes-vous sûr de vouloir effacer l'historique de la conversation actuelle ? Cette action est irréversible.",
-    "newChatFeaturePlaceholder": "Démarrer un nouveau chat avec un historique distinct sera bientôt disponible !",
     "sidebarCollapse": "Réduire la barre latérale",
     "sidebarExpand": "Étendre la barre latérale"
   },
@@ -152,6 +157,8 @@
     "finalScoreLabel": "Score final :",
     "tooManyMissedText": "Trop d'étoiles manquées. Beaux rêves la prochaine fois !",
     "goodTryText": "Bien essayé ! Prêt pour une autre session d'attrapage d'étoiles ?",
-    "restartGameButton": "Rejouer"
+    "restartGameButton": "Rejouer",
+    "highScoreLabel": "Meilleur Score :",
+    "newHighScoreText": "Nouveau Meilleur Score !"
   }
 }

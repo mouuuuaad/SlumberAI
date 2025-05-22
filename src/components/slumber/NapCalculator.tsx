@@ -6,8 +6,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Coffee, AlertCircle, Clock } from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card'; // Removed CardHeader, CardTitle, CardDescription
+import { Coffee, AlertCircle, Clock, Timer } from 'lucide-react'; // Added Timer
 import { addMinutes, format, set } from 'date-fns';
 import { useTranslations } from 'next-intl';
 
@@ -49,6 +49,11 @@ export default function NapCalculator() {
     setStartTime(format(new Date(), 'HH:mm'));
   }, []);
 
+  const handleUseCurrentTime = () => {
+    setStartTime(format(new Date(), 'HH:mm'));
+    if(timeError) setTimeError(null);
+    if(napResult) setNapResult(null);
+  };
 
   const handleCalculateNap = () => {
     if (!startTime) {
@@ -95,9 +100,6 @@ export default function NapCalculator() {
   const selectedNapDetails = translatedNapTypes.find(n => n.duration.toString() === selectedNapDuration);
 
   return (
-    // Removed Card wrapper, styling is now on parent AnimatedSection
-    // Removed CardHeader, title is on parent AnimatedSection
-    // Removed CardDescription, description is on parent AnimatedSection
     <div className="space-y-6">
       <div className="space-y-2">
         <Label htmlFor="napType" className="text-foreground/90">{t('napTypeLabel')}</Label>
@@ -121,17 +123,26 @@ export default function NapCalculator() {
 
       <div className="space-y-2">
         <Label htmlFor="startTime" className="text-foreground/90">{t('startTimeLabel')}</Label>
-        <Input
-          id="startTime"
-          type="time" 
-          value={startTime}
-          onChange={(e) => {
-            setStartTime(e.target.value)
-            if(timeError) setTimeError(null);
-            if(napResult) setNapResult(null);
-          }}
-          className="w-full md:w-1/2 bg-input text-foreground focus:ring-primary"
-        />
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
+            <Input
+            id="startTime"
+            type="time" 
+            value={startTime}
+            onChange={(e) => {
+                setStartTime(e.target.value)
+                if(timeError) setTimeError(null);
+                if(napResult) setNapResult(null);
+            }}
+            className="w-full sm:w-auto flex-grow bg-input text-foreground focus:ring-primary"
+            />
+            <Button 
+                variant="outline" 
+                onClick={handleUseCurrentTime} 
+                className="w-full sm:w-auto text-xs sm:text-sm border-primary/50 text-primary/80 hover:text-primary hover:bg-primary/10"
+            >
+                <Timer className="mr-1.5 h-3.5 w-3.5" /> {t('useCurrentTimeButton')}
+            </Button>
+        </div>
         {timeError && (
           <p className="text-sm text-destructive flex items-center gap-1 pt-1">
             <AlertCircle className="h-4 w-4" /> {timeError}
@@ -140,7 +151,7 @@ export default function NapCalculator() {
       </div>
 
       <Button onClick={handleCalculateNap} className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-primary-foreground">
-        {t('calculateButton')}
+        <Coffee className="mr-2 h-5 w-5" /> {t('calculateButton')}
       </Button>
 
       {napResult && (

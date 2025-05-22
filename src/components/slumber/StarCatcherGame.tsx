@@ -5,6 +5,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { useTranslations } from 'next-intl';
+import { Award, TrendingUp } from 'lucide-react'; // Added Award for high score
 
 interface Star {
   id: number;
@@ -22,10 +23,11 @@ interface Star {
 // Constants
 const PLAYER_SIZE = 32; // px
 const MAX_MISSED_STARS = 10;
-const STAR_VY_MIN = 0.8; // Slightly faster minimum speed
-const STAR_VY_MAX = 1.8; // Slightly faster maximum speed
-const STAR_GENERATION_PROBABILITY = 0.04; // Slightly higher probability
+const STAR_VY_MIN = 0.8; 
+const STAR_VY_MAX = 1.8; 
+const STAR_GENERATION_PROBABILITY = 0.045; // Slightly increased for more action
 const BONUS_STAR_CHANCE = 0.1; // 10% chance for a bonus star
+const HIGH_SCORE_KEY = 'slumberAiStarCatcherHighScore';
 
 export default function StarCatcherGame() {
   const gameAreaRef = useRef<HTMLDivElement>(null);
@@ -36,15 +38,23 @@ export default function StarCatcherGame() {
   const gameAreaSize = useRef({ width: 0, height: 0 });
 
   const [score, setScore] = useState(0);
+  const [highScore, setHighScore] = useState(0);
   const [missed, setMissed] = useState(0);
   const [isGameOver, setIsGameOver] = useState(false);
   const [gameStarted, setGameStarted] = useState(false);
   const [isClient, setIsClient] = useState(false);
+  const [showBonusText, setShowBonusText] = useState(false);
+  const bonusTextTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const t = useTranslations('SleepGamePage');
 
   useEffect(() => {
     setIsClient(true);
+    const storedHighScore = localStorage.getItem(HIGH_SCORE_KEY);
+    if (storedHighScore) {
+      setHighScore(parseInt(storedHighScore, 10));
+    }
+
     const updateGameAreaSize = () => {
       if (gameAreaRef.current) {
         gameAreaSize.current = {
@@ -52,7 +62,7 @@ export default function StarCatcherGame() {
           height: gameAreaRef.current.offsetHeight,
         };
         if (playerRef.current && gameStarted) {
-          playerRef.current.style.top = `${gameAreaSize.current.height - PLAYER_SIZE - 20}px`; // Ensure player is visible
+          playerRef.current.style.top = `${gameAreaSize.current.height - PLAYER_SIZE - 20}px`; 
         }
       }
     };
@@ -64,7 +74,11 @@ export default function StarCatcherGame() {
       if (animationFrameId.current) {
         cancelAnimationFrame(animationFrameId.current);
       }
+      if (bonusTextTimeoutRef.current) {
+        clearTimeout(bonusTextTimeoutRef.current);
+      }
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [gameStarted]);
 
   const createStar = useCallback(() => {
@@ -73,15 +87,15 @@ export default function StarCatcherGame() {
     const isBonus = Math.random() < BONUS_STAR_CHANCE;
     return {
       id: lastStarId.current,
-      x: Math.random() * (gameAreaSize.current.width - 30) + 15, // Ensure stars are not too close to edges
+      x: Math.random() * (gameAreaSize.current.width - 30) + 15, 
       y: -20,
-      size: isBonus ? Math.random() * 6 + 8 : Math.random() * 5 + 5, // Bonus stars slightly bigger
-      opacity: Math.random() * 0.4 + 0.6, // Brighter stars
-      vx: (Math.random() - 0.5) * 0.5, // Slightly more horizontal drift
+      size: isBonus ? Math.random() * 7 + 10 : Math.random() * 5 + 5, // Bonus stars slightly bigger
+      opacity: Math.random() * 0.4 + 0.7, // Brighter stars
+      vx: (Math.random() - 0.5) * 0.6, 
       vy: Math.random() * (STAR_VY_MAX - STAR_VY_MIN) + STAR_VY_MIN,
       type: isBonus ? 'bonus' : 'normal',
-      color: isBonus ? 'bg-yellow-400' : 'bg-accent',
-      glowColor: isBonus ? 'hsl(45 90% 60%)' : 'hsl(var(--accent))',
+      color: isBonus ? 'bg-yellow-300' : 'bg-accent', // Brighter yellow for bonus
+      glowColor: isBonus ? 'hsl(50 95% 60%)' : 'hsl(var(--accent))',
     };
   }, []);
 
@@ -89,7 +103,6 @@ export default function StarCatcherGame() {
     setScore(0);
     setMissed(0);
     setIsGameOver(false);
-    // Initial burst of stars
     const initialStars = [];
     for(let i=0; i < 5; i++) {
         const newStar = createStar();
@@ -119,6 +132,16 @@ export default function StarCatcherGame() {
     playerRef.current.style.left = `${x}px`;
   }, [gameStarted, isGameOver]);
 
+  const triggerBonusText = () => {
+    setShowBonusText(true);
+    if (bonusTextTimeoutRef.current) {
+      clearTimeout(bonusTextTimeoutRef.current);
+    }
+    bonusTextTimeoutRef.current = setTimeout(() => {
+      setShowBonusText(false);
+    }, 1000); // Show text for 1 second
+  };
+
   useEffect(() => {
     if (!gameStarted || isGameOver || !isClient) {
       if (animationFrameId.current) {
@@ -139,26 +162,28 @@ export default function StarCatcherGame() {
             const playerRect = playerRef.current.getBoundingClientRect();
             const gameAreaRectVal = gameAreaRef.current.getBoundingClientRect();
             
-            // Star's screen coordinates (center)
             const starCenterX = gameAreaRectVal.left + star.x;
             const starCenterY = gameAreaRectVal.top + star.y;
 
-            // Collision detection (circle vs circle for simplicity, approximating player and star as circles)
             const distanceX = (playerRect.left + PLAYER_SIZE / 2) - starCenterX;
             const distanceY = (playerRect.top + PLAYER_SIZE / 2) - starCenterY;
             const distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
 
             if (distance < (PLAYER_SIZE / 2 + star.size / 2)) {
-              setScore(s => s + (star.type === 'bonus' ? 50 : 10));
-              return false; // Star caught
+              if (star.type === 'bonus') {
+                setScore(s => s + 50);
+                triggerBonusText();
+              } else {
+                setScore(s => s + 10);
+              }
+              return false; 
             }
           }
 
           if (star.y > gameAreaSize.current.height + star.size) {
             newMissedCount++;
-            return false; // Star missed
+            return false; 
           }
-          // Keep star if it's within horizontal bounds or slightly outside (for smooth appearance/disappearance)
           return star.x > -star.size * 2 && star.x < gameAreaSize.current.width + star.size * 2;
         });
 
@@ -166,6 +191,10 @@ export default function StarCatcherGame() {
           setMissed(newMissedCount);
           if (newMissedCount >= MAX_MISSED_STARS) {
             setIsGameOver(true);
+            if (score > highScore) {
+              setHighScore(score);
+              localStorage.setItem(HIGH_SCORE_KEY, score.toString());
+            }
           }
         }
 
@@ -189,7 +218,8 @@ export default function StarCatcherGame() {
         cancelAnimationFrame(animationFrameId.current);
       }
     };
-  }, [gameStarted, isGameOver, createStar, missed, isClient]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [gameStarted, isGameOver, createStar, missed, isClient, score, highScore]);
 
 
   useEffect(() => {
@@ -257,39 +287,61 @@ export default function StarCatcherGame() {
                   width: `${star.size}px`,
                   height: `${star.size}px`,
                   opacity: star.opacity,
-                  boxShadow: `0 0 ${star.type === 'bonus' ? '12px 4px' : '8px 2px'} ${star.glowColor}${Math.floor(star.opacity * 100)}`, // Opacity in hex
+                  boxShadow: `0 0 ${star.type === 'bonus' ? '14px 5px' : '8px 2px'} ${star.glowColor}${Math.floor(star.opacity * 100)}`, 
                   transform: 'translate(-50%, -50%)',
-                  transition: 'opacity 0.2s ease-out, transform 0.2s ease-out', // For potential future catch animation
+                  transition: 'opacity 0.2s ease-out, transform 0.2s ease-out',
                 }}
                 data-ai-hint={star.type === 'bonus' ? "bonus star" : "star item"}
               />
             ))}
+             {showBonusText && (
+              <div 
+                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-yellow-300 text-3xl font-bold animate-ping-once"
+                style={{ textShadow: '0 0 10px yellow' }}
+              >
+                BONUS!
+              </div>
+            )}
           </>
         )}
       </div>
 
       <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none p-4">
         {!gameStarted && !isGameOver && (
-          <Button 
-            onClick={startGame} 
-            className="pointer-events-auto bg-primary hover:bg-primary/90 text-primary-foreground text-lg px-8 py-6 shadow-xl transition-all hover:scale-105 active:scale-95"
-          >
-            {t('startGameButton')}
-          </Button>
+          <div className="text-center bg-slate-800/80 backdrop-blur-sm p-6 rounded-xl shadow-2xl pointer-events-auto">
+            <Button 
+                onClick={startGame} 
+                className="pointer-events-auto bg-primary hover:bg-primary/90 text-primary-foreground text-lg px-8 py-6 shadow-xl transition-all hover:scale-105 active:scale-95"
+            >
+                {t('startGameButton')}
+            </Button>
+            {highScore > 0 && (
+                <p className="mt-4 text-lg text-amber-400 flex items-center justify-center gap-2">
+                    <Award className="h-5 w-5" /> {t('highScoreLabel')} {highScore}
+                </p>
+            )}
+          </div>
         )}
 
         {gameStarted && !isGameOver && (
           <div className="absolute top-4 left-4 text-left text-primary-foreground bg-slate-700/70 backdrop-blur-sm p-3 rounded-lg shadow-lg space-y-1 border border-slate-600/50">
             <p className="text-lg font-semibold">{t('scoreLabel')} {score}</p>
             <p className="text-sm">{t('missedLabel')} {missed} / {MAX_MISSED_STARS}</p>
+             {highScore > 0 && <p className="text-xs text-amber-400/80">{t('highScoreLabel')} {highScore}</p>}
           </div>
         )}
 
         {isGameOver && (
           <div className="text-center bg-slate-800/90 backdrop-blur-md p-6 md:p-10 rounded-xl shadow-2xl pointer-events-auto border border-slate-700/60">
             <h2 className="text-4xl font-bold text-primary mb-3">{t('gameOverTitle')}</h2>
-            <p className="text-2xl text-primary-foreground mb-2">{t('finalScoreLabel')} {score}</p>
-            <p className="text-lg text-muted-foreground mb-6">
+            <p className="text-2xl text-primary-foreground mb-1">{t('finalScoreLabel')} {score}</p>
+            {score > 0 && score >= highScore && (
+              <p className="text-lg text-amber-300 mb-2 flex items-center justify-center gap-1.5">
+                <TrendingUp className="h-5 w-5"/> {t('newHighScoreText')}
+              </p>
+            )}
+             <p className="text-sm text-muted-foreground mb-1">{t('highScoreLabel')} {highScore}</p>
+            <p className="text-base text-muted-foreground mb-6">
               {missed >= MAX_MISSED_STARS ? t('tooManyMissedText') : t('goodTryText')}
             </p>
             <Button 
@@ -303,4 +355,19 @@ export default function StarCatcherGame() {
       </div>
     </div>
   );
+}
+
+// Add simple ping animation for bonus text
+const style = document.createElement('style');
+style.innerHTML = `
+  @keyframes ping-once {
+    0% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+    70%, 100% { transform: translate(-50%, -50%) scale(1.8); opacity: 0; }
+  }
+  .animate-ping-once {
+    animation: ping-once 1s cubic-bezier(0, 0, 0.2, 1) forwards;
+  }
+`;
+if (typeof window !== 'undefined') {
+    document.head.appendChild(style);
 }

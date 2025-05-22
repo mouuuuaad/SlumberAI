@@ -22,7 +22,12 @@
     "sleepScienceTitle": "Explore the Science of Sleep",
     "sleepScienceSubtitle": "Understand your body's needs and learn how to optimize your rest for better health and well-being.",
     "sleepScienceLinkText": "Dive into Sleep Science",
-    "footerCopyright": "© {year} SlumberAI. All rights reserved. Crafted with 💜"
+    "footerCopyright": "© {year} SlumberAI. All rights reserved. Crafted with 💜",
+    "sleepCyclesTab": "Sleep Cycles",
+    "napOptimizerTab": "Nap Optimizer",
+    "aiCoachTab": "AI Coach",
+    "dreamJournalTab": "Dream Journal",
+    "sleepScienceTab": "Sleep Science"
   },
   "SleepCalculatorForm": {
     "title": "Sleep Cycle Calculator",
@@ -51,8 +56,9 @@
     "description": "Calculate the best time to wake up from your nap for optimal refreshment.",
     "napTypeLabel": "Nap Type:",
     "selectNapTypePlaceholder": "Select nap type",
-    "startTimeLabel": "Nap Start Time (HH:MM):",
+    "startTimeLabel": "Nap Start Time:",
     "calculateButton": "Calculate Nap",
+    "useCurrentTimeButton": "Use Current Time",
     "errorEnterStartTime": "Please enter a start time for your nap.",
     "errorInvalidTimeFormat": "Invalid time format. Please use HH:MM (24-hour).",
     "errorProcessTime": "Could not process the time. Please ensure it is a valid HH:MM format.",
@@ -93,8 +99,8 @@
     "lifestylePlaceholder": "e.g., Sedentary office worker, Active athlete, Student",
     "loadingResponse": "SlumberAI is thinking...",
     "errorResponse": "Sorry, I had a little trouble connecting to my coaching knowledge. Please try again in a moment.",
-    "initialBotGreeting": "Hi there! I'm SlumberAI, your personal sleep guide. How can I help you improve your sleep today?",
-    "inputPlaceholder": "Ask SlumberAI about your sleep...",
+    "initialBotGreeting": "Hi there! I'm SlumberAI, your personal sleep guide. How can I help you improve your sleep today?\n\nFor example, you can tell me:\n* \"I feel tired all the time.\"\n* \"I have trouble falling asleep.\"\n* \"What are some good pre-sleep routines?\"\n\nIf you'd like, you can also provide some optional details above like your age, stress level, and lifestyle so I can tailor my advice even better!",
+    "inputPlaceholder": "Ask about your sleep...",
     "sidebarCollapse": "Collapse sidebar",
     "sidebarExpand": "Expand sidebar"
   },
@@ -109,7 +115,6 @@
     "settings": "Settings",
     "clearHistory": "Clear Conversation",
     "confirmClearHistory": "Are you sure you want to clear the current conversation history? This action cannot be undone.",
-    "newChatFeaturePlaceholder": "Starting a new chat with distinct history is coming soon!",
     "sidebarCollapse": "Collapse sidebar",
     "sidebarExpand": "Expand sidebar"
   },
@@ -152,6 +157,8 @@
     "finalScoreLabel": "Final Score:",
     "tooManyMissedText": "Too many stars missed. Sweet dreams next time!",
     "goodTryText": "Nice try! Ready for another round of star catching?",
-    "restartGameButton": "Play Again"
+    "restartGameButton": "Play Again",
+    "highScoreLabel": "High Score:",
+    "newHighScoreText": "New High Score!"
   }
 }
