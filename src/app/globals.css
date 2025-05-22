@@ -232,3 +232,16 @@ html {
   scrollbar-width: thin;
   scrollbar-color: hsl(var(--sidebar-accent) / 0.5) transparent;
 }
+
+/* Blinking cursor animation */
+@keyframes blink-animation {
+  50% {
+    opacity: 0;
+  }
+}
+.animate-blink {
+  animation: blink-animation 1s step-end infinite;
+  display: inline-block; /* Ensures it doesn't break line flow weirdly */
+  user-select: none; /* Prevents user from selecting the cursor */
+}
+

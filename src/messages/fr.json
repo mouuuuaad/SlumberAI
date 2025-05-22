@@ -23,8 +23,6 @@
     "aiCoachSubtitle": "Discutez avec notre IA pour des conseils et des informations personnalisés sur le sommeil.",
     "dreamJournalTitle": "Journal des rêves",
     "dreamJournalSubtitle": "Enregistrez vos rêves et explorez leurs significations avec l'analyse IA.",
-    "sleepScienceTitle": "Explorateur de Science du Sommeil",
-    "sleepScienceSubtitle": "Apprenez des faits fascinants sur la science du sommeil.",
     "viewButton": "Explorer"
   },
   "SleepCalculatorForm": {
@@ -96,8 +94,12 @@
     "errorResponse": "Désolé, j'ai eu un petit problème pour me connecter à mes connaissances de coaching. Veuillez réessayer dans un instant.",
     "initialBotGreeting": "Bonjour ! Je suis SlumberAI, votre guide personnel du sommeil. Comment puis-je vous aider à améliorer votre sommeil aujourd'hui ?\n\nPar exemple, vous pouvez me dire :\n* \"Je me sens fatigué tout le temps.\"\n* \"J'ai du mal à m'endormir.\"\n* \"Quelles sont les bonnes routines avant de dormir ?\"\n\nSi vous le souhaitez, vous pouvez également fournir quelques détails optionnels ci-dessus comme votre âge, votre niveau de stress et votre style de vie afin que je puisse encore mieux adapter mes conseils !",
     "inputPlaceholder": "Interrogez SlumberAI sur votre sommeil...",
-    "sidebarCollapse": "Réduire la barre latérale",
-    "sidebarExpand": "Étendre la barre latérale"
+    "copyAction": "Copier le message",
+    "copySuccessTitle": "Copié !",
+    "copySuccessDescription": "Message copié dans le presse-papiers.",
+    "copyErrorTitle": "Échec de la copie",
+    "copyErrorDescription": "Impossible de copier le message dans le presse-papiers.",
+    "errorToastTitle": "Erreur IA"
   },
   "AiSleepCoachSidebar": {
     "newChat": "Nouveau Chat",
@@ -155,3 +157,4 @@
     "soundOff": "Son Désactivé"
   }
 }
+

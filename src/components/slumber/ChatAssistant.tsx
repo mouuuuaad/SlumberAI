@@ -7,22 +7,28 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Bot, User, Send, Settings2, Loader2 } from 'lucide-react';
+import { Bot, User, Send, Settings2, Loader2, Copy, AlertTriangle } from 'lucide-react';
 import { aiSleepCoach, type AiSleepCoachInput, type AiSleepCoachOutput } from '@/ai/flows/ai-sleep-coach';
 import { cn } from '@/lib/utils';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { useTranslations } from 'next-intl';
+import { useToast } from "@/hooks/use-toast";
 
 export interface Message {
   id: string;
   role: 'user' | 'assistant';
   content: string;
+  fullText?: string; // For AI messages, to store the complete response before typing
+  isTyping?: boolean; // To indicate this message is currently being typed
   followUpQuestions?: string[];
   isGreeting?: boolean;
 }
 
 const renderMarkdownMessage = (text: string) => {
-  const blocks = text.split(/\\n\\n|\\n(?! )/); 
+  // Escape the blinking cursor if it's present, so it's not misinterpreted by markdown logic
+  const cleanText = text.replace(/<span class="animate-blink">▌<\/span>$/, '');
+
+  const blocks = cleanText.split(/\\n\\n|\\n(?! )/);
   const elements: JSX.Element[] = [];
   let currentListItems: string[] = [];
 
@@ -45,16 +51,15 @@ const renderMarkdownMessage = (text: string) => {
 
   blocks.forEach((block, blockIndex) => {
     let trimmedBlock = block.trim();
-    
+
     const listBlockMatch = trimmedBlock.match(/^(\* .*(\n\* .*)?)/s);
     if (listBlockMatch && listBlockMatch[0].startsWith('* ')) {
-        flushList(); 
-        const items = listBlockMatch[0].split('\n').map(item => item.trim().substring(2)).filter(Boolean);
+        flushList();
+        const items = listBlockMatch[0].split('\n').map(item => item.trim().substring(2).trim()).filter(Boolean);
         items.forEach(item => currentListItems.push(item));
-        flushList(); 
-        return; 
+        flushList();
+        return;
     }
-
 
     if (!trimmedBlock) return;
 
@@ -67,17 +72,15 @@ const renderMarkdownMessage = (text: string) => {
               return <strong key={i} className="ml-1">{part.slice(2, -2)}</strong>;
             }
             const emojiMatch = part.match(/^(\S\s)/);
-            if (emojiMatch && part.length > 2) { 
+            if (emojiMatch && part.length > 2) {
                 return <Fragment key={i}><span className="mr-1.5">{emojiMatch[1].trim()}</span>{part.substring(emojiMatch[1].length)}</Fragment>;
-            } else if (emojiMatch && part.length <=2 ) { 
+            } else if (emojiMatch && part.length <=2 ) {
                  return <span key={i} className="mr-1.5">{part.trim()}</span>
             }
             return <span key={i}>{part}</span>;
           })}
         </h2>
       );
-    } else if (trimmedBlock.startsWith('* ')) { // Should be caught by listBlockMatch if formatted correctly by AI
-      currentListItems.push(trimmedBlock.substring(2));
     } else {
       flushList();
       elements.push(
@@ -94,8 +97,8 @@ const renderMarkdownMessage = (text: string) => {
   return <>{elements}</>;
 };
 
-
 const LOCAL_STORAGE_CHAT_KEY = 'slumberAiCurrentChat';
+const TYPING_SPEED_MS = 50;
 
 interface ChatAssistantProps {
   startFresh: boolean;
@@ -104,12 +107,15 @@ interface ChatAssistantProps {
 
 export default function ChatAssistant({ startFresh, onUserFirstInteractionInNewChat }: ChatAssistantProps) {
   const t = useTranslations('AiSleepCoach');
+  const { toast } = useToast();
 
   const getInitialMessage = (): Message => ({
     id: 'greeting-0',
     role: 'assistant',
     content: t('initialBotGreeting'),
+    fullText: t('initialBotGreeting'),
     isGreeting: true,
+    isTyping: false, // Greetings are not typed out
   });
 
   const [messages, setMessages] = useState<Message[]>([]);
@@ -121,52 +127,97 @@ export default function ChatAssistant({ startFresh, onUserFirstInteractionInNewC
   const [age, setAge] = useState<string>('');
   const [lifestyle, setLifestyle] = useState<string>('');
   const [stressLevel, setStressLevel] = useState<string>('');
+  
+  const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     setIsClient(true);
-    // This effect runs when the component mounts OR when 'startFresh' prop changes
-    // (because ChatAssistant is re-keyed by chatKey from parent, it re-mounts on new/clear chat)
     if (startFresh) {
       setMessages([getInitialMessage()]);
     } else {
       if (typeof window !== 'undefined') {
-        const storedMessages = localStorage.getItem(LOCAL_STORAGE_CHAT_KEY);
-        if (storedMessages) {
+        const storedMessagesRaw = localStorage.getItem(LOCAL_STORAGE_CHAT_KEY);
+        if (storedMessagesRaw) {
           try {
-            const parsedMessages = JSON.parse(storedMessages);
+            const parsedMessages: Message[] = JSON.parse(storedMessagesRaw).map((msg: Message) => ({
+              ...msg,
+              isTyping: false, // Ensure isTyping is reset on load
+              content: msg.fullText || msg.content, // Ensure content is full text on load
+            }));
             if (Array.isArray(parsedMessages) && parsedMessages.length > 0) {
               setMessages(parsedMessages);
             } else {
-              setMessages([getInitialMessage()]); // Fallback if stored data is empty/invalid array
+              setMessages([getInitialMessage()]);
             }
           } catch (error) {
             console.error("Error parsing stored chat messages:", error);
-            setMessages([getInitialMessage()]); // Fallback on parsing error
+            setMessages([getInitialMessage()]);
           }
         } else {
-          setMessages([getInitialMessage()]); // Fallback if no stored messages
+          setMessages([getInitialMessage()]);
         }
       } else {
-         setMessages([getInitialMessage()]); // Fallback for SSR or if window is not defined yet
+         setMessages([getInitialMessage()]);
       }
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [startFresh, t]); // Key prop from parent handles full re-mount logic for session reset.
+  }, [startFresh, t]);
 
   useEffect(() => {
     if (isClient && typeof window !== 'undefined') {
       if (startFresh && messages.length === 1 && messages[0].isGreeting) {
-        // Do not save to localStorage if it's a fresh start and only the greeting is present.
-        // This preserves the old chat in localStorage until the user interacts.
+        // Do not save
       } else if (messages.length > 0) {
-        localStorage.setItem(LOCAL_STORAGE_CHAT_KEY, JSON.stringify(messages));
+         // Save only non-typing messages or fully typed messages
+        const messagesToSave = messages.map(msg => ({
+          ...msg,
+          content: msg.fullText || msg.content, // Save full content
+          isTyping: undefined // Don't save typing state
+        }));
+        localStorage.setItem(LOCAL_STORAGE_CHAT_KEY, JSON.stringify(messagesToSave));
       } else if (messages.length === 0 && !startFresh) {
-        // This might occur if a "Clear Conversation" happened, or if messages became empty
-        // while not in a 'startFresh' state (e.g. if all messages were deleted by some other means)
         localStorage.removeItem(LOCAL_STORAGE_CHAT_KEY);
       }
     }
   }, [messages, isClient, startFresh]);
+
+  useEffect(() => {
+    const messageToType = messages.find(msg => msg.isTyping && msg.role === 'assistant');
+    if (messageToType && messageToType.fullText) {
+      if (typingTimeoutRef.current) {
+        clearTimeout(typingTimeoutRef.current);
+      }
+
+      let currentTypedLength = messageToType.content.replace(/<span class="animate-blink">▌<\/span>$/, '').length;
+
+      if (currentTypedLength < messageToType.fullText.length) {
+        typingTimeoutRef.current = setTimeout(() => {
+          setMessages(prevMessages =>
+            prevMessages.map(msg =>
+              msg.id === messageToType.id
+                ? {
+                    ...msg,
+                    content: msg.fullText!.substring(0, currentTypedLength + 1) + (currentTypedLength + 1 < msg.fullText!.length ? '<span class="animate-blink">▌</span>' : ''),
+                  }
+                : msg
+            )
+          );
+        }, TYPING_SPEED_MS);
+      } else {
+        // Typing finished
+        setMessages(prevMessages =>
+          prevMessages.map(msg =>
+            msg.id === messageToType.id ? { ...msg, isTyping: false, content: msg.fullText! } : msg
+          )
+        );
+      }
+    }
+    return () => {
+      if (typingTimeoutRef.current) {
+        clearTimeout(typingTimeoutRef.current);
+      }
+    };
+  }, [messages]);
 
 
   const scrollToBottom = () => {
@@ -184,7 +235,7 @@ export default function ChatAssistant({ startFresh, onUserFirstInteractionInNewC
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages, isLoading]);
+  }, [messages, isLoading]); // Scroll on messages change and when loading indicator appears/disappears
 
   const handleFollowUpClick = (question: string) => {
     setInputValue(question);
@@ -196,7 +247,6 @@ export default function ChatAssistant({ startFresh, onUserFirstInteractionInNewC
     const query = followUpQuery || inputValue;
     if (!query.trim() || isLoading) return;
 
-    // If this is the first interaction in a "fresh" chat, notify parent.
     if (startFresh) {
       onUserFirstInteractionInNewChat();
     }
@@ -208,7 +258,6 @@ export default function ChatAssistant({ startFresh, onUserFirstInteractionInNewC
     };
 
     setMessages((prev) => {
-      // If it's a fresh start (only greeting exists), replace greeting with user message
       if (prev.length === 1 && prev[0].isGreeting) {
         return [userMessage];
       }
@@ -232,24 +281,51 @@ export default function ChatAssistant({ startFresh, onUserFirstInteractionInNewC
         userProfile: Object.keys(userProfileInput).length > 0 ? userProfileInput : undefined,
       };
       const result: AiSleepCoachOutput = await aiSleepCoach(input);
+      setIsLoading(false);
 
       const assistantMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        content: result.advice,
+        content: '<span class="animate-blink">▌</span>', // Initial content with cursor
+        fullText: result.advice,
+        isTyping: true,
         followUpQuestions: result.followUpQuestions,
       };
       setMessages((prev) => [...prev, assistantMessage]);
     } catch (error) {
+      setIsLoading(false);
       console.error('Error calling AI Sleep Coach:', error);
+      const errorMessageContent = t('errorResponse');
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        content: t('errorResponse'),
+        content: errorMessageContent,
+        fullText: errorMessageContent,
+        isTyping: false, // Errors are not typed out
       };
       setMessages((prev) => [...prev, errorMessage]);
-    } finally {
-      setIsLoading(false);
+       toast({
+        variant: "destructive",
+        title: t('errorToastTitle'),
+        description: t('errorResponse'),
+      });
+    }
+  };
+
+  const handleCopy = async (textToCopy: string) => {
+    try {
+      await navigator.clipboard.writeText(textToCopy);
+      toast({
+        title: t('copySuccessTitle'),
+        description: t('copySuccessDescription'),
+      });
+    } catch (err) {
+      console.error('Failed to copy text: ', err);
+      toast({
+        variant: "destructive",
+        title: t('copyErrorTitle'),
+        description: t('copyErrorDescription'),
+      });
     }
   };
 
@@ -307,10 +383,10 @@ export default function ChatAssistant({ startFresh, onUserFirstInteractionInNewC
       <ScrollArea className="flex-grow min-h-0 pr-3" ref={scrollAreaRef}>
         <div className="space-y-6 pb-4">
           {messages.map((message) => (
-            <div key={message.id} className={cn("flex flex-col", message.role === 'user' ? 'items-end' : 'items-start')}>
+            <div key={message.id} className={cn("flex flex-col group", message.role === 'user' ? 'items-end' : 'items-start')}>
               <div
                 className={cn(
-                  'flex items-start gap-2.5 p-3 rounded-lg max-w-[85%] shadow-md break-words',
+                  'flex items-start gap-2.5 p-3 rounded-lg max-w-[85%] shadow-md break-words relative',
                   message.role === 'user'
                     ? 'bg-primary text-primary-foreground rounded-br-none'
                     : 'bg-card/90 text-card-foreground border border-border/50 rounded-bl-none'
@@ -319,10 +395,22 @@ export default function ChatAssistant({ startFresh, onUserFirstInteractionInNewC
                 {message.role === 'assistant' && <Bot className="h-5 w-5 text-accent flex-shrink-0 mt-0.5" />}
                 <div className="flex-1 text-sm">
                   {message.role === 'user' ? message.content : renderMarkdownMessage(message.content)}
+                   {/* Blinking cursor is now part of the content string during typing */}
                 </div>
                 {message.role === 'user' && <User className="h-5 w-5 text-primary-foreground flex-shrink-0 mt-0.5" />}
+                {message.role === 'assistant' && !message.isTyping && message.fullText && (
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => handleCopy(message.fullText!)}
+                    className="absolute -top-2 -right-2 h-6 w-6 p-1 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity bg-card/90 hover:bg-accent/30 rounded-full"
+                    aria-label={t('copyAction')}
+                  >
+                    <Copy className="h-3.5 w-3.5" />
+                  </Button>
+                )}
               </div>
-              {message.role === 'assistant' && message.followUpQuestions && message.followUpQuestions.length > 0 && (
+              {message.role === 'assistant' && message.followUpQuestions && message.followUpQuestions.length > 0 && !message.isTyping && (
                 <div className="mt-2.5 flex flex-wrap gap-2 max-w-[85%] self-start">
                   {message.followUpQuestions.map((q, index) => (
                     <Button
@@ -339,7 +427,7 @@ export default function ChatAssistant({ startFresh, onUserFirstInteractionInNewC
               )}
             </div>
           ))}
-          {isLoading && messages.length > 0 && !(messages.length === 1 && messages[0].isGreeting) && (
+          {isLoading && ( // Only show this when AI is fetching, not during typing
              <div className="flex items-start gap-3 p-3 rounded-lg bg-muted/70 max-w-[85%] shadow-sm self-start">
               <Bot className="h-5 w-5 text-accent flex-shrink-0 mt-0.5" />
               <div className="flex items-center space-x-1.5">
@@ -357,16 +445,16 @@ export default function ChatAssistant({ startFresh, onUserFirstInteractionInNewC
             placeholder={t('inputPlaceholder')}
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
-            disabled={isLoading}
+            disabled={isLoading || messages.some(msg => msg.isTyping)} // Disable input while loading or typing
             className="flex-grow bg-transparent border-none focus:ring-0 h-10 text-sm placeholder:text-muted-foreground/80"
             onKeyDown={(e) => {
-              if (e.key === 'Enter' && !e.shiftKey && !isLoading && inputValue.trim()) {
+              if (e.key === 'Enter' && !e.shiftKey && !isLoading && !messages.some(msg => msg.isTyping) && inputValue.trim()) {
                 e.preventDefault();
                 handleSubmit(e);
               }
             }}
           />
-          <Button type="submit" disabled={isLoading || !inputValue.trim()} size="icon" className="bg-primary hover:bg-primary/90 rounded-lg w-9 h-9">
+          <Button type="submit" disabled={isLoading || messages.some(msg => msg.isTyping) || !inputValue.trim()} size="icon" className="bg-primary hover:bg-primary/90 rounded-lg w-9 h-9">
             <Send className="h-4 w-4 text-primary-foreground" />
           </Button>
         </div>
@@ -374,3 +462,4 @@ export default function ChatAssistant({ startFresh, onUserFirstInteractionInNewC
     </div>
   );
 }
+

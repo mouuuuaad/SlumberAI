@@ -23,8 +23,6 @@
     "aiCoachSubtitle": "Chat with our AI for personalized sleep advice and insights.",
     "dreamJournalTitle": "Dream Journal",
     "dreamJournalSubtitle": "Log your dreams and explore their meanings with AI analysis.",
-    "sleepScienceTitle": "Sleep Science Explorer",
-    "sleepScienceSubtitle": "Learn fascinating facts about the science of sleep.",
     "viewButton": "Explore"
   },
   "SleepCalculatorForm": {
@@ -96,8 +94,12 @@
     "errorResponse": "Sorry, I had a little trouble connecting to my coaching knowledge. Please try again in a moment.",
     "initialBotGreeting": "Hi there! I'm SlumberAI, your personal sleep guide. How can I help you improve your sleep today?\n\nFor example, you can tell me:\n* \"I feel tired all the time.\"\n* \"I have trouble falling asleep.\"\n* \"What are some good pre-sleep routines?\"\n\nIf you'd like, you can also provide some optional details above like your age, stress level, and lifestyle so I can tailor my advice even better!",
     "inputPlaceholder": "Ask about your sleep...",
-    "sidebarCollapse": "Collapse sidebar",
-    "sidebarExpand": "Expand sidebar"
+    "copyAction": "Copy message",
+    "copySuccessTitle": "Copied!",
+    "copySuccessDescription": "Message copied to clipboard.",
+    "copyErrorTitle": "Copy Failed",
+    "copyErrorDescription": "Could not copy message to clipboard.",
+    "errorToastTitle": "AI Error"
   },
   "AiSleepCoachSidebar": {
     "newChat": "New Chat",
@@ -155,3 +157,4 @@
     "soundOff": "Sound Off"
   }
 }
+
