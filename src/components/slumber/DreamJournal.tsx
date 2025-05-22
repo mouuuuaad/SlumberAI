@@ -11,7 +11,7 @@ import { BookOpen, Feather, Loader2, Sparkles, Download } from 'lucide-react';
 import { analyzeDreamSentiment, type AnalyzeDreamSentimentInput, type AnalyzeDreamSentimentOutput } from '@/ai/flows/analyze-dream-sentiment-flow';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
-import jsPDF from 'jspdf';
+// Removed static import: import jsPDF from 'jspdf';
 import { useTranslations } from 'next-intl';
 
 interface DreamEntry {
@@ -19,7 +19,7 @@ interface DreamEntry {
   date: string; // ISO string
   text: string;
   sentiment?: AnalyzeDreamSentimentOutput['primarySentiment'];
-  analysis?: AnalyzeDreamSentimentOutput['detailedAnalysis']; // Changed from briefAnalysis
+  detailedAnalysis?: AnalyzeDreamSentimentOutput['detailedAnalysis'];
   sentimentColor?: string;
   isAnalyzing?: boolean;
 }
@@ -82,7 +82,7 @@ export default function DreamJournal() {
             ? {
                 ...dream,
                 sentiment: sentimentResult.primarySentiment,
-                analysis: sentimentResult.detailedAnalysis, // Use detailedAnalysis
+                detailedAnalysis: sentimentResult.detailedAnalysis,
                 sentimentColor: getSentimentColor(sentimentResult.primarySentiment),
                 isAnalyzing: false,
               }
@@ -94,7 +94,7 @@ export default function DreamJournal() {
       setLoggedDreams((prevDreams) =>
         prevDreams.map((dream) =>
           dream.id === newDreamId
-            ? { ...dream, sentiment: t('analysisError'), analysis: t('analysisErrorDetails'), sentimentColor: 'text-red-500', isAnalyzing: false }
+            ? { ...dream, sentiment: t('analysisError'), detailedAnalysis: t('analysisErrorDetails'), sentimentColor: 'text-red-500', isAnalyzing: false }
             : dream
         )
       );
@@ -103,26 +103,28 @@ export default function DreamJournal() {
     }
   };
 
-  const handleExportToPdf = () => {
+  const handleExportToPdf = async () => { // Make function async
     if (loggedDreams.length === 0 || !isClient) {
       console.log("No dreams to export or client not ready.");
       return;
     }
 
+    const { default: jsPDF } = await import('jspdf'); // Dynamic import
+
     const doc = new jsPDF({
       orientation: 'portrait',
-      unit: 'pt', // Use points for finer control
+      unit: 'pt',
       format: 'a4'
     });
     
     const pageWidth = doc.internal.pageSize.getWidth();
     const pageHeight = doc.internal.pageSize.getHeight();
-    const margin = 40; // Points
+    const margin = 40;
     const contentWidth = pageWidth - margin * 2;
     let yPos = margin;
-    const lineSpacing = 7; // Points
+    const lineSpacing = 7; 
 
-    // --- Cover Page ---
+    // Cover Page
     doc.setFontSize(28);
     doc.setFont(undefined, 'bold');
     doc.text(t('pdfReportTitle'), pageWidth / 2, yPos + 20, { align: 'center' });
@@ -138,43 +140,36 @@ export default function DreamJournal() {
     doc.text(t('pdfReportSubtitle'), pageWidth / 2, yPos, { align: 'center' });
 
 
-    // --- Dreams ---
-    loggedDreams.slice().reverse().forEach((dream, index) => { // Iterate in chronological order for the report
-      // Check if new page is needed before rendering the dream
-      // Estimate height (very rough): date + text lines + sentiment + analysis lines + padding
-      const minHeightForDream = 60 + (dream.text.length / 50 * (11 + lineSpacing)) + ((dream.analysis?.length ?? 0) / 50 * (10 + lineSpacing));
-      if (yPos + minHeightForDream > pageHeight - margin * 1.5) { // Add some bottom margin buffer
+    // Dreams
+    loggedDreams.slice().reverse().forEach((dream, index) => {
+      const minHeightForDream = 60 + (dream.text.length / 50 * (11 + lineSpacing)) + ((dream.detailedAnalysis?.length ?? 0) / 50 * (10 + lineSpacing));
+      if (yPos + minHeightForDream > pageHeight - margin * 1.5) { 
         doc.addPage();
         yPos = margin;
       }
       
-      // Add a separator before each dream entry except the first on a new page
       if (index > 0 || yPos !== margin) {
-          yPos += 20; // Space before separator
-          doc.setDrawColor(200, 200, 200); // Light gray line
+          yPos += 20; 
+          doc.setDrawColor(200, 200, 200); 
           doc.line(margin, yPos, pageWidth - margin, yPos);
-          yPos += 20; // Space after separator
+          yPos += 20; 
       }
 
-
-      // Date of the dream
       doc.setFontSize(14);
       doc.setFont(undefined, 'bold');
-      doc.setTextColor(50, 50, 50); // Dark gray
+      doc.setTextColor(50, 50, 50); 
       doc.text(t('pdfDreamFrom', { date: format(new Date(dream.date), 'MMMM d, yyyy - hh:mm a') }), margin, yPos);
       yPos += 14 + lineSpacing + 5;
 
-      // Dream Text
       doc.setFontSize(11);
       doc.setFont(undefined, 'normal');
-      doc.setTextColor(0, 0, 0); // Black
+      doc.setTextColor(0, 0, 0); 
       doc.text(t('pdfDreamTextLabel'), margin, yPos);
       yPos += 11 + lineSpacing /2;
       const dreamTextLines = doc.splitTextToSize(dream.text || t('pdfNoText'), contentWidth);
       doc.text(dreamTextLines, margin, yPos);
       yPos += (dreamTextLines.length * (11 + lineSpacing)) + lineSpacing;
 
-      // AI Sentiment
       if (dream.sentiment) {
         doc.setFontSize(10);
         doc.setFont(undefined, 'bold');
@@ -185,8 +180,7 @@ export default function DreamJournal() {
         yPos += 10 + lineSpacing;
       }
 
-      // AI Analysis
-      if (dream.analysis) {
+      if (dream.detailedAnalysis) {
         doc.setFontSize(10);
         doc.setFont(undefined, 'bold');
         doc.setTextColor(80, 80, 80);
@@ -194,7 +188,7 @@ export default function DreamJournal() {
         yPos += 10 + lineSpacing/2;
         doc.setFont(undefined, 'italic');
         doc.setTextColor(50, 50, 50);
-        const analysisLines = doc.splitTextToSize(dream.analysis, contentWidth);
+        const analysisLines = doc.splitTextToSize(dream.detailedAnalysis, contentWidth);
         doc.text(analysisLines, margin, yPos);
         yPos += (analysisLines.length * (10 + lineSpacing));
       }
@@ -273,7 +267,7 @@ export default function DreamJournal() {
                         <Sparkles className="h-3.5 w-3.5" />
                         {t('aiSentimentPrefix')} <span className="font-semibold">{dream.sentiment}</span>
                       </p>
-                      {dream.analysis && <p className="text-xs text-muted-foreground mt-1 italic whitespace-pre-wrap">"{dream.analysis}"</p>}
+                      {dream.detailedAnalysis && <p className="text-xs text-muted-foreground mt-1 italic whitespace-pre-wrap">"{dream.detailedAnalysis}"</p>}
                     </div>
                   )}
                 </CardContent>
@@ -285,4 +279,3 @@ export default function DreamJournal() {
     </div>
   );
 }
-
