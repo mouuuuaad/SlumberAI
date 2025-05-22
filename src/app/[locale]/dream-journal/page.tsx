@@ -10,7 +10,7 @@ import { useEffect, useState } from 'react';
 
 export default function DreamJournalPage() {
   const t = useTranslations('HomePage'); // For footer and consistent page structure
-  const journalT = useTranslations('DreamJournal'); // For fallback title
+  const journalT = useTranslations('DreamJournal'); // For page title
   const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
@@ -41,7 +41,7 @@ export default function DreamJournalPage() {
         >
           <div className="flex items-center mb-6">
             <BookOpen className="h-7 w-7 text-primary mr-3" />
-            <h2 className="text-2xl md:text-3xl font-semibold text-foreground">{t('dreamJournalTitle') || journalT('title')}</h2>
+            <h2 className="text-2xl md:text-3xl font-semibold text-foreground">{journalT('title')}</h2>
           </div>
           <DreamJournal />
         </AnimatedSection>
