@@ -14,7 +14,18 @@
   "HomePage": {
     "heroTitle": "Débloquez des nuits reposantes et des journées pleines d'énergie",
     "heroSubtitle": "Votre guide personnel pour comprendre et améliorer vos habitudes de sommeil pour une vie plus saine et dynamique.",
-    "footerCopyright": "© {year} SlumberAI. Tous droits réservés. Conçu avec 💜"
+    "footerCopyright": "© {year} SlumberAI. Tous droits réservés. Conçu avec 💜",
+    "calculatorTitle": "Calculateur de Cycle de Sommeil",
+    "calculatorSubtitle": "Calculez vos heures de sommeil optimales en fonction des cycles de sommeil naturels.",
+    "napOptimizerTitle": "Optimiseur de sieste",
+    "napOptimizerSubtitle": "Trouvez la durée de sieste parfaite pour booster votre énergie et votre concentration.",
+    "aiCoachTitle": "Coach IA du Sommeil",
+    "aiCoachSubtitle": "Discutez avec notre IA pour des conseils et des informations personnalisés sur le sommeil.",
+    "dreamJournalTitle": "Journal des rêves",
+    "dreamJournalSubtitle": "Enregistrez vos rêves et explorez leurs significations avec l'analyse IA.",
+    "sleepScienceTitle": "Explorateur de Science du Sommeil",
+    "sleepScienceSubtitle": "Apprenez des faits fascinants sur la science du sommeil.",
+    "viewButton": "Explorer"
   },
   "SleepCalculatorForm": {
     "title": "Calculateur de Cycle de Sommeil",
@@ -129,6 +140,7 @@
     "title": "Jeu Attrape-Étoiles",
     "description": "Guidez doucement l'orbe pour attraper les étoiles filantes. Détendez-vous et laissez votre esprit se calmer.",
     "loadingGameMessage": "Chargement du jeu...",
+    "startGamePrompt": "Prêt à attraper des étoiles ?",
     "startGameButton": "Commencer le jeu",
     "scoreLabel": "Score :",
     "missedLabel": "Manquées :",
@@ -138,6 +150,8 @@
     "goodTryText": "Bien essayé ! Prêt pour une autre session d'attrapage d'étoiles ?",
     "restartGameButton": "Rejouer",
     "highScoreLabel": "Meilleur Score :",
-    "newHighScoreText": "Nouveau Meilleur Score !"
+    "newHighScoreText": "Nouveau Meilleur Score !",
+    "soundOn": "Son Activé",
+    "soundOff": "Son Désactivé"
   }
 }

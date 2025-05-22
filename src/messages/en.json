@@ -14,7 +14,18 @@
   "HomePage": {
     "heroTitle": "Unlock Restful Nights & Energized Days",
     "heroSubtitle": "Your personal guide to understanding and improving your sleep patterns for a healthier, more vibrant life.",
-    "footerCopyright": "© {year} SlumberAI. All rights reserved. Crafted with 💜"
+    "footerCopyright": "© {year} SlumberAI. All rights reserved. Crafted with 💜",
+    "calculatorTitle": "Sleep Cycle Calculator",
+    "calculatorSubtitle": "Calculate your optimal sleep times based on natural sleep cycles.",
+    "napOptimizerTitle": "Nap Optimizer",
+    "napOptimizerSubtitle": "Find the perfect nap duration to boost your energy and focus.",
+    "aiCoachTitle": "AI Sleep Coach",
+    "aiCoachSubtitle": "Chat with our AI for personalized sleep advice and insights.",
+    "dreamJournalTitle": "Dream Journal",
+    "dreamJournalSubtitle": "Log your dreams and explore their meanings with AI analysis.",
+    "sleepScienceTitle": "Sleep Science Explorer",
+    "sleepScienceSubtitle": "Learn fascinating facts about the science of sleep.",
+    "viewButton": "Explore"
   },
   "SleepCalculatorForm": {
     "title": "Sleep Cycle Calculator",
@@ -129,6 +140,7 @@
     "title": "Star Catcher Game",
     "description": "Gently guide the orb to catch the falling stars. Relax and let your mind unwind.",
     "loadingGameMessage": "Loading Game...",
+    "startGamePrompt": "Ready to Catch Some Stars?",
     "startGameButton": "Start Game",
     "scoreLabel": "Score:",
     "missedLabel": "Missed:",
@@ -138,6 +150,8 @@
     "goodTryText": "Nice try! Ready for another round of star catching?",
     "restartGameButton": "Play Again",
     "highScoreLabel": "High Score:",
-    "newHighScoreText": "New High Score!"
+    "newHighScoreText": "New High Score!",
+    "soundOn": "Sound On",
+    "soundOff": "Sound Off"
   }
 }
