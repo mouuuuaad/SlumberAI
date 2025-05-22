@@ -4,7 +4,7 @@
 import Header from '@/components/slumber/Header';
 import ChatAssistant from '@/components/slumber/ChatAssistant';
 import ConversationSidebar from '@/components/slumber/ConversationSidebar';
-import AnimatedSection from '@/components/slumber/AnimatedSection'; // Added import
+import AnimatedSection from '@/components/slumber/AnimatedSection';
 import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
@@ -13,18 +13,21 @@ import { PanelLeftClose, PanelLeftOpen } from 'lucide-react';
 const LOCAL_STORAGE_CHAT_KEY = 'slumberAiCurrentChat';
 
 export default function AiCoachPage() {
-  const t = useTranslations('HomePage');
+  const t = useTranslations('HomePage'); // For footer, though footer is removed on this page
   const coachT = useTranslations('AiSleepCoach');
   const [isClient, setIsClient] = useState(false);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false); // Initialize to false
   const [chatSessionKey, setChatSessionKey] = useState(Date.now());
 
   useEffect(() => {
     setIsClient(true);
-    if (window.innerWidth < 768) { // md breakpoint
+    // Adjust sidebar based on screen width only after client is confirmed
+    if (window.innerWidth >= 768) { // md breakpoint
+      setIsSidebarOpen(true);
+    } else {
       setIsSidebarOpen(false);
     }
-  }, []);
+  }, []); // Runs once on mount
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -50,7 +53,7 @@ export default function AiCoachPage() {
       <div className="flex flex-col h-screen bg-background text-foreground">
         <Header />
         <main className="flex-grow flex items-center justify-center">
-          {/* Placeholder or loading spinner */}
+          {/* Minimal placeholder for SSR/pre-hydration */}
         </main>
       </div>
     );
@@ -67,11 +70,11 @@ export default function AiCoachPage() {
           onClearConversation={handleClearChatSession}
           chatSessionKey={chatSessionKey}
         />
-        <AnimatedSection 
-          tag="main" 
-          className="flex-grow flex flex-col relative" // Pass existing classes
-          delay="100ms" // Optional: add a slight delay
-        >
+        {/* The AnimatedSection wrapper was here previously, 
+            but for a full-page chat app, the main content is the chat assistant itself.
+            Animations can be applied internally if needed.
+        */}
+        <main className="flex-grow flex flex-col relative">
           <Button
             variant="ghost"
             size="icon"
@@ -81,10 +84,10 @@ export default function AiCoachPage() {
           >
             {isSidebarOpen ? <PanelLeftClose className="h-5 w-5" /> : <PanelLeftOpen className="h-5 w-5" />}
           </Button>
-          <div className="flex-grow p-4 md:p-6 overflow-y-auto min-h-0"> {/* Added min-h-0 for flex scroll */}
+          <div className="flex-grow p-0 md:p-0 overflow-y-auto min-h-0 bg-background"> {/* Removed padding for edge-to-edge chat */}
             <ChatAssistant key={chatSessionKey} />
           </div>
-        </AnimatedSection>
+        </main>
       </div>
     </div>
   );
