@@ -11,21 +11,35 @@ import { Button } from '@/components/ui/button';
 import { PanelLeftClose, PanelLeftOpen } from 'lucide-react';
 
 const LOCAL_STORAGE_CHAT_KEY = 'slumberAiCurrentChat';
+const SESSION_STORAGE_PENDING_NEW_CHAT_KEY = 'slumberAiPendingNewChat';
 
 export default function AiCoachPage() {
-  const t = useTranslations('HomePage');
+  const t = useTranslations('HomePage'); // For footer, though footer is removed here.
   const coachT = useTranslations('AiSleepCoach');
   const [isClient, setIsClient] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [chatKey, setChatKey] = useState(Date.now()); // Renamed from chatSessionKey
-  const [startFreshChat, setStartFreshChat] = useState(true); // New state
+  const [chatKey, setChatKey] = useState(Date.now());
+
+  // Initialize startFreshChat based on sessionStorage flag
+  const [startFreshChat, setStartFreshChat] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return sessionStorage.getItem(SESSION_STORAGE_PENDING_NEW_CHAT_KEY) === 'true';
+    }
+    return false; // Default to false if window is not defined (SSR)
+  });
 
   useEffect(() => {
     setIsClient(true);
+    // Determine initial sidebar state based on screen width
     if (window.innerWidth >= 768) {
       setIsSidebarOpen(true);
     } else {
       setIsSidebarOpen(false);
+    }
+
+    // Clean up sessionStorage flag if it was used for initialization
+    if (sessionStorage.getItem(SESSION_STORAGE_PENDING_NEW_CHAT_KEY) === 'true') {
+      sessionStorage.removeItem(SESSION_STORAGE_PENDING_NEW_CHAT_KEY);
     }
   }, []);
 
@@ -34,15 +48,18 @@ export default function AiCoachPage() {
   };
 
   const handleNewChatSession = () => {
-    // Does NOT remove from localStorage here.
-    // ChatAssistant will handle overwriting localStorage upon new user interaction.
+    if (typeof window !== 'undefined') {
+      sessionStorage.setItem(SESSION_STORAGE_PENDING_NEW_CHAT_KEY, 'true');
+    }
     setStartFreshChat(true);
     setChatKey(Date.now());
+    // localStorage.removeItem(LOCAL_STORAGE_CHAT_KEY); // No longer removing here
   };
 
   const handleClearChatSession = () => {
     if (typeof window !== 'undefined') {
       localStorage.removeItem(LOCAL_STORAGE_CHAT_KEY);
+      sessionStorage.removeItem(SESSION_STORAGE_PENDING_NEW_CHAT_KEY); // Clear pending flag too
     }
     setStartFreshChat(true);
     setChatKey(Date.now());
@@ -50,6 +67,9 @@ export default function AiCoachPage() {
 
   const handleUserFirstInteractionInNewChat = () => {
     setStartFreshChat(false);
+    if (typeof window !== 'undefined') {
+      sessionStorage.removeItem(SESSION_STORAGE_PENDING_NEW_CHAT_KEY);
+    }
   };
 
   if (!isClient) {
@@ -72,7 +92,7 @@ export default function AiCoachPage() {
           toggleSidebar={toggleSidebar}
           onNewChat={handleNewChatSession}
           onClearConversation={handleClearChatSession}
-          chatSessionKey={chatKey} // Pass the renamed chatKey
+          chatSessionKey={chatKey}
         />
         <main className="flex-grow flex flex-col relative">
           <Button
@@ -88,7 +108,7 @@ export default function AiCoachPage() {
             <ChatAssistant
               key={chatKey}
               startFresh={startFreshChat}
-              onActualChatInteraction={handleUserFirstInteractionInNewChat}
+              onUserFirstInteractionInNewChat={handleUserFirstInteractionInNewChat}
             />
           </div>
         </main>
