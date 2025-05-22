@@ -6,7 +6,7 @@ import { cn } from '@/lib/utils';
 import { MessageSquarePlus, PanelLeftClose, Trash2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
-import type { Message } from './ChatAssistant'; // Assuming Message type is exported or defined here
+import type { Message } from './ChatAssistant';
 
 const LOCAL_STORAGE_CHAT_KEY = 'slumberAiCurrentChat';
 const SESSION_STORAGE_PENDING_NEW_CHAT_KEY = 'slumberAiPendingNewChat';
@@ -41,7 +41,6 @@ export default function ConversationSidebar({
   const loadCurrentConversationTitle = () => {
     if (typeof window === 'undefined') return;
 
-    // If a new chat is pending, sidebar should be empty
     if (sessionStorage.getItem(SESSION_STORAGE_PENDING_NEW_CHAT_KEY) === 'true') {
       setConversations([]);
       return;
@@ -51,29 +50,27 @@ export default function ConversationSidebar({
     if (storedMessagesRaw) {
       try {
         const storedMessages: Message[] = JSON.parse(storedMessagesRaw);
-        // Ensure messages exist and it's not just the initial greeting
         if (storedMessages.length > 0 && !(storedMessages.length === 1 && storedMessages[0].isGreeting)) {
-          // Use the first user message or first assistant message (if no user message yet but not greeting) as title
-          const firstMeaningfulMessage = storedMessages.find(msg => !msg.isGreeting);
-          const titleText = firstMeaningfulMessage?.content.substring(0, 35) + (firstMeaningfulMessage?.content.length > 35 ? '...' : '') || t('currentSessionTitle');
+          const firstMeaningfulMessage = storedMessages.find(msg => !msg.isGreeting && msg.content.trim() !== '');
+          const titleText = firstMeaningfulMessage?.content.substring(0, 35) + (firstMeaningfulMessage && firstMeaningfulMessage.content.length > 35 ? '...' : '') || t('currentSessionTitle');
           
           setConversations([
             {
-              id: 'current_session', // This ID is fine as we only show one "current" session
+              id: 'current_session',
               title: titleText,
-              timestamp: Date.now(), // Could be derived from last message if available
+              timestamp: Date.now(),
               messageCount: storedMessages.length,
             },
           ]);
         } else {
-          setConversations([]); // No meaningful messages or only greeting
+          setConversations([]);
         }
       } catch (error) {
         console.error("Error loading conversation for sidebar:", error);
         setConversations([]);
       }
     } else {
-      setConversations([]); // No chat in localStorage
+      setConversations([]);
     }
   };
 
@@ -84,24 +81,24 @@ export default function ConversationSidebar({
   }, [chatSessionKey, t]); // Re-load if chatSessionKey (from parent) changes or translations load
 
   const handleNewChatClick = () => {
-    onNewChat(); // This will trigger parent to set sessionStorage flag and update chatKey
-    // The useEffect reacting to chatSessionKey will then call loadCurrentConversationTitle,
-    // which will see the sessionStorage flag and clear conversations display.
-    // No need for setConversations([]) here as the effect will handle it.
+    onNewChat();
+    // Sidebar display updates reactively via chatSessionKey prop change which triggers useEffect.
   };
 
   const handleClearHistoryClick = () => {
     if (confirm(t('confirmClearHistory'))) {
-      onClearConversation(); // Parent handles localStorage clear and chatKey update
-      // Similar to new chat, the useEffect will update the display.
+      onClearConversation();
+      // Sidebar display updates reactively.
     }
   };
 
   if (!isClient) {
+    // Return a basic structure consistent with the skeleton on AiCoachPage
     return (
       <aside className={cn(
-        "bg-sidebar-background text-sidebar-foreground flex flex-col transition-all duration-300 ease-in-out",
-        isOpen ? "w-60 md:w-72 p-3" : "w-0 p-0" // Adjusted width slightly
+        "bg-sidebar-background text-sidebar-foreground flex-shrink-0 flex flex-col transition-all duration-300 ease-in-out border-r border-sidebar-border",
+        "h-full",
+        isOpen ? "w-60 md:w-72 p-3" : "w-0 p-0 overflow-hidden"
       )} />
     );
   }
@@ -109,7 +106,7 @@ export default function ConversationSidebar({
   return (
     <aside className={cn(
       "bg-sidebar-background text-sidebar-foreground flex-shrink-0 flex flex-col transition-all duration-300 ease-in-out border-r border-sidebar-border",
-      "h-full", // Ensure sidebar takes full height of its flex container
+      "h-full", 
       isOpen ? "w-60 md:w-72 p-3" : "w-0 p-0 overflow-hidden"
     )}>
       {isOpen && (
@@ -142,6 +139,7 @@ export default function ConversationSidebar({
                   key={convo.id}
                   variant="ghost"
                   className="w-full justify-start text-left h-auto py-2 px-2.5 text-sm text-sidebar-foreground/80 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground truncate"
+                  // onClick={() => console.log("Load conversation:", convo.id)} // Future functionality
                 >
                   <span className="truncate">{convo.title}</span>
                 </Button>

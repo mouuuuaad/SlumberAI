@@ -22,7 +22,7 @@ export interface Message {
 }
 
 const renderMarkdownMessage = (text: string) => {
-  const blocks = text.split(/\\n\\n|\\n(?! )/); // Split on double newlines, or single newline not followed by space (to preserve list item newlines)
+  const blocks = text.split(/\\n\\n|\\n(?! )/); 
   const elements: JSX.Element[] = [];
   let currentListItems: string[] = [];
 
@@ -46,15 +46,13 @@ const renderMarkdownMessage = (text: string) => {
   blocks.forEach((block, blockIndex) => {
     let trimmedBlock = block.trim();
     
-    // Handle newlines that were part of the original prompt for lists like "\n* item"
-    // This regex ensures that list items starting immediately after a newline are captured.
     const listBlockMatch = trimmedBlock.match(/^(\* .*(\n\* .*)?)/s);
     if (listBlockMatch && listBlockMatch[0].startsWith('* ')) {
-        flushList(); // Flush any pending list items from a previous block
+        flushList(); 
         const items = listBlockMatch[0].split('\n').map(item => item.trim().substring(2)).filter(Boolean);
         items.forEach(item => currentListItems.push(item));
-        flushList(); // Flush this new list immediately
-        return; // Move to next block
+        flushList(); 
+        return; 
     }
 
 
@@ -68,18 +66,17 @@ const renderMarkdownMessage = (text: string) => {
             if (part.startsWith('**') && part.endsWith('**')) {
               return <strong key={i} className="ml-1">{part.slice(2, -2)}</strong>;
             }
-            // Check if the part is likely an emoji (non-alphanumeric, non-space single character at start)
             const emojiMatch = part.match(/^(\S\s)/);
-            if (emojiMatch && part.length > 2) { // emoji + space + text
+            if (emojiMatch && part.length > 2) { 
                 return <Fragment key={i}><span className="mr-1.5">{emojiMatch[1].trim()}</span>{part.substring(emojiMatch[1].length)}</Fragment>;
-            } else if (emojiMatch && part.length <=2 ) { // just emoji + space
+            } else if (emojiMatch && part.length <=2 ) { 
                  return <span key={i} className="mr-1.5">{part.trim()}</span>
             }
             return <span key={i}>{part}</span>;
           })}
         </h2>
       );
-    } else if (trimmedBlock.startsWith('* ')) {
+    } else if (trimmedBlock.startsWith('* ')) { // Should be caught by listBlockMatch if formatted correctly by AI
       currentListItems.push(trimmedBlock.substring(2));
     } else {
       flushList();
@@ -127,7 +124,8 @@ export default function ChatAssistant({ startFresh, onUserFirstInteractionInNewC
 
   useEffect(() => {
     setIsClient(true);
-    // Logic for loading messages based on startFresh prop
+    // This effect runs when the component mounts OR when 'startFresh' prop changes
+    // (because ChatAssistant is re-keyed by chatKey from parent, it re-mounts on new/clear chat)
     if (startFresh) {
       setMessages([getInitialMessage()]);
     } else {
@@ -153,17 +151,18 @@ export default function ChatAssistant({ startFresh, onUserFirstInteractionInNewC
       }
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [startFresh, t]); // Added t to dependencies as getInitialMessage uses it. Key prop handles re-mount for new session.
+  }, [startFresh, t]); // Key prop from parent handles full re-mount logic for session reset.
 
   useEffect(() => {
     if (isClient && typeof window !== 'undefined') {
       if (startFresh && messages.length === 1 && messages[0].isGreeting) {
         // Do not save to localStorage if it's a fresh start and only the greeting is present.
+        // This preserves the old chat in localStorage until the user interacts.
       } else if (messages.length > 0) {
         localStorage.setItem(LOCAL_STORAGE_CHAT_KEY, JSON.stringify(messages));
       } else if (messages.length === 0 && !startFresh) {
-        // This case might occur if a "Clear Conversation" is somehow triggered internally
-        // or if an empty message array is set while not in a 'startFresh' state.
+        // This might occur if a "Clear Conversation" happened, or if messages became empty
+        // while not in a 'startFresh' state (e.g. if all messages were deleted by some other means)
         localStorage.removeItem(LOCAL_STORAGE_CHAT_KEY);
       }
     }
@@ -177,7 +176,6 @@ export default function ChatAssistant({ startFresh, onUserFirstInteractionInNewC
         if (scrollViewport) {
           scrollViewport.scrollTop = scrollViewport.scrollHeight;
         } else if (scrollAreaRef.current) {
-          // Fallback for environments where viewport selector might not match
           scrollAreaRef.current.scrollTop = scrollAreaRef.current.scrollHeight;
         }
       });
@@ -198,8 +196,9 @@ export default function ChatAssistant({ startFresh, onUserFirstInteractionInNewC
     const query = followUpQuery || inputValue;
     if (!query.trim() || isLoading) return;
 
+    // If this is the first interaction in a "fresh" chat, notify parent.
     if (startFresh) {
-      onUserFirstInteractionInNewChat(); // Signal to parent that interaction has begun
+      onUserFirstInteractionInNewChat();
     }
 
     const userMessage: Message = {
@@ -209,8 +208,9 @@ export default function ChatAssistant({ startFresh, onUserFirstInteractionInNewC
     };
 
     setMessages((prev) => {
+      // If it's a fresh start (only greeting exists), replace greeting with user message
       if (prev.length === 1 && prev[0].isGreeting) {
-        return [userMessage]; // Replace greeting with user's first message
+        return [userMessage];
       }
       return [...prev, userMessage];
     });
@@ -230,7 +230,6 @@ export default function ChatAssistant({ startFresh, onUserFirstInteractionInNewC
       const input: AiSleepCoachInput = {
         currentQuery,
         userProfile: Object.keys(userProfileInput).length > 0 ? userProfileInput : undefined,
-        // sleepHistory: [] // Example if we were to pass it
       };
       const result: AiSleepCoachOutput = await aiSleepCoach(input);
 
@@ -255,7 +254,7 @@ export default function ChatAssistant({ startFresh, onUserFirstInteractionInNewC
   };
 
   return (
-    <div className="w-full h-full flex flex-col bg-transparent"> {/* Removed overflow-hidden */}
+    <div className="w-full h-full flex flex-col bg-transparent">
       <Accordion type="single" collapsible className="px-1 pt-0 pb-1 border-b border-border/30 mb-3">
         <AccordionItem value="profile" className="border-b-0">
           <AccordionTrigger className="text-sm hover:no-underline text-foreground/90 py-2.5">
@@ -305,7 +304,7 @@ export default function ChatAssistant({ startFresh, onUserFirstInteractionInNewC
         </AccordionItem>
       </Accordion>
 
-      <ScrollArea className="flex-grow min-h-0 pr-3" ref={scrollAreaRef}> {/* Added min-h-0 */}
+      <ScrollArea className="flex-grow min-h-0 pr-3" ref={scrollAreaRef}>
         <div className="space-y-6 pb-4">
           {messages.map((message) => (
             <div key={message.id} className={cn("flex flex-col", message.role === 'user' ? 'items-end' : 'items-start')}>
@@ -318,7 +317,7 @@ export default function ChatAssistant({ startFresh, onUserFirstInteractionInNewC
                 )}
               >
                 {message.role === 'assistant' && <Bot className="h-5 w-5 text-accent flex-shrink-0 mt-0.5" />}
-                <div className="flex-1 text-sm"> {/* Added flex-1 here */}
+                <div className="flex-1 text-sm">
                   {message.role === 'user' ? message.content : renderMarkdownMessage(message.content)}
                 </div>
                 {message.role === 'user' && <User className="h-5 w-5 text-primary-foreground flex-shrink-0 mt-0.5" />}
