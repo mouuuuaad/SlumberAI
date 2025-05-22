@@ -100,14 +100,17 @@ export default function NapCalculator() {
   const selectedNapDetails = translatedNapTypes.find(n => n.duration.toString() === selectedNapDuration);
 
   return (
-    <div className="space-y-6">
-      <div className="space-y-2">
-        <Label htmlFor="napType" className="text-foreground/90">{t('napTypeLabel')}</Label>
+    <div className="space-y-8 py-2">
+      <div className="space-y-3">
+        <Label htmlFor="napType" className="text-foreground/90 font-medium">{t('napTypeLabel')}</Label>
         <Select value={selectedNapDuration} onValueChange={(value) => {
           setSelectedNapDuration(value);
           setNapResult(null); 
         }}>
-          <SelectTrigger id="napType" className="w-full md:w-[280px] bg-input text-foreground focus:bg-input focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background transition-shadow duration-200 shadow-sm hover:shadow-md">
+          <SelectTrigger 
+            id="napType" 
+            className="w-full md:w-[300px] bg-input text-foreground rounded-lg shadow-sm hover:shadow-md focus:shadow-xl focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background transition-all duration-200 h-11 px-4"
+          >
             <SelectValue placeholder={t('selectNapTypePlaceholder')} />
           </SelectTrigger>
           <SelectContent>
@@ -118,12 +121,12 @@ export default function NapCalculator() {
             ))}
           </SelectContent>
         </Select>
-        {selectedNapDetails && <p className="text-sm text-muted-foreground pt-1.5">{selectedNapDetails.description}</p>}
+        {selectedNapDetails && <p className="text-sm text-muted-foreground pt-2">{selectedNapDetails.description}</p>}
       </div>
 
-      <div className="space-y-2">
-        <Label htmlFor="startTime" className="text-foreground/90">{t('startTimeLabel')}</Label>
-        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
+      <div className="space-y-3">
+        <Label htmlFor="startTime" className="text-foreground/90 font-medium">{t('startTimeLabel')}</Label>
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
             <Input
             id="startTime"
             type="time" 
@@ -133,18 +136,18 @@ export default function NapCalculator() {
                 if(timeError) setTimeError(null);
                 if(napResult) setNapResult(null);
             }}
-            className="w-full sm:w-auto flex-grow bg-input text-foreground focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background transition-shadow duration-200 shadow-sm hover:shadow-md"
+            className="w-full sm:w-auto flex-grow bg-input text-foreground rounded-lg shadow-sm hover:shadow-md focus:shadow-xl focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background transition-all duration-200 h-11 px-4"
             />
             <Button 
                 variant="outline" 
                 onClick={handleUseCurrentTime} 
-                className="w-full sm:w-auto text-xs sm:text-sm border-primary/50 text-primary/80 hover:text-primary hover:bg-primary/10 transition-all duration-200 shadow-sm hover:shadow-md"
+                className="w-full sm:w-auto text-sm border-primary/60 text-primary/90 hover:text-primary hover:bg-primary/10 transition-all duration-200 rounded-lg shadow-sm hover:shadow-md h-11 px-4"
             >
-                <Timer className="mr-1.5 h-3.5 w-3.5" /> {t('useCurrentTimeButton')}
+                <Timer className="mr-2 h-4 w-4" /> {t('useCurrentTimeButton')}
             </Button>
         </div>
         {timeError && (
-          <p className="text-sm text-destructive flex items-center gap-1 pt-1">
+          <p className="text-sm text-destructive flex items-center gap-1.5 pt-1">
             <AlertCircle className="h-4 w-4" /> {timeError}
           </p>
         )}
@@ -152,17 +155,17 @@ export default function NapCalculator() {
 
       <Button 
         onClick={handleCalculateNap} 
-        className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-primary-foreground shadow-md hover:shadow-lg transition-all duration-200 active:scale-95 transform"
+        className="w-full bg-primary hover:bg-primary/90 text-primary-foreground shadow-md hover:shadow-lg focus:shadow-xl transition-all duration-200 active:scale-[0.98] transform focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background rounded-lg h-12 text-base"
         size="lg"
       >
         <Coffee className="mr-2 h-5 w-5" /> {t('calculateButton')}
       </Button>
 
       {napResult && (
-        <Card className="mt-6 bg-primary/10 border-primary/30 shadow-lg">
-          <CardContent className="p-4 sm:p-5">
-            <p className="text-center font-medium text-primary flex items-center justify-center gap-2 text-sm sm:text-base">
-              <Clock className="h-5 w-5"/> {napResult}
+        <Card className="mt-8 bg-primary/10 border-primary/30 shadow-lg rounded-xl">
+          <CardContent className="p-5 sm:p-6">
+            <p className="text-center font-semibold text-primary flex items-center justify-center gap-2.5 text-base sm:text-lg">
+              <Clock className="h-5 w-5 sm:h-6 sm:w-6"/> {napResult}
             </p>
           </CardContent>
         </Card>
@@ -170,3 +173,5 @@ export default function NapCalculator() {
     </div>
   );
 }
+
+    
