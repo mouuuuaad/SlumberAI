@@ -22,10 +22,7 @@
     "aiCoachTitle": "AI Sleep Coach",
     "aiCoachSubtitle": "Chat with our AI for personalized sleep advice and insights.",
     "dreamJournalTitle": "Dream Journal",
-    "dreamJournalSubtitle": "Log your dreams and explore their meanings with AI analysis.",
-    "sleepScienceTitle": "Sleep Science Explorer",
-    "sleepScienceSubtitle": "Delve into the science of sleep with our curated articles.",
-    "viewButton": "Explore"
+    "dreamJournalSubtitle": "Log your dreams and explore their meanings with AI analysis."
   },
   "SleepCalculatorForm": {
     "title": "Sleep Cycle Calculator",
@@ -94,17 +91,17 @@
     "lifestylePlaceholder": "e.g., Sedentary office worker, Active athlete, Student",
     "loadingResponse": "SlumberAI is thinking...",
     "errorResponse": "Sorry, I had a little trouble connecting to my coaching knowledge. Please try again in a moment.",
-    "initialBotGreeting": "Hi there! I'm **SlumberAI**, your personal sleep guide. How can I help you improve your sleep today?\n\nFor example, you can tell me:\n* \"I feel **tired** all the time.\"\n* \"I have **trouble falling asleep**.\"\n* \"What are some **good pre-sleep routines**?\"\n\nIf you'd like, you can also provide some optional details above like your age, stress level, and lifestyle so I can tailor my advice even better!",
+    "initialBotGreeting": "Hi there! I'm **SlumberAI**, your personal sleep guide. How can I help you improve your sleep today?\\n\\nFor example, you can tell me:\\n* \"I feel **tired** all the time.\"\\n* \"I have **trouble falling asleep**.\"\\n* \"What are some **good pre-sleep routines**?\"\\n\\nIf you'd like, you can also provide some optional details above like your age, stress level, and lifestyle so I can tailor my advice even better!",
     "inputPlaceholder": "Ask about your sleep...",
-    "copiedToClipboard": "Message copied to clipboard!",
-    "copyFailed": "Failed to copy message.",
     "copySuccessTitle": "Copied!",
     "copySuccessDescription": "Message copied to clipboard.",
     "copyErrorTitle": "Copy Failed",
     "copyErrorDescription": "Could not copy message to clipboard.",
     "errorToastTitle": "AI Error",
     "sidebarCollapse": "Collapse sidebar",
-    "sidebarExpand": "Expand sidebar"
+    "sidebarExpand": "Expand sidebar",
+    "copyMessageAriaLabel": "Copy message",
+    "sendMessageAriaLabel": "Send message"
   },
   "AiSleepCoachSidebar": {
     "newChat": "New Chat",
@@ -162,5 +159,3 @@
     "soundOff": "Sound Off"
   }
 }
-
-    

@@ -22,10 +22,7 @@
     "aiCoachTitle": "Coach IA du Sommeil",
     "aiCoachSubtitle": "Discutez avec notre IA pour des conseils et des informations personnalisés sur le sommeil.",
     "dreamJournalTitle": "Journal des rêves",
-    "dreamJournalSubtitle": "Enregistrez vos rêves et explorez leurs significations avec l'analyse IA.",
-    "sleepScienceTitle": "Explorateur des Sciences du Sommeil",
-    "sleepScienceSubtitle": "Plongez dans la science du sommeil avec nos articles sélectionnés.",
-    "viewButton": "Explorer"
+    "dreamJournalSubtitle": "Enregistrez vos rêves et explorez leurs significations avec l'analyse IA."
   },
   "SleepCalculatorForm": {
     "title": "Calculateur de Cycle de Sommeil",
@@ -94,17 +91,17 @@
     "lifestylePlaceholder": "ex: Employé de bureau sédentaire, Athlète actif, Étudiant",
     "loadingResponse": "SlumberAI réfléchit...",
     "errorResponse": "Désolé, j'ai eu un petit problème pour me connecter à mes connaissances de coaching. Veuillez réessayer dans un instant.",
-    "initialBotGreeting": "Bonjour ! Je suis **SlumberAI**, votre guide personnel du sommeil. Comment puis-je vous aider à améliorer votre sommeil aujourd'hui ?\n\nPar exemple, vous pouvez me dire :\n* \"Je me sens **fatigué** tout le temps.\"\n* \"J'ai **du mal à m'endormir**.\"\n* \"Quelles sont les **bonnes routines avant de dormir** ?\"\n\nSi vous le souhaitez, vous pouvez également fournir quelques détails optionnels ci-dessus comme votre âge, votre niveau de stress et votre style de vie afin que je puisse encore mieux adapter mes conseils !",
+    "initialBotGreeting": "Bonjour ! Je suis **SlumberAI**, votre guide personnel du sommeil. Comment puis-je vous aider à améliorer votre sommeil aujourd'hui ?\\n\\nPar exemple, vous pouvez me dire :\\n* \"Je me sens **fatigué** tout le temps.\"\\n* \"J'ai **du mal à m'endormir**.\"\\n* \"Quelles sont les **bonnes routines avant de dormir** ?\"\\n\\nSi vous le souhaitez, vous pouvez également fournir quelques détails optionnels ci-dessus comme votre âge, votre niveau de stress et votre style de vie afin que je puisse encore mieux adapter mes conseils !",
     "inputPlaceholder": "Interrogez SlumberAI sur votre sommeil...",
-    "copiedToClipboard": "Message copié dans le presse-papiers !",
-    "copyFailed": "Échec de la copie du message.",
     "copySuccessTitle": "Copié !",
     "copySuccessDescription": "Message copié dans le presse-papiers.",
     "copyErrorTitle": "Échec de la copie",
     "copyErrorDescription": "Impossible de copier le message dans le presse-papiers.",
     "errorToastTitle": "Erreur IA",
     "sidebarCollapse": "Réduire la barre latérale",
-    "sidebarExpand": "Étendre la barre latérale"
+    "sidebarExpand": "Étendre la barre latérale",
+    "copyMessageAriaLabel": "Copier le message",
+    "sendMessageAriaLabel": "Envoyer le message"
   },
   "AiSleepCoachSidebar": {
     "newChat": "Nouveau Chat",
@@ -162,5 +159,3 @@
     "soundOff": "Son Désactivé"
   }
 }
-
-    
