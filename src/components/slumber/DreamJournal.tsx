@@ -5,13 +5,12 @@ import { useState, useEffect, type FormEvent } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { BookOpen, Feather, Loader2, Sparkles, Download } from 'lucide-react';
 import { analyzeDreamSentiment, type AnalyzeDreamSentimentInput, type AnalyzeDreamSentimentOutput } from '@/ai/flows/analyze-dream-sentiment-flow';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
-// Removed static import: import jsPDF from 'jspdf';
 import { useTranslations } from 'next-intl';
 
 interface DreamEntry {
@@ -19,9 +18,11 @@ interface DreamEntry {
   date: string; // ISO string
   text: string;
   sentiment?: AnalyzeDreamSentimentOutput['primarySentiment'];
-  detailedAnalysis?: AnalyzeDreamSentimentOutput['detailedAnalysis'];
+  fullDetailedAnalysis?: string; // Store full analysis from AI
+  displayedAnalysis?: string; // For typewriter effect
   sentimentColor?: string;
-  isAnalyzing?: boolean;
+  isAnalyzing?: boolean; // True when fetching AI analysis
+  isTypingAnalysis?: boolean; // True when analysis is being typed out
 }
 
 const getSentimentColor = (sentiment?: string): string => {
@@ -39,15 +40,17 @@ export default function DreamJournal() {
   const t = useTranslations('DreamJournal');
   const [dreamInput, setDreamInput] = useState('');
   const [loggedDreams, setLoggedDreams] = useState<DreamEntry[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingAnalysis, setIsLoadingAnalysis] = useState(false); // For the "Log Dream & Analyze" button
   const [isClient, setIsClient] = useState(false);
+  const typewriterTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
 
   useEffect(() => {
     setIsClient(true);
     if (typeof window !== 'undefined') {
       const storedDreams = localStorage.getItem('slumberAiDreams');
       if (storedDreams) {
-        setLoggedDreams(JSON.parse(storedDreams));
+        setLoggedDreams(JSON.parse(storedDreams).map((d: DreamEntry) => ({...d, isTypingAnalysis: false, isAnalyzing: false })));
       }
     }
   }, []);
@@ -62,13 +65,15 @@ export default function DreamJournal() {
     e.preventDefault();
     if (!dreamInput.trim()) return;
 
-    setIsLoading(true);
+    setIsLoadingAnalysis(true); // For button state
     const newDreamId = Date.now().toString();
     const newDreamEntry: DreamEntry = {
       id: newDreamId,
       date: new Date().toISOString(),
       text: dreamInput.trim(),
-      isAnalyzing: true,
+      isAnalyzing: true, // This dream entry is currently fetching analysis
+      isTypingAnalysis: false,
+      displayedAnalysis: '',
     };
 
     setLoggedDreams((prevDreams) => [newDreamEntry, ...prevDreams]);
@@ -82,9 +87,11 @@ export default function DreamJournal() {
             ? {
                 ...dream,
                 sentiment: sentimentResult.primarySentiment,
-                detailedAnalysis: sentimentResult.detailedAnalysis,
+                fullDetailedAnalysis: sentimentResult.detailedAnalysis, // Store full analysis
                 sentimentColor: getSentimentColor(sentimentResult.primarySentiment),
-                isAnalyzing: false,
+                isAnalyzing: false, // Done fetching
+                isTypingAnalysis: true, // Start typing it out
+                displayedAnalysis: '', // Reset for typing
               }
             : dream
         )
@@ -94,22 +101,74 @@ export default function DreamJournal() {
       setLoggedDreams((prevDreams) =>
         prevDreams.map((dream) =>
           dream.id === newDreamId
-            ? { ...dream, sentiment: t('analysisError'), detailedAnalysis: t('analysisErrorDetails'), sentimentColor: 'text-red-500', isAnalyzing: false }
+            ? { 
+                ...dream, 
+                sentiment: t('analysisError'), 
+                fullDetailedAnalysis: t('analysisErrorDetails'), // Store error details
+                displayedAnalysis: t('analysisErrorDetails'), // Display error directly
+                sentimentColor: 'text-red-500', 
+                isAnalyzing: false,
+                isTypingAnalysis: false,
+              }
             : dream
         )
       );
     } finally {
-      setIsLoading(false);
+      setIsLoadingAnalysis(false); // Reset button state
     }
   };
 
-  const handleExportToPdf = async () => { // Make function async
+  // Typewriter effect for dream analysis
+  useEffect(() => {
+    if (typewriterTimeoutRef.current) {
+      clearTimeout(typewriterTimeoutRef.current);
+    }
+
+    const dreamToType = loggedDreams.find(d => d.isTypingAnalysis && d.fullDetailedAnalysis && d.displayedAnalysis !== d.fullDetailedAnalysis);
+
+    if (dreamToType && dreamToType.fullDetailedAnalysis) {
+      const currentContentLength = dreamToType.displayedAnalysis?.length || 0;
+      
+      if (currentContentLength < dreamToType.fullDetailedAnalysis.length) {
+        const nextChar = dreamToType.fullDetailedAnalysis.charAt(currentContentLength);
+        let delay = 25; // Standard delay for dream analysis typing
+        if (['.', '!', '?'].includes(nextChar)) delay = 250;
+        else if ([',', ';'].includes(nextChar)) delay = 100;
+        else if (nextChar === ' ') delay = 30;
+
+        typewriterTimeoutRef.current = setTimeout(() => {
+          setLoggedDreams(prevDreams =>
+            prevDreams.map(d =>
+              d.id === dreamToType.id
+                ? { ...d, displayedAnalysis: (d.fullDetailedAnalysis || "").substring(0, currentContentLength + 1) }
+                : d
+            )
+          );
+        }, delay);
+      } else { // Typing finished for this dream
+        setLoggedDreams(prevDreams =>
+          prevDreams.map(d =>
+            d.id === dreamToType.id ? { ...d, isTypingAnalysis: false } : d
+          )
+        );
+      }
+    }
+    
+    return () => {
+      if (typewriterTimeoutRef.current) {
+        clearTimeout(typewriterTimeoutRef.current);
+      }
+    };
+  }, [loggedDreams]);
+
+
+  const handleExportToPdf = async () => {
     if (loggedDreams.length === 0 || !isClient) {
       console.log("No dreams to export or client not ready.");
       return;
     }
 
-    const { default: jsPDF } = await import('jspdf'); // Dynamic import
+    const { default: jsPDF } = await import('jspdf');
 
     const doc = new jsPDF({
       orientation: 'portrait',
@@ -124,7 +183,6 @@ export default function DreamJournal() {
     let yPos = margin;
     const lineSpacing = 7; 
 
-    // Cover Page
     doc.setFontSize(28);
     doc.setFont(undefined, 'bold');
     doc.text(t('pdfReportTitle'), pageWidth / 2, yPos + 20, { align: 'center' });
@@ -139,16 +197,25 @@ export default function DreamJournal() {
     doc.setFont(undefined, 'italic');
     doc.text(t('pdfReportSubtitle'), pageWidth / 2, yPos, { align: 'center' });
 
-
-    // Dreams
     loggedDreams.slice().reverse().forEach((dream, index) => {
-      const minHeightForDream = 60 + (dream.text.length / 50 * (11 + lineSpacing)) + ((dream.detailedAnalysis?.length ?? 0) / 50 * (10 + lineSpacing));
-      if (yPos + minHeightForDream > pageHeight - margin * 1.5) { 
-        doc.addPage();
+      const dreamTextHeight = (doc.splitTextToSize(dream.text || t('pdfNoText'), contentWidth).length * (11 + lineSpacing));
+      const analysisTextHeight = (doc.splitTextToSize(dream.fullDetailedAnalysis || '', contentWidth).length * (10 + lineSpacing));
+      const minHeightForDream = 60 + dreamTextHeight + analysisTextHeight;
+
+      if (yPos + minHeightForDream > pageHeight - margin * 1.5 || (index === 0 && yPos === margin)) { // ensure first entry has space or add page
+        if (yPos > margin || index > 0) doc.addPage(); // Don't add page if it's the very first item on the first page
         yPos = margin;
+         // Re-add title on new page if needed, or simpler header
+        if (index > 0) { // Add a simpler header for subsequent pages
+            doc.setFontSize(10);
+            doc.setFont(undefined, 'italic');
+            doc.text(t('pdfReportTitle'), margin, margin / 2);
+            doc.text(format(new Date(), 'MMMM d, yyyy'), pageWidth - margin - doc.getTextWidth(format(new Date(), 'MMMM d, yyyy')), margin / 2);
+            yPos = margin; // Reset yPos after header
+        }
       }
       
-      if (index > 0 || yPos !== margin) {
+      if (index > 0 || yPos !== margin && index !==0) { // Avoid double separator on new page start
           yPos += 20; 
           doc.setDrawColor(200, 200, 200); 
           doc.line(margin, yPos, pageWidth - margin, yPos);
@@ -180,7 +247,7 @@ export default function DreamJournal() {
         yPos += 10 + lineSpacing;
       }
 
-      if (dream.detailedAnalysis) {
+      if (dream.fullDetailedAnalysis) { // Use fullDetailedAnalysis for PDF
         doc.setFontSize(10);
         doc.setFont(undefined, 'bold');
         doc.setTextColor(80, 80, 80);
@@ -188,7 +255,7 @@ export default function DreamJournal() {
         yPos += 10 + lineSpacing/2;
         doc.setFont(undefined, 'italic');
         doc.setTextColor(50, 50, 50);
-        const analysisLines = doc.splitTextToSize(dream.detailedAnalysis, contentWidth);
+        const analysisLines = doc.splitTextToSize(dream.fullDetailedAnalysis, contentWidth);
         doc.text(analysisLines, margin, yPos);
         yPos += (analysisLines.length * (10 + lineSpacing));
       }
@@ -208,7 +275,7 @@ export default function DreamJournal() {
                 variant="outline" 
                 size="sm" 
                 onClick={handleExportToPdf} 
-                disabled={loggedDreams.length === 0 || !isClient}
+                disabled={loggedDreams.length === 0 || !isClient || loggedDreams.some(d => d.isAnalyzing || d.isTypingAnalysis)}
                 className="bg-card/70 hover:bg-card/90 border-border/50 text-foreground w-full sm:w-auto"
             >
                 <Download className="mr-2 h-4 w-4" />
@@ -226,11 +293,11 @@ export default function DreamJournal() {
               onChange={(e) => setDreamInput(e.target.value)}
               rows={4}
               className="bg-input/70 text-foreground placeholder:text-muted-foreground/70 focus:ring-primary min-h-[100px]"
-              disabled={isLoading}
+              disabled={isLoadingAnalysis}
             />
           </div>
-          <Button type="submit" disabled={isLoading || !dreamInput.trim()} className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-primary-foreground">
-            {isLoading ? (
+          <Button type="submit" disabled={isLoadingAnalysis || !dreamInput.trim()} className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-primary-foreground">
+            {isLoadingAnalysis ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" /> {t('analyzingButton')}
               </>
@@ -244,7 +311,7 @@ export default function DreamJournal() {
 
         <ScrollArea className="flex-grow p-4 md:p-6">
           <div className="space-y-6">
-            {loggedDreams.length === 0 && !isLoading && (
+            {loggedDreams.length === 0 && !isLoadingAnalysis && (
               <div className="text-center py-10 text-muted-foreground">
                 <BookOpen className="h-12 w-12 mx-auto mb-3 opacity-50" />
                 <p>{t('emptyStateMessage')}</p>
@@ -261,13 +328,18 @@ export default function DreamJournal() {
                 </CardHeader>
                 <CardContent className="px-4 pb-4 space-y-2">
                   <p className="text-sm text-foreground whitespace-pre-wrap leading-relaxed">{dream.text}</p>
-                  {dream.sentiment && (
+                  {(dream.sentiment || dream.isTypingAnalysis || dream.displayedAnalysis) && ( // Show section if sentiment exists or analysis is typing/typed
                     <div className="pt-2 border-t border-border/30">
-                      <p className={cn("text-xs font-medium flex items-center gap-1.5", dream.sentimentColor)}>
-                        <Sparkles className="h-3.5 w-3.5" />
-                        {t('aiSentimentPrefix')} <span className="font-semibold">{dream.sentiment}</span>
-                      </p>
-                      {dream.detailedAnalysis && <p className="text-xs text-muted-foreground mt-1 italic whitespace-pre-wrap">"{dream.detailedAnalysis}"</p>}
+                      {dream.sentiment && !dream.isTypingAnalysis && ( // Only show sentiment if not actively typing analysis
+                         <p className={cn("text-xs font-medium flex items-center gap-1.5 mb-1", dream.sentimentColor)}>
+                            <Sparkles className="h-3.5 w-3.5" />
+                            {t('aiSentimentPrefix')} <span className="font-semibold">{dream.sentiment}</span>
+                        </p>
+                      )}
+                      <div className="text-xs text-muted-foreground mt-1 italic whitespace-pre-wrap">
+                        "{dream.displayedAnalysis || (dream.isTypingAnalysis ? '' : dream.fullDetailedAnalysis)}"
+                        {dream.isTypingAnalysis && <span className="animate-blink">▌</span>}
+                      </div>
                     </div>
                   )}
                 </CardContent>
