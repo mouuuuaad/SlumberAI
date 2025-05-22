@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect, useCallback } from 'react'; // Added useCallback
+import { useState, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import CustomTimePicker from './CustomTimePicker';
 import { Label } from '@/components/ui/label';
@@ -124,7 +124,8 @@ export default function SleepCalculatorForm({ onCalculate }: SleepCalculatorForm
     setSelectedTime(newTime);
     if (timeError) setTimeError(null);
     setShowGoToBedNowResults(false);
-  }, [timeError]); // Dependencies for useCallback
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [timeError, setSelectedTime, setTimeError, setShowGoToBedNowResults]);
 
   return (
     <div className="w-full space-y-8">
@@ -134,7 +135,7 @@ export default function SleepCalculatorForm({ onCalculate }: SleepCalculatorForm
         </Label>
         <CustomTimePicker
           value={selectedTime}
-          onChange={handleTimeChange} // Use memoized handler
+          onChange={handleTimeChange}
         />
         {timeError && !showGoToBedNowResults && (
           <p className="text-sm text-destructive flex items-center gap-1 pt-1 justify-center">
@@ -162,7 +163,7 @@ export default function SleepCalculatorForm({ onCalculate }: SleepCalculatorForm
         <Button
           onClick={handleCalculateWakeUpNow}
           variant="outline"
-          className="w-full border-primary/60 hover:bg-primary/10 text-primary text-base py-3 rounded-lg shadow-md hover:shadow-lg transition-shadow hover:border-primary"
+          className="w-full border border-primary/50 text-primary/80 hover:border-primary hover:text-primary hover:bg-primary/10 text-base py-3 rounded-lg shadow-md hover:shadow-lg transition-shadow"
           size="lg"
         >
           <Clock className="mr-2 h-5 w-5" /> {t('calculateWakeUpTimesButton')}
