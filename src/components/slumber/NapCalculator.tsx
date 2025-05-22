@@ -6,8 +6,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Card, CardContent } from '@/components/ui/card'; // Removed CardHeader, CardTitle, CardDescription
-import { Coffee, AlertCircle, Clock, Timer } from 'lucide-react'; // Added Timer
+import { Card, CardContent } from '@/components/ui/card';
+import { Coffee, AlertCircle, Clock, Timer } from 'lucide-react';
 import { addMinutes, format, set } from 'date-fns';
 import { useTranslations } from 'next-intl';
 
@@ -107,7 +107,7 @@ export default function NapCalculator() {
           setSelectedNapDuration(value);
           setNapResult(null); 
         }}>
-          <SelectTrigger id="napType" className="w-full md:w-[280px] bg-input text-foreground focus:bg-input focus:ring-primary">
+          <SelectTrigger id="napType" className="w-full md:w-[280px] bg-input text-foreground focus:bg-input focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background transition-shadow duration-200 shadow-sm hover:shadow-md">
             <SelectValue placeholder={t('selectNapTypePlaceholder')} />
           </SelectTrigger>
           <SelectContent>
@@ -118,7 +118,7 @@ export default function NapCalculator() {
             ))}
           </SelectContent>
         </Select>
-        {selectedNapDetails && <p className="text-sm text-muted-foreground pt-1">{selectedNapDetails.description}</p>}
+        {selectedNapDetails && <p className="text-sm text-muted-foreground pt-1.5">{selectedNapDetails.description}</p>}
       </div>
 
       <div className="space-y-2">
@@ -133,12 +133,12 @@ export default function NapCalculator() {
                 if(timeError) setTimeError(null);
                 if(napResult) setNapResult(null);
             }}
-            className="w-full sm:w-auto flex-grow bg-input text-foreground focus:ring-primary"
+            className="w-full sm:w-auto flex-grow bg-input text-foreground focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background transition-shadow duration-200 shadow-sm hover:shadow-md"
             />
             <Button 
                 variant="outline" 
                 onClick={handleUseCurrentTime} 
-                className="w-full sm:w-auto text-xs sm:text-sm border-primary/50 text-primary/80 hover:text-primary hover:bg-primary/10"
+                className="w-full sm:w-auto text-xs sm:text-sm border-primary/50 text-primary/80 hover:text-primary hover:bg-primary/10 transition-all duration-200 shadow-sm hover:shadow-md"
             >
                 <Timer className="mr-1.5 h-3.5 w-3.5" /> {t('useCurrentTimeButton')}
             </Button>
@@ -150,14 +150,18 @@ export default function NapCalculator() {
         )}
       </div>
 
-      <Button onClick={handleCalculateNap} className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-primary-foreground">
+      <Button 
+        onClick={handleCalculateNap} 
+        className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-primary-foreground shadow-md hover:shadow-lg transition-all duration-200 active:scale-95 transform"
+        size="lg"
+      >
         <Coffee className="mr-2 h-5 w-5" /> {t('calculateButton')}
       </Button>
 
       {napResult && (
-        <Card className="mt-4 bg-primary/10 border-primary/30">
-          <CardContent className="p-4 sm:p-6">
-            <p className="text-center font-medium text-primary flex items-center justify-center gap-2">
+        <Card className="mt-6 bg-primary/10 border-primary/30 shadow-lg">
+          <CardContent className="p-4 sm:p-5">
+            <p className="text-center font-medium text-primary flex items-center justify-center gap-2 text-sm sm:text-base">
               <Clock className="h-5 w-5"/> {napResult}
             </p>
           </CardContent>
