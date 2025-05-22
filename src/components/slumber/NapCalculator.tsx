@@ -109,7 +109,7 @@ export default function NapCalculator() {
         }}>
           <SelectTrigger 
             id="napType" 
-            className="w-full md:w-[300px] bg-input text-foreground rounded-lg shadow-sm hover:shadow-md focus:shadow-xl focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background transition-all duration-200 h-11 px-4"
+            className="w-full md:w-[300px] bg-input text-foreground rounded-lg h-12 px-4 shadow-md hover:shadow-lg focus:shadow-xl focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background transition-all duration-300 ease-in-out"
           >
             <SelectValue placeholder={t('selectNapTypePlaceholder')} />
           </SelectTrigger>
@@ -136,12 +136,12 @@ export default function NapCalculator() {
                 if(timeError) setTimeError(null);
                 if(napResult) setNapResult(null);
             }}
-            className="w-full sm:w-auto flex-grow bg-input text-foreground rounded-lg shadow-sm hover:shadow-md focus:shadow-xl focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background transition-all duration-200 h-11 px-4"
+            className="w-full sm:w-auto flex-grow bg-input text-foreground rounded-lg h-12 px-4 shadow-md hover:shadow-lg focus:shadow-xl focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background transition-all duration-300 ease-in-out"
             />
             <Button 
                 variant="outline" 
                 onClick={handleUseCurrentTime} 
-                className="w-full sm:w-auto text-sm border-primary/60 text-primary/90 hover:text-primary hover:bg-primary/10 transition-all duration-200 rounded-lg shadow-sm hover:shadow-md h-11 px-4"
+                className="w-full sm:w-auto text-sm border-primary/60 text-primary/90 hover:text-primary hover:bg-primary/10 transition-all duration-300 ease-in-out rounded-lg h-12 px-4 shadow-md hover:shadow-lg focus:shadow-xl focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background"
             >
                 <Timer className="mr-2 h-4 w-4" /> {t('useCurrentTimeButton')}
             </Button>
@@ -155,16 +155,16 @@ export default function NapCalculator() {
 
       <Button 
         onClick={handleCalculateNap} 
-        className="w-full bg-primary hover:bg-primary/90 text-primary-foreground shadow-md hover:shadow-lg focus:shadow-xl transition-all duration-200 active:scale-[0.98] transform focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background rounded-lg h-12 text-base"
+        className="w-full bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl h-14 px-8 text-lg shadow-xl hover:shadow-2xl focus:shadow-2xl focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background transition-all duration-300 ease-in-out transform hover:scale-[1.02] active:scale-[0.98]"
         size="lg"
       >
         <Coffee className="mr-2 h-5 w-5" /> {t('calculateButton')}
       </Button>
 
       {napResult && (
-        <Card className="mt-8 bg-primary/10 border-primary/30 shadow-lg rounded-xl">
-          <CardContent className="p-5 sm:p-6">
-            <p className="text-center font-semibold text-primary flex items-center justify-center gap-2.5 text-base sm:text-lg">
+        <Card className="mt-8 rounded-xl shadow-xl bg-primary/15 border-primary/40">
+          <CardContent className="p-6">
+            <p className="text-center font-semibold text-primary text-lg sm:text-xl flex items-center justify-center gap-2.5">
               <Clock className="h-5 w-5 sm:h-6 sm:w-6"/> {napResult}
             </p>
           </CardContent>
@@ -173,5 +173,4 @@ export default function NapCalculator() {
     </div>
   );
 }
-
     
