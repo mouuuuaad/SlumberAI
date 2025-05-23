@@ -93,9 +93,6 @@ export default function HomePage() {
             </section>
           </TabsContent>
           
-           <TabsContent value="science">
-             {/* This content area will not be shown as we navigate away. */}
-           </TabsContent>
 
         </Tabs>
 
