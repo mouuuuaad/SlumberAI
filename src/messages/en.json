@@ -13,7 +13,17 @@
   "HomePage": {
     "heroTitle": "Unlock Restful Nights & Energized Days",
     "heroSubtitle": "Your personal guide to understanding and improving your sleep patterns for a healthier, more vibrant life.",
-    "footerCopyright": "© {year} SlumberAI. All rights reserved. Crafted with 💜"
+    "footerCopyright": "© {year} SlumberAI. All rights reserved. Crafted with 💜",
+    "calculatorTitle": "Sleep Cycle Calculator",
+    "calculatorDescription": "Calculate optimal sleep times based on your desired wake-up time or if you go to bed now.",
+    "napOptimizerTitle": "Nap Optimizer",
+    "napOptimizerDescription": "Find the perfect nap duration to boost your energy and alertness.",
+    "aiCoachTitle": "AI Sleep Coach",
+    "aiCoachDescription": "Chat with SlumberAI for personalized sleep advice and insights.",
+    "dreamJournalTitle": "Dream Journal",
+    "dreamJournalDescription": "Log your dreams and explore their meanings with AI-powered sentiment analysis.",
+    "sleepGameTitle": "Star Catcher Game",
+    "sleepGameDescription": "Relax and unwind with this calming star-catching mini-game designed to ease your mind before sleep."
   },
   "SleepCalculatorForm": {
     "title": "Sleep Cycle Calculator",
@@ -80,8 +90,6 @@
     },
     "lifestyleLabel": "Lifestyle",
     "lifestylePlaceholder": "e.g., Sedentary office worker, Active athlete, Student",
-    "loadingResponse": "SlumberAI is thinking...",
-    "errorResponse": "Sorry, I had a little trouble connecting to my coaching knowledge. Please try again in a moment.",
     "initialBotGreeting": "Hi there! I'm **SlumberAI**, your personal sleep guide. How can I help you improve your sleep today?\\n\\nFor example, you can tell me:\\n* \"I feel **tired** all the time.\"\\n* \"I have **trouble falling asleep**.\"\\n* \"What are some **good pre-sleep routines**?\"\\n\\nIf you'd like, you can also provide some optional details above like your age, stress level, and lifestyle so I can tailor my advice even better!",
     "inputPlaceholder": "Ask about your sleep...",
     "copySuccessTitle": "Copied!",
@@ -89,10 +97,11 @@
     "copyErrorTitle": "Copy Failed",
     "copyErrorDescription": "Could not copy message to clipboard.",
     "errorToastTitle": "AI Error",
-    "sidebarCollapse": "Collapse sidebar",
-    "sidebarExpand": "Expand sidebar",
+    "errorResponse": "Sorry, I had a little trouble connecting to my coaching knowledge. Please try again in a moment.",
     "copyMessageAriaLabel": "Copy message",
-    "sendMessageAriaLabel": "Send message"
+    "sendMessageAriaLabel": "Send message",
+    "sidebarCollapse": "Collapse sidebar",
+    "sidebarExpand": "Expand sidebar"
   },
   "DreamJournal": {
     "title": "Dream Journal",

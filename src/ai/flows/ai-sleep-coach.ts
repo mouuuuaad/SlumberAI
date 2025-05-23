@@ -37,66 +37,9 @@ const AiSleepCoachOutputSchema = z.object({
 });
 export type AiSleepCoachOutput = z.infer<typeof AiSleepCoachOutputSchema>;
 
-// Helper function to detect greeting messages
-const isGreetingMessage = (message: string): boolean => {
-  const greetingPatterns = [
-    /^(hi|hello|hey|sup|yo|greetings?|hallo|hola|bonjour|salut|ciao|namaste|konnichiwa|안녕|你好|привет)!*$/i,
-    /^(good\s+(morning|afternoon|evening|day|night))!*$/i,
-    /^(howdy|hiya|what'?s\s*up|wassup|how are you|how's it going)!*$/i,
-    /^(مرحبا|أهلا|السلام عليكم|صباح الخير|مساء الخير)!*$/i // Arabic greetings
-  ];
-  
-  const trimmed = message.trim().toLowerCase(); // Normalize to lowercase
-  return greetingPatterns.some(pattern => pattern.test(trimmed));
-};
-
 export async function aiSleepCoach(input: AiSleepCoachInput): Promise<AiSleepCoachOutput> {
-  // Handle simple greetings with predefined responses
-  const trimmedQuery = input.currentQuery.trim().toLowerCase();
-
-  if (isGreetingMessage(trimmedQuery)) {
-    const greetingResponses = [
-      {
-        advice: "Hello! I'm SlumberAI, your personal sleep coach. How can I help you sleep better tonight? 😴",
-        followUpQuestions: [
-          "I'm having trouble falling asleep",
-          "I wake up feeling tired",
-          "Tell me about good sleep habits"
-        ]
-      },
-      {
-        advice: "Hi there! Welcome to SlumberAI. I'm here to help you achieve better sleep. What's on your mind? 🌙",
-        followUpQuestions: [
-          "How many hours should I sleep?",
-          "What's the best bedtime routine?",
-          "I snore, what can I do?"
-        ]
-      },
-      {
-        advice: "Good to see you! I'm SlumberAI, ready to help you unlock the secrets of great sleep. What would you like to know? ✨",
-        followUpQuestions: [
-          "Why do I feel tired even after 8 hours of sleep?",
-          "What's the ideal sleep environment?",
-          "Help me create a bedtime routine"
-        ]
-      }
-    ];
-     // For Arabic greetings, respond in Arabic
-    if (/^(مرحبا|أهلا|السلام عليكم|صباح الخير|مساء الخير)!*$/i.test(input.currentQuery.trim())) { // Use original query for Arabic check
-      return {
-        advice: "مرحباً بك! أنا SlumberAI، مدربك الشخصي للنوم. كيف يمكنني مساعدتك في الحصول على نوم أفضل الليلة؟ 😴",
-        followUpQuestions: [
-          "أواجه صعوبة في النوم",
-          "أستيقظ متعباً رغم النوم لساعات كافية",
-          "ما هي عادات النوم الصحية؟"
-        ]
-      };
-    }
-    // Return a random English greeting response for variety for other greetings
-    const randomResponse = greetingResponses[Math.floor(Math.random() * greetingResponses.length)];
-    return randomResponse;
-  }
-
+  // Removed the explicit greeting handler block. All queries go to the LLM.
+  // The main prompt instructs the LLM to handle simple greetings appropriately.
   return aiSleepCoachFlow(input);
 }
 
