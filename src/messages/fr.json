@@ -2,9 +2,8 @@
 {
   "Header": {
     "title": "SlumberAI",
-    "toggleTheme": "Changer de thème",
-    "languageSelectorLabel": "Sélectionner la langue",
     "toggleThemeAriaLabel": "Changer le thème de couleur",
+    "languageSelectorLabel": "Sélectionner la langue",
     "navCalculator": "Calculateur",
     "navNapOptimizer": "Sieste",
     "navAiCoach": "Coach IA",
@@ -14,15 +13,7 @@
   "HomePage": {
     "heroTitle": "Débloquez des nuits reposantes et des journées pleines d'énergie",
     "heroSubtitle": "Votre guide personnel pour comprendre et améliorer vos habitudes de sommeil pour une vie plus saine et dynamique.",
-    "footerCopyright": "© {year} SlumberAI. Tous droits réservés. Conçu avec 💜",
-    "calculatorTitle": "Calculateur de Cycle de Sommeil",
-    "calculatorSubtitle": "Calculez vos heures de sommeil optimales en fonction des cycles de sommeil naturels.",
-    "napOptimizerTitle": "Optimiseur de sieste",
-    "napOptimizerSubtitle": "Trouvez la durée de sieste parfaite pour booster votre énergie et votre concentration.",
-    "aiCoachTitle": "Coach IA du Sommeil",
-    "aiCoachSubtitle": "Discutez avec notre IA pour des conseils et des informations personnalisés sur le sommeil.",
-    "dreamJournalTitle": "Journal des rêves",
-    "dreamJournalSubtitle": "Enregistrez vos rêves et explorez leurs significations avec l'analyse IA."
+    "footerCopyright": "© {year} SlumberAI. Tous droits réservés. Conçu avec 💜"
   },
   "SleepCalculatorForm": {
     "title": "Calculateur de Cycle de Sommeil",
@@ -102,20 +93,6 @@
     "sidebarExpand": "Étendre la barre latérale",
     "copyMessageAriaLabel": "Copier le message",
     "sendMessageAriaLabel": "Envoyer le message"
-  },
-  "AiSleepCoachSidebar": {
-    "newChat": "Nouveau Chat",
-    "chatHistory": "Historique des Chats",
-    "today": "Aujourd'hui",
-    "previous7Days": "7 derniers jours",
-    "previous30Days": "30 derniers jours",
-    "currentSessionTitle": "Session Actuelle",
-    "noHistory": "Aucun historique de chat pour le moment.",
-    "settings": "Paramètres",
-    "clearHistory": "Effacer la Conversation",
-    "confirmClearHistory": "Êtes-vous sûr de vouloir effacer l'historique de la conversation actuelle ? Cette action est irréversible.",
-    "sidebarCollapse": "Réduire la barre latérale",
-    "sidebarExpand": "Étendre la barre latérale"
   },
   "DreamJournal": {
     "title": "Journal des rêves",

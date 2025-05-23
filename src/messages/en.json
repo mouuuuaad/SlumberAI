@@ -2,9 +2,8 @@
 {
   "Header": {
     "title": "SlumberAI",
-    "toggleTheme": "Toggle theme",
-    "languageSelectorLabel": "Select language",
     "toggleThemeAriaLabel": "Toggle color theme",
+    "languageSelectorLabel": "Select language",
     "navCalculator": "Calculator",
     "navNapOptimizer": "Nap",
     "navAiCoach": "AI Coach",
@@ -14,15 +13,7 @@
   "HomePage": {
     "heroTitle": "Unlock Restful Nights & Energized Days",
     "heroSubtitle": "Your personal guide to understanding and improving your sleep patterns for a healthier, more vibrant life.",
-    "footerCopyright": "© {year} SlumberAI. All rights reserved. Crafted with 💜",
-    "calculatorTitle": "Sleep Cycle Calculator",
-    "calculatorSubtitle": "Calculate your optimal sleep times based on natural sleep cycles.",
-    "napOptimizerTitle": "Nap Optimizer",
-    "napOptimizerSubtitle": "Find the perfect nap duration to boost your energy and focus.",
-    "aiCoachTitle": "AI Sleep Coach",
-    "aiCoachSubtitle": "Chat with our AI for personalized sleep advice and insights.",
-    "dreamJournalTitle": "Dream Journal",
-    "dreamJournalSubtitle": "Log your dreams and explore their meanings with AI analysis."
+    "footerCopyright": "© {year} SlumberAI. All rights reserved. Crafted with 💜"
   },
   "SleepCalculatorForm": {
     "title": "Sleep Cycle Calculator",
@@ -102,20 +93,6 @@
     "sidebarExpand": "Expand sidebar",
     "copyMessageAriaLabel": "Copy message",
     "sendMessageAriaLabel": "Send message"
-  },
-  "AiSleepCoachSidebar": {
-    "newChat": "New Chat",
-    "chatHistory": "Chat History",
-    "today": "Today",
-    "previous7Days": "Previous 7 Days",
-    "previous30Days": "Previous 30 Days",
-    "currentSessionTitle": "Current Session",
-    "noHistory": "No chat history yet.",
-    "settings": "Settings",
-    "clearHistory": "Clear Conversation",
-    "confirmClearHistory": "Are you sure you want to clear the current conversation history? This action cannot be undone.",
-    "sidebarCollapse": "Collapse sidebar",
-    "sidebarExpand": "Expand sidebar"
   },
   "DreamJournal": {
     "title": "Dream Journal",

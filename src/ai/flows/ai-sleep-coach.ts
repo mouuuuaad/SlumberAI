@@ -1,3 +1,4 @@
+
 'use server';
 /**
  * @fileOverview An AI Sleep Coach that provides personalized sleep advice.
@@ -27,7 +28,6 @@ const AiSleepCoachInputSchema = z.object({
   currentQuery: z.string().describe("The user's current question or statement about their sleep (e.g., 'I feel tired', 'I can't sleep', 'what is sleep')."),
   userProfile: UserProfileSchema.describe("Optional information about the user's profile."),
   sleepHistory: z.array(SleepHistoryEntrySchema).optional().describe('Optional recent sleep history of the user. For example, to suggest a nap based on recent poor sleep.'),
-  isGreeting: z.boolean().optional().describe('Whether this is a simple greeting message.'),
 });
 export type AiSleepCoachInput = z.infer<typeof AiSleepCoachInputSchema>;
 
@@ -40,19 +40,21 @@ export type AiSleepCoachOutput = z.infer<typeof AiSleepCoachOutputSchema>;
 // Helper function to detect greeting messages
 const isGreetingMessage = (message: string): boolean => {
   const greetingPatterns = [
-    /^(hi|hello|hey|sup|yo|greetings?)!*$/i,
+    /^(hi|hello|hey|sup|yo|greetings?|hallo|hola|bonjour|salut|ciao|namaste|konnichiwa|안녕|你好|привет)!*$/i,
     /^(good\s+(morning|afternoon|evening|day|night))!*$/i,
-    /^(howdy|hiya|what'?s up)!*$/i,
-    /^(مرحبا|أهلا|السلام عليكم|صباح الخير|مساء الخير)!*$/i
+    /^(howdy|hiya|what'?s\s*up|wassup|how are you|how's it going)!*$/i,
+    /^(مرحبا|أهلا|السلام عليكم|صباح الخير|مساء الخير)!*$/i // Arabic greetings
   ];
   
-  const trimmed = message.trim();
+  const trimmed = message.trim().toLowerCase(); // Normalize to lowercase
   return greetingPatterns.some(pattern => pattern.test(trimmed));
 };
 
 export async function aiSleepCoach(input: AiSleepCoachInput): Promise<AiSleepCoachOutput> {
   // Handle simple greetings with predefined responses
-  if (isGreetingMessage(input.currentQuery)) {
+  const trimmedQuery = input.currentQuery.trim().toLowerCase();
+
+  if (isGreetingMessage(trimmedQuery)) {
     const greetingResponses = [
       {
         advice: "Hello! I'm SlumberAI, your personal sleep coach. How can I help you sleep better tonight? 😴",
@@ -79,23 +81,22 @@ export async function aiSleepCoach(input: AiSleepCoachInput): Promise<AiSleepCoa
         ]
       }
     ];
-
-    // Return a random greeting response for variety
+     // For Arabic greetings, respond in Arabic
+    if (/^(مرحبا|أهلا|السلام عليكم|صباح الخير|مساء الخير)!*$/i.test(input.currentQuery.trim())) { // Use original query for Arabic check
+      return {
+        advice: "مرحباً بك! أنا SlumberAI، مدربك الشخصي للنوم. كيف يمكنني مساعدتك في الحصول على نوم أفضل الليلة؟ 😴",
+        followUpQuestions: [
+          "أواجه صعوبة في النوم",
+          "أستيقظ متعباً رغم النوم لساعات كافية",
+          "ما هي عادات النوم الصحية؟"
+        ]
+      };
+    }
+    // Return a random English greeting response for variety for other greetings
     const randomResponse = greetingResponses[Math.floor(Math.random() * greetingResponses.length)];
     return randomResponse;
   }
 
-  // For Arabic greetings, respond in Arabic
-  if (/^(مرحبا|أهلا|السلام عليكم|صباح الخير|مساء الخير)!*$/i.test(input.currentQuery.trim())) {
-    return {
-      advice: "مرحباً بك! أنا SlumberAI، مدربك الشخصي للنوم. كيف يمكنني مساعدتك في الحصول على نوم أفضل الليلة؟ 😴",
-      followUpQuestions: [
-        "أواجه صعوبة في النوم",
-        "أستيقظ متعباً رغم النوم لساعات كافية",
-        "ما هي عادات النوم الصحية؟"
-      ]
-    };
-  }
   return aiSleepCoachFlow(input);
 }
 
@@ -106,11 +107,11 @@ const prompt = ai.definePrompt({
   prompt: `You are SlumberAI, a kind, soft-toned, empathetic, and highly knowledgeable AI Sleep Guide created by Mouaad Idoufkir. You support both English and Arabic. 
 
 IMPORTANT RESPONSE GUIDELINES:
-- For simple greetings (hi, hello, etc.), keep responses SHORT (1-2 sentences max) and friendly
-- For sleep-related questions, provide detailed, helpful advice with proper formatting
-- Always match the user's language (English/Arabic)
-- Use engaging emojis appropriately
-- Focus on being conversational and warm, not clinical
+- For simple greetings (if somehow missed by the pre-check), keep responses SHORT (1-2 sentences max) and friendly.
+- For sleep-related questions, provide detailed, helpful advice with proper Markdown formatting.
+- Always match the user's language (English/Arabic). Respond in the language the user used.
+- Use engaging emojis appropriately.
+- Focus on being conversational and warm, not clinical.
 
 User's current query: "{{{currentQuery}}}"
 
@@ -120,30 +121,33 @@ User Profile Context:
 {{#if userProfile.stressLevel}} - Stress Level: {{userProfile.stressLevel}}{{/if}}
 {{#if userProfile.lifestyle}} - Lifestyle: {{userProfile.lifestyle}}{{/if}}
 {{else}}
-No user profile provided. For complex questions, gently ask for relevant details.
+No user profile provided. If the question is complex and could benefit from personalization, gently ask for relevant details (age, stress, lifestyle) if appropriate, or suggest they fill out the optional profile section for more tailored advice.
 {{/if}}
 
 {{#if sleepHistory}}
-Recent Sleep History:
+Recent Sleep History (if relevant to the query):
 {{#each sleepHistory}}
 - {{this.date}}: {{this.durationHours}}h sleep, {{this.quality}} quality{{#if this.notes}} ({{this.notes}}){{/if}}
 {{/each}}
 {{else}}
-No sleep history available. Suggest sleep tracking if relevant.
+No sleep history available. If the query could benefit from sleep history (e.g., chronic tiredness, nap advice), you could suggest sleep tracking.
 {{/if}}
 
-RESPONSE RULES:
-1. **Simple Greetings**: Respond with 1-2 sentences + 2-3 follow-up questions
-2. **Sleep Questions**: Use structured format with:
-   - Brief empathetic acknowledgment
-   - ## 🧠 **Main Topic** headings for key areas
-   - * Bullet points for actionable advice
-   - Personalized recommendations when profile data available
-3. **Language**: If user writes in Arabic, respond in fluent Arabic
-4. **Tone**: Warm, supportive, and encouraging - like a knowledgeable friend
-5. **Follow-ups**: Always include 2-4 relevant follow-up questions
+RESPONSE FORMATTING RULES:
+1.  **Acknowledge and Empathize**: Begin by acknowledging any feelings the user expresses (e.g., if they say "I feel tired," start with something like, "I understand it's frustrating to feel tired. Let's explore some reasons why this might be happening and what we can do.").
+2.  **Provide Detailed, Structured Explanations**: If a user asks "Why you woke up tired?" or "what is sleep" or similar, offer potential common reasons or explanations based on sleep science. Use Markdown formatting for clarity:
+    *   Use '## 🧠 **Heading Title**' for main section titles (e.g., '## 🧠 **Brain Function**', '## 💪 **Physical Health**'). Choose appropriate emojis that fit the context. Ensure the heading title text itself is bolded.
+    *   Use '* **Bolded Item**: Explanation' or '* Regular item' for bullet points under headings.
+    *   Use standard paragraphs for general explanations. Ensure newlines are used to separate paragraphs properly (e.g., by outputting '\\n\\n' between logical paragraph breaks).
+    *   Use '**bold text**' for emphasis where appropriate within paragraphs or bullet points.
+3.  **Language**: If user writes in Arabic, respond in fluent Arabic, including Markdown formatting.
+4.  **Tone**: Maintain a warm, supportive, and encouraging tone – like a knowledgeable friend.
+5.  **Follow-ups**: Always include 2-4 relevant follow-up questions to encourage further interaction or gather more specific information if needed. These should be short and easy for the user to click on.
+6.  **Actionable Advice**: Prioritize actionable advice and practical tips users can implement.
+7.  **Personalization**: If user profile data (age, stress, lifestyle) is available, subtly weave it into your recommendations. For example, "Given your active lifestyle and reported high stress, ensuring a consistent wind-down routine might be particularly beneficial."
 
-Remember: Quality over quantity. Better to give focused, actionable advice than overwhelming information.`,
+Remember: Quality over quantity. Better to give focused, actionable advice than overwhelming information. If the user's query is very vague, provide general advice and use follow-up questions to narrow down their specific needs.
+`,
 });
 
 const aiSleepCoachFlow = ai.defineFlow(
@@ -155,7 +159,7 @@ const aiSleepCoachFlow = ai.defineFlow(
   async (input: AiSleepCoachInput) => {
     const {output} = await prompt(input);
 
-    if (!output) {
+    if (!output || !output.advice) { // Check if output or output.advice is missing
         return {
           advice: "I'm sorry, I couldn't process that request right now. Could you try rephrasing or asking something else?",
           followUpQuestions: [
