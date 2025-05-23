@@ -44,7 +44,7 @@ export default function AiCoachPage() {
   }
 
   return (
-    <div className="flex flex-col h-screen bg-background text-foreground overflow-hidden">
+    <div className="flex flex-col h-screen bg-background text-foreground overflow-auto">
       <Header />
       <main className="flex-grow flex flex-col relative">
         {/* 
@@ -52,7 +52,10 @@ export default function AiCoachPage() {
           If not, ChatAssistant can be rendered directly.
         */}
         <AnimatedSection delay="100ms" className="flex-grow flex flex-col min-h-0">
-          <ChatAssistant />
+          <div className="fixed inset-0">
+             <ChatAssistant/>
+          </div>
+          
         </AnimatedSection>
       </main>
     </div>

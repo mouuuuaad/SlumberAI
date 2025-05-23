@@ -1,11 +1,10 @@
-
 'use client';
 
-import { Moon, Sun, BedDouble, Languages, Calculator, Coffee, MessageSquare, BookOpen, Gamepad2 } from 'lucide-react'; // Removed BrainIcon
+import { Moon, Sun, BedDouble, Languages, Calculator, Coffee, MessageSquare, BookOpen, Gamepad2, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useEffect, useState } from 'react';
 import { useTranslations, useLocale } from 'next-intl';
-import { useRouter, usePathname } from 'next/navigation'; // Standard Next.js navigation
+import { useRouter, usePathname } from 'next/navigation';
 import NextLink from 'next/link';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { cn } from '@/lib/utils';
@@ -14,9 +13,15 @@ interface NavItem {
   href: string;
   labelKey: string;
   icon: React.ElementType;
-  id?: string; // For anchor links on the homepage
-  isPageLink?: boolean; // To differentiate between anchor and page links
+  id?: string;
+  isPageLink?: boolean;
 }
+
+const languageMap = {
+  en: 'English',
+  ar: 'العربية',
+  fr: 'Français'
+};
 
 export default function Header() {
   const t = useTranslations('Header');
@@ -65,7 +70,7 @@ export default function Header() {
     if (basePath.startsWith(`/${currentLocale}`)) {
       basePath = basePath.substring(`/${currentLocale}`.length) || '/';
     }
-    if (basePath === "") basePath = "/"; // Ensure base path is at least "/"
+    if (basePath === "") basePath = "/";
 
     router.push(`/${newLocale}${basePath}`);
   };
@@ -78,67 +83,123 @@ export default function Header() {
     { href: '/ai-coach', labelKey: 'navAiCoach', icon: MessageSquare, isPageLink: true },
     { href: '/dream-journal', labelKey: 'navDreamJournal', icon: BookOpen, isPageLink: true },
     { href: '/sleep-game', labelKey: 'navSleepGame', icon: Gamepad2, isPageLink: true },
-    // { href: '/sleep-science', labelKey: 'navSleepScience', icon: BrainIcon, isPageLink: true }, // Removed Sleep Science
   ];
 
+  // Check if current page matches nav item
+  const isActiveNavItem = (href: string) => {
+    const cleanPath = currentPathname.replace(`/${currentLocale}`, '') || '/';
+    return cleanPath === href || (href !== '/' && cleanPath.startsWith(href));
+  };
+
   return (
-    <header className="sticky top-0 z-50 py-3 sm:py-4 px-4 md:px-8 border-b border-border/30 shadow-sm bg-background/80 backdrop-blur-md">
+    <header className="sticky top-0 z-50 py-2 sm:py-4 px-4 md:px-8 border-b border-border/30 shadow-sm bg-background/95 backdrop-blur-md">
       <div className="container mx-auto">
         <div className="flex justify-between items-center">
           <NextLink href="/" passHref legacyBehavior>
-            <a className="flex items-center gap-2 sm:gap-3 cursor-pointer">
-              <BedDouble className="h-7 w-7 sm:h-8 sm:w-8 text-primary" />
-              <h1 className="text-2xl sm:text-3xl font-bold text-primary whitespace-nowrap">{t('title')}</h1>
+            <a className="flex items-center gap-2 sm:gap-3 cursor-pointer group">
+              <BedDouble className="h-7 w-7 sm:h-8 sm:w-8 text-primary group-hover:scale-110 transition-transform duration-200" />
+              <h1 className="text-2xl sm:text-3xl font-bold text-primary whitespace-nowrap group-hover:text-primary/80 transition-colors">
+                {t('title')}
+              </h1>
             </a>
           </NextLink>
+          
           <div className="flex items-center gap-2 sm:gap-3">
             {mounted ? (
               <Select value={currentLocale} onValueChange={handleLocaleChange}>
                 <SelectTrigger
-                  className="w-auto h-9 text-xs sm:text-sm border-border/70 bg-transparent hover:bg-accent/50 focus:ring-ring"
+                  className={cn(
+                    "w-auto h-10 text-xs sm:text-sm border-2 transition-all duration-200",
+                    "bg-background/50 hover:bg-accent/70 focus:ring-2 focus:ring-primary/20",
+                    "border-primary/30 hover:border-primary/50 focus:border-primary",
+                    "shadow-sm hover:shadow-md"
+                  )}
                   aria-label={t('languageSelectorLabel')}
                 >
-                  <div className="flex items-center gap-1.5">
-                    <Languages className="h-4 w-4" />
-                    <div className="hidden sm:block">
-                      <SelectValue placeholder={t('languageSelectorLabel')} />
-                    </div>
+                  <div className="flex items-center gap-2">
+                    <Languages className="h-4 w-4 text-primary" />
+                    <span className="font-medium text-foreground">
+                      {languageMap[currentLocale as keyof typeof languageMap]}
+                    </span>
                   </div>
                 </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="en">English</SelectItem>
-                  <SelectItem value="ar">العربية</SelectItem>
-                  <SelectItem value="fr">Français</SelectItem>
+                <SelectContent className="min-w-[120px] border-2 border-primary/20 shadow-lg">
+                  {Object.entries(languageMap).map(([locale, label]) => (
+                    <SelectItem 
+                      key={locale} 
+                      value={locale}
+                      className={cn(
+                        "cursor-pointer transition-colors duration-150",
+                        "hover:bg-primary/10 focus:bg-primary/10",
+                        currentLocale === locale && "bg-primary/5"
+                      )}
+                    >
+                      <div className="flex items-center justify-between w-full">
+                        <span className={cn(
+                          "font-medium",
+                          currentLocale === locale ? "text-primary" : "text-foreground"
+                        )}>
+                          {label}
+                        </span>
+                        {currentLocale === locale && (
+                          <Check className="h-4 w-4 text-primary ml-2" />
+                        )}
+                      </div>
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             ) : (
-              <div className="w-auto sm:w-[100px] h-9 bg-muted rounded-md animate-pulse" />
+              <div className="w-[120px] h-10 bg-muted rounded-md animate-pulse" />
             )}
 
             {mounted ? (
-              <Button variant="outline" size="icon" onClick={toggleTheme} aria-label={t('toggleThemeAriaLabel')} className="border-border/70 bg-transparent hover:bg-accent/50">
-                <ThemeIcon className="h-5 w-5 transition-all" />
+              <Button 
+                variant="outline" 
+                size="icon" 
+                onClick={toggleTheme} 
+                aria-label={t('toggleThemeAriaLabel')} 
+                className={cn(
+                  "h-10 w-10 border-2 transition-all duration-200",
+                  "bg-background/50 hover:bg-accent/70",
+                  "border-primary/30 hover:border-primary/50",
+                  "shadow-sm hover:shadow-md hover:scale-105"
+                )}
+              >
+                <ThemeIcon className="h-5 w-5 text-primary transition-all duration-200" />
               </Button>
             ) : (
-              <Button variant="outline" size="icon" aria-label={t('toggleThemeAriaLabel')} className="border-border/70 bg-transparent" disabled>
-                <Sun className="h-5 w-5 transition-all" />
-              </Button>
+              <div className="h-10 w-10 bg-muted rounded-md animate-pulse" />
             )}
           </div>
         </div>
-        <nav className="mt-3 overflow-x-auto custom-scrollbar-thin pb-1">
-          <ul className="flex items-center justify-start sm:justify-center gap-x-3 sm:gap-x-5 text-sm">
+        
+        <nav className="mt-4 overflow-x-auto custom-scrollbar-thin pb-2">
+          <ul className="flex items-center justify-start sm:justify-center gap-x-2 sm:gap-x-4 text-sm">
             {navItems.map((item) => {
               const IconComponent = item.icon;
-              // All links are now page links
-              const linkHref = item.href;
+              const isActive = isActiveNavItem(item.href);
+              
               return (
                 <li key={item.labelKey} className="whitespace-nowrap">
-                  <NextLink href={linkHref} passHref legacyBehavior>
-                      <a className="flex items-center gap-1.5 py-1 px-2 rounded-md hover:bg-primary/10 hover:text-primary transition-colors text-muted-foreground font-medium">
-                        <IconComponent className="h-4 w-4" />
-                        {t(item.labelKey)}
-                      </a>
+                  <NextLink href={item.href} passHref legacyBehavior>
+                    <a className={cn(
+                      "flex items-center gap-2 py-2 px-3 rounded-lg transition-all duration-200",
+                      "font-medium border border-transparent",
+                      isActive 
+                        ? "bg-primary/10 text-primary border-primary/20 shadow-sm" 
+                        : "text-muted-foreground hover:text-primary hover:bg-primary/5 hover:border-primary/10",
+                      "hover:scale-105 hover:shadow-sm"
+                    )}>
+                      <IconComponent className={cn(
+                        "h-4 w-4 transition-colors duration-200",
+                        isActive ? "text-primary" : "text-muted-foreground group-hover:text-primary"
+                      )} />
+                      <span>{t(item.labelKey)}</span>
+                      {isActive && (
+                        <div className="w-1 h-1 bg-primary rounded-full ml-1" />
+                      )}
+                    </a>
                   </NextLink>
                 </li>
               );

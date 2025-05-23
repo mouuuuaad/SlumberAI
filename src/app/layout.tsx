@@ -1,29 +1,12 @@
-
 import type { Metadata } from 'next';
 import './globals.css'; // Root global styles
-import { Tajawal, Montserrat, Roboto } from 'next/font/google';
+import { Tajawal } from 'next/font/google';
 
-// Initialize Tajawal font for Arabic
+// Initialize Tajawal font for all text
 const tajawal = Tajawal({
   variable: '--font-tajawal',
-  subsets: ['arabic'],
-  weight: ['400', '700'], // Common weights
-  display: 'swap',
-});
-
-// Initialize Roboto font for English/French body
-const roboto = Roboto({
-  variable: '--font-roboto',
-  subsets: ['latin'],
-  weight: ['400', '700'], // Regular and Bold
-  display: 'swap',
-});
-
-// Initialize Montserrat font for English/French headings
-const montserrat = Montserrat({
-  variable: '--font-montserrat',
-  subsets: ['latin'],
-  weight: ['400', '500', '600', '700'], // Various weights for headings
+  subsets: ['arabic', 'latin'], // Include both Arabic and Latin subsets
+  weight: ['400', '500', '700'], // Regular, Medium, and Bold
   display: 'swap',
 });
 
@@ -42,7 +25,7 @@ export default function RootLayout({
   return (
     <html suppressHydrationWarning>
       <body
-        className={`${tajawal.variable} ${roboto.variable} ${montserrat.variable} font-sans antialiased`}
+        className={`${tajawal.variable} font-tajawal antialiased`}
         suppressHydrationWarning
       >
         {children}

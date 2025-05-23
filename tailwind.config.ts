@@ -1,4 +1,3 @@
-
 import type { Config } from "tailwindcss";
 
 export default {
@@ -11,8 +10,9 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        // Roboto is now the primary sans-serif font for Latin scripts
-        sans: ["var(--font-roboto)", "Arial", "Helvetica", "sans-serif"],
+        // Tajawal is now the primary font for all scripts (Arabic and Latin)
+        sans: ["var(--font-tajawal)", "Arial", "Helvetica", "sans-serif"],
+        tajawal: ["var(--font-tajawal)", "sans-serif"],
       },
   		colors: {
   			background: 'hsl(var(--background))',

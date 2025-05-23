@@ -1,26 +1,28 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Base body and heading font styles for non-Arabic languages */
+/* Base body and heading font styles */
 @layer base {
   body {
     @apply bg-background text-foreground antialiased;
-    /* font-family is primarily set by Tailwind's `font-sans` utility,
-       which uses `var(--font-roboto)` due to `tailwind.config.ts`
-       and the `font-sans` class on the `<body>` in `layout.tsx`. */
+    /* Use Tajawal for all text */
+    font-family: var(--font-tajawal), sans-serif;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
   }
 
   h1, h2, h3, h4, h5, h6 {
-    /* Apply Montserrat for headings in non-Arabic languages */
-    font-family: var(--font-montserrat), var(--font-roboto), sans-serif;
+    /* Use Tajawal for headings as well */
+    font-family: var(--font-tajawal), sans-serif;
   }
 
-  /* Apply Tajawal font for Arabic language, overriding defaults for both body and headings */
+  /* Arabic text direction handling */
+  html[lang="ar"] {
+    direction: rtl;
+  }
+  
   html[lang="ar"] body,
   html[lang="ar"] h1,
   html[lang="ar"] h2,
@@ -244,4 +246,3 @@ html {
   display: inline-block; /* Ensures it doesn't break line flow weirdly */
   user-select: none; /* Prevents user from selecting the cursor */
 }
-

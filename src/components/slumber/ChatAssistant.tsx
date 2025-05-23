@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useEffect, useRef, useState, FormEvent, useCallback } from 'react';
@@ -6,7 +5,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, SendHorizonal, Copy, Bot, Sparkles } from 'lucide-react';
+import { Loader2, SendHorizontal, Copy, Bot, Sparkles, Check } from 'lucide-react';
 import { AiSleepCoachInput, AiSleepCoachOutput, aiSleepCoach } from '@/ai/flows/ai-sleep-coach';
 import { useTranslations } from 'next-intl';
 import { cn } from '@/lib/utils';
@@ -15,7 +14,8 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
-const LOCAL_STORAGE_CHAT_KEY = 'slumberAiChatSession'; // Single key for the ongoing chat
+const CHAT_STORAGE_KEY = 'slumberAiChatSession';
+const WORD_ANIMATION_DELAY = 200; // 0.5s per word
 
 export interface Message {
   id: string;
@@ -24,116 +24,173 @@ export interface Message {
   fullText?: string;
   isTyping?: boolean;
   followUpQuestions?: string[];
-  isGreeting?: boolean; // For the system's initial greeting
-  timestamp?: number;
+  isGreeting?: boolean;
+  timestamp: number;
 }
 
-// Enhanced markdown renderer with animations
-const renderMarkdownMessage = (text: string | undefined) => {
+interface UserProfile {
+  age?: string;
+  stressLevel?: string;
+  lifestyle?: string;
+}
+
+// Enhanced markdown renderer with proper text formatting
+const MarkdownRenderer = ({ text, isTyping }: { text: string; isTyping?: boolean }) => {
   if (!text) return null;
 
+  // Process markdown-style formatting
+  const processText = (inputText: string) => {
+    return inputText
+      .replace(/\*\*(.*?)\*\*/g, '<strong class="font-bold text-foreground">$1</strong>')
+      .replace(/\*(.*?)\*/g, '<em class="italic">$1</em>');
+  };
+
   const normalizedText = text.replace(/\\n\\n/g, '\n\n').replace(/\\n/g, '\n');
-  const blocks = normalizedText.split(/\n\n+/); 
+  const blocks = normalizedText.split(/\n\n+/).filter(block => block.trim());
 
-  return blocks.map((block, blockIndex) => {
-    if (!block.trim()) return null; 
+  return (
+    <div className="space-y-4">
+      {blocks.map((block, blockIndex) => {
+        const animationDelay = blockIndex * 150;
 
-    const animationDelay = `${blockIndex * 100}ms`; 
-
-    if (block.startsWith('## ')) {
-      let headingText = block.substring(3).trim();
-      const emojiMatch = headingText.match(/^(\p{Emoji_Presentation}|\p{Emoji})\s*/u);
-      let emoji = '';
-      let titleText = headingText;
-
-      if (emojiMatch) {
-        emoji = emojiMatch[0];
-        titleText = titleText.substring(emoji.length).trim();
-      }
-      
-      titleText = titleText.replace(/\*\*(.*?)\*\*/g, '<strong class="font-semibold">$1</strong>');
-      
-      return (
-        <div
-          key={blockIndex}
-          className="animate-in slide-in-from-bottom-3 fade-in duration-500" // Faster animation
-          style={{ animationDelay }}
-        >
-          <h2 className="text-xl font-semibold mt-4 mb-2.5 text-foreground flex items-center gap-2 group">
-            <span 
-              role="img" 
-              aria-label="heading-emoji" 
-              className="text-2xl group-hover:scale-110 transition-transform duration-200"
+        // Heading detection
+        if (block.startsWith('## ')) {
+          const headingContent = block.substring(3).trim();
+          const emojiMatch = headingContent.match(/^(\p{Emoji_Presentation}|\p{Emoji})\s*/u);
+          const emoji = emojiMatch?.[0] || '';
+          const titleText = headingContent.substring(emoji.length).trim();
+          
+          return (
+            <div
+              key={blockIndex}
+              className="animate-in slide-in-from-bottom-4 fade-in duration-700"
+              style={{ animationDelay: `${animationDelay}ms` }}
             >
-              {emoji.trim()}
-            </span>
-            <span 
-              dangerouslySetInnerHTML={{ __html: titleText }}
-              className="bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text" 
-            />
-          </h2>
-        </div>
-      );
-    }
-
-    if (block.match(/^(\s*)\*\s+/m)) { 
-      const listItems = block.split(/\n(?=\s*\*\s)/).map(item => item.replace(/^\s*\*\s?/, '').trim());
-      return (
-        <ul key={blockIndex} className="space-y-1 my-2.5 pl-1.5">
-          {listItems.map((item, itemIndex) => {
-            if (!item.trim()) return null;
-            const formattedItem = item.replace(/\*\*(.*?)\*\*/g, '<strong class="text-foreground font-semibold">$1</strong>');
-            const itemDelay = `${(blockIndex * 100) + (itemIndex * 50)}ms`; 
-            
-            return (
-              <li 
-                key={itemIndex}
-                className={cn(
-                  "flex items-start gap-2 p-1 rounded-md hover:bg-accent/10 transition-colors duration-150",
-                  "animate-in slide-in-from-left-2 fade-in duration-300" // Faster animation
+              <h2 className="flex items-center gap-3 text-xl font-bold text-foreground mt-6 mb-4 group">
+                {emoji && (
+                  <span 
+                    className="text-2xl transition-transform duration-300 group-hover:scale-110"
+                    role="img" 
+                    aria-label="heading-emoji"
+                  >
+                    {emoji.trim()}
+                  </span>
                 )}
-                style={{ animationDelay: itemDelay }}
-              >
-                <div className="w-1.5 h-1.5 rounded-full bg-primary mt-[7px] flex-shrink-0 animate-pulse" />
-                <span 
-                  dangerouslySetInnerHTML={{ __html: formattedItem }}
-                  className="text-foreground/90 leading-relaxed"
-                />
-              </li>
-            );
-          })}
-        </ul>
-      );
-    }
-    
-    const formattedBlock = block.replace(/\*\*(.*?)\*\*/g, '<strong class="text-foreground font-semibold">$1</strong>');
-    return (
-      <div
-        key={blockIndex}
-        className="animate-in slide-in-from-bottom-1.5 fade-in duration-400" // Faster animation
-        style={{ animationDelay }}
-      >
-        <p 
-          className="my-2 text-foreground/90 leading-relaxed whitespace-pre-line" 
-          dangerouslySetInnerHTML={{ __html: formattedBlock }} 
-        />
-      </div>
-    );
-  });
+                <span dangerouslySetInnerHTML={{ __html: processText(titleText) }} />
+              </h2>
+            </div>
+          );
+        }
+
+        // List items detection
+        if (block.match(/^(\s*)[•*-]\s+/m)) {
+          const listItems = block
+            .split(/\n(?=\s*[•*-]\s)/)
+            .map(item => item.replace(/^\s*[•*-]\s?/, '').trim())
+            .filter(Boolean);
+
+          return (
+            <div
+              key={blockIndex}
+              className="animate-in slide-in-from-left-4 fade-in duration-600"
+              style={{ animationDelay: `${animationDelay}ms` }}
+            >
+              <ul className="space-y-3 my-4">
+                {listItems.map((item, itemIndex) => {
+                  const itemDelay = animationDelay + (itemIndex * 100);
+                  
+                  return (
+                    <li 
+                      key={itemIndex}
+                      className="flex items-start gap-3 p-3 rounded-lg hover:bg-accent/10 transition-all duration-300 group"
+                      style={{ 
+                        animationDelay: `${itemDelay}ms`,
+                        animation: 'fadeInUp 0.6s ease-out forwards'
+                      }}
+                    >
+                      <div className="w-2 h-2 rounded-full bg-primary mt-2 flex-shrink-0 group-hover:animate-pulse" />
+                      <div 
+                        className="text-foreground/90 leading-relaxed"
+                        dangerouslySetInnerHTML={{ __html: processText(item) }}
+                      />
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          );
+        }
+
+        // Regular paragraph
+        return (
+          <div
+            key={blockIndex}
+            className="animate-in slide-in-from-bottom-2 fade-in duration-600"
+            style={{ animationDelay: `${animationDelay}ms` }}
+          >
+            <p 
+              className="my-3 text-foreground/90 leading-relaxed"
+              dangerouslySetInnerHTML={{ __html: processText(block) }}
+            />
+          </div>
+        );
+      })}
+    </div>
+  );
 };
 
+// Modern copy button component
+const CopyButton = ({ text, onCopy }: { text?: string; onCopy: (text: string) => void }) => {
+  const [copied, setCopied] = useState(false);
+
+  const handleClick = async () => {
+    if (!text) return;
+    
+    await onCopy(text);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  return (
+    <Button
+      variant="ghost"
+      size="icon"
+      onClick={handleClick}
+      className={cn(
+        "absolute -top-2 -right-2 h-8 w-8 rounded-full shadow-lg backdrop-blur-sm",
+        "opacity-0 group-hover:opacity-100 transition-all duration-300",
+        "hover:scale-110 transform bg-background/80 hover:bg-background",
+        "border border-border/20 hover:border-border/40",
+        copied ? "bg-green-500/10 border-green-500/20" : ""
+      )}
+      aria-label="Copy message"
+    >
+      {copied ? (
+        <Check className="h-4 w-4 text-green-600 animate-in zoom-in duration-200" />
+      ) : (
+        <Copy className="h-4 w-4" />
+      )}
+    </Button>
+  );
+};
+
+// Typing indicator component
 const TypingIndicator = () => (
-  <div className="flex items-center gap-1.5 py-2">
-    <Avatar className="h-7 w-7 self-end shrink-0 ring-1 ring-primary/20 animate-pulse">
-        <AvatarImage src="/bot-avatar.png" alt="SlumberAI" data-ai-hint="robot face" />
-        <AvatarFallback className="bg-gradient-to-br from-primary to-primary/80 text-primary-foreground">
-          <Bot className="h-3.5 w-3.5" />
-        </AvatarFallback>
+  <div className="flex items-end gap-3 animate-in slide-in-from-left-4 fade-in duration-400">
+    <Avatar className="h-8 w-8 ring-2 ring-primary/20 animate-pulse">
+      <AvatarImage src="/bot-avatar.png" alt="SlumberAI" />
+      <AvatarFallback className="bg-gradient-to-br from-primary to-primary/80 text-primary-foreground">
+        <Bot className="h-4 w-4" />
+      </AvatarFallback>
     </Avatar>
-    <div className="flex gap-1.5">
-      <div className="w-1.5 h-1.5 bg-primary rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-      <div className="w-1.5 h-1.5 bg-primary rounded-full animate-bounce" style={{ animationDelay: '120ms' }} />
-      <div className="w-1.5 h-1.5 bg-primary rounded-full animate-bounce" style={{ animationDelay: '240ms' }} />
+    <div className="flex items-center gap-1 bg-card p-3 rounded-xl rounded-bl-md border border-border/20">
+      {[0, 1, 2].map((i) => (
+        <div
+          key={i}
+          className="w-2 h-2 bg-primary rounded-full animate-bounce"
+          style={{ animationDelay: `${i * 150}ms` }}
+        />
+      ))}
     </div>
   </div>
 );
@@ -143,34 +200,31 @@ export default function ChatAssistant() {
   const [inputValue, setInputValue] = useState('');
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const { toast } = useToast();
-
-  const [userProfile, setUserProfile] = useState<{ age?: string; stressLevel?: string; lifestyle?: string }>({
-    age: '',
-    stressLevel: '',
-    lifestyle: '',
-  });
-
+  const [userProfile, setUserProfile] = useState<UserProfile>({});
   const [currentlyTypingMessageId, setCurrentlyTypingMessageId] = useState<string | null>(null);
+  
+  const { toast } = useToast();
   const typewriterTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
+  // Get initial greeting message
   const getInitialGreetingMessage = useCallback((): Message => ({
-    id: 'initial-greeting-' + Date.now(),
+    id: `greeting-${Date.now()}`,
     role: 'assistant',
-    content: t('initialBotGreeting'), // The longer, detailed greeting
+    content: t('initialBotGreeting'),
     fullText: t('initialBotGreeting'),
     isGreeting: true,
     timestamp: Date.now(),
   }), [t]);
 
+  // Initialize messages from storage
   useEffect(() => {
     try {
-      const storedMessagesRaw = localStorage.getItem(LOCAL_STORAGE_CHAT_KEY);
-      if (storedMessagesRaw) {
-        const storedMessagesParsed = JSON.parse(storedMessagesRaw);
-        if (Array.isArray(storedMessagesParsed) && storedMessagesParsed.length > 0) {
-          setMessages(storedMessagesParsed.map(m => ({...m, isTyping: false})));
+      const storedMessages = localStorage.getItem(CHAT_STORAGE_KEY);
+      if (storedMessages) {
+        const parsedMessages = JSON.parse(storedMessages) as Message[];
+        if (Array.isArray(parsedMessages) && parsedMessages.length > 0) {
+          setMessages(parsedMessages.map(msg => ({ ...msg, isTyping: false })));
         } else {
           setMessages([getInitialGreetingMessage()]);
         }
@@ -178,29 +232,25 @@ export default function ChatAssistant() {
         setMessages([getInitialGreetingMessage()]);
       }
     } catch (error) {
-      console.error("Error loading messages from localStorage:", error);
+      console.error('Error loading messages from localStorage:', error);
       setMessages([getInitialGreetingMessage()]);
     }
   }, [getInitialGreetingMessage]);
 
+  // Save messages to storage
   useEffect(() => {
     if (messages.length > 0) {
-       localStorage.setItem(LOCAL_STORAGE_CHAT_KEY, JSON.stringify(messages));
+      localStorage.setItem(CHAT_STORAGE_KEY, JSON.stringify(messages));
     } else {
-       localStorage.removeItem(LOCAL_STORAGE_CHAT_KEY); // Clear if messages array becomes empty
+      localStorage.removeItem(CHAT_STORAGE_KEY);
     }
   }, [messages]);
 
-  const handleProfileChange = (field: keyof typeof userProfile, value: string) => {
-    setUserProfile((prev) => ({ ...prev, [field]: value }));
-  };
-
+  // Auto-scroll to bottom
   const scrollToBottom = useCallback(() => {
     if (messagesEndRef.current) {
       requestAnimationFrame(() => {
-        if (messagesEndRef.current) {
-            messagesEndRef.current.scrollIntoView({ behavior: 'smooth', block: 'end' });
-        }
+        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
       });
     }
   }, []);
@@ -209,33 +259,35 @@ export default function ChatAssistant() {
     scrollToBottom();
   }, [messages, scrollToBottom, currentlyTypingMessageId]);
 
+  // Typewriter effect
   useEffect(() => {
     if (typewriterTimeoutRef.current) {
       clearTimeout(typewriterTimeoutRef.current);
     }
 
-    const messageToType = messages.find(msg => msg.id === currentlyTypingMessageId && msg.isTyping && msg.role === 'assistant');
+    const messageToType = messages.find(
+      msg => msg.id === currentlyTypingMessageId && msg.isTyping && msg.role === 'assistant'
+    );
 
-    if (messageToType && messageToType.fullText) {
-      const currentContentLength = messageToType.content?.length || 0;
+    if (messageToType?.fullText) {
+      const currentLength = messageToType.content?.length || 0;
       
-      if (currentContentLength < messageToType.fullText.length) {
-        const nextChar = messageToType.fullText.charAt(currentContentLength);
-        let delay = 15; // Faster standard delay
-        if (['.', '!', '?'].includes(nextChar)) delay = 200; // Reduced punctuation delay
-        else if ([',', ';'].includes(nextChar)) delay = 80; // Reduced punctuation delay
-        else if (nextChar === ' ') delay = 20; // Reduced space delay
+      if (currentLength < messageToType.fullText.length) {
+        const nextChar = messageToType.fullText.charAt(currentLength);
+        const delay = ['.', '!', '?'].includes(nextChar) ? 300 
+                    : [',', ';'].includes(nextChar) ? 100
+                    : nextChar === ' ' ? 30 
+                    : 20;
 
         typewriterTimeoutRef.current = setTimeout(() => {
           setMessages(prevMessages =>
             prevMessages.map(msg =>
               msg.id === currentlyTypingMessageId
-                ? { ...msg, content: (msg.fullText || "").substring(0, currentContentLength + 1) }
+                ? { ...msg, content: (msg.fullText || '').substring(0, currentLength + 1) }
                 : msg
             )
           );
         }, delay);
-
       } else {
         setMessages(prevMessages =>
           prevMessages.map(msg =>
@@ -245,6 +297,7 @@ export default function ChatAssistant() {
         setCurrentlyTypingMessageId(null);
       }
     }
+
     return () => {
       if (typewriterTimeoutRef.current) {
         clearTimeout(typewriterTimeoutRef.current);
@@ -252,8 +305,13 @@ export default function ChatAssistant() {
     };
   }, [messages, currentlyTypingMessageId]);
 
-  const handleCopyMessage = async (textToCopy: string | undefined) => {
-    if (!textToCopy) return;
+  // Handle profile changes
+  const handleProfileChange = (field: keyof UserProfile, value: string) => {
+    setUserProfile(prev => ({ ...prev, [field]: value }));
+  };
+
+  // Handle copy message
+  const handleCopyMessage = async (textToCopy: string) => {
     try {
       await navigator.clipboard.writeText(textToCopy);
       toast({
@@ -261,7 +319,7 @@ export default function ChatAssistant() {
         description: t('copySuccessDescription'),
         duration: 2000,
       });
-    } catch (err) {
+    } catch (error) {
       toast({
         title: t('copyErrorTitle'),
         description: t('copyErrorDescription'),
@@ -271,22 +329,21 @@ export default function ChatAssistant() {
     }
   };
 
+  // Handle form submission
   const handleSubmit = async (e: FormEvent, suggestedQuery?: string) => {
     e.preventDefault();
     const query = suggestedQuery || inputValue.trim();
     if (!query) return;
 
     const newUserMessage: Message = {
-      id: Date.now().toString() + '-user',
+      id: `${Date.now()}-user`,
       role: 'user',
       content: query,
       timestamp: Date.now(),
     };
 
-    setMessages((prev) => [...prev, newUserMessage]);
-    if (!suggestedQuery) {
-      setInputValue('');
-    }
+    setMessages(prev => [...prev, newUserMessage]);
+    if (!suggestedQuery) setInputValue('');
     setIsLoading(true);
 
     try {
@@ -298,11 +355,11 @@ export default function ChatAssistant() {
           lifestyle: userProfile.lifestyle || undefined,
         },
       };
+
       const aiResponse = await aiSleepCoach(coachInput);
+      setIsLoading(false);
 
-      setIsLoading(false); 
-
-      const newAssistantMessageId = Date.now().toString() + '-assistant';
+      const newAssistantMessageId = `${Date.now()}-assistant`;
       const newAssistantMessage: Message = {
         id: newAssistantMessageId,
         role: 'assistant',
@@ -313,20 +370,22 @@ export default function ChatAssistant() {
         timestamp: Date.now(),
       };
       
-      setMessages((prev) => [...prev, newAssistantMessage]);
+      setMessages(prev => [...prev, newAssistantMessage]);
       setCurrentlyTypingMessageId(newAssistantMessageId);
 
     } catch (error) {
       console.error('Error fetching AI response:', error);
       setIsLoading(false);
-      const errorResponseMessage: Message = {
-        id: Date.now().toString() + '-error',
+      
+      const errorMessage: Message = {
+        id: `${Date.now()}-error`,
         role: 'assistant',
         content: t('errorResponse'),
         fullText: t('errorResponse'),
         timestamp: Date.now(),
       };
-      setMessages((prev) => [...prev, errorResponseMessage]);
+      
+      setMessages(prev => [...prev, errorMessage]);
       toast({
         title: t('errorToastTitle'),
         description: t('errorResponse'),
@@ -336,47 +395,59 @@ export default function ChatAssistant() {
   };
 
   const handleFollowUpClick = (question: string) => {
-    const dummyEvent = { preventDefault: () => {} } as FormEvent;
-    handleSubmit(dummyEvent, question);
+    handleSubmit({ preventDefault: () => {} } as FormEvent, question);
   };
 
   return (
-    <div className="flex flex-col h-full w-full bg-transparent text-foreground min-h-0">
-      <Accordion type="single" collapsible className="px-4 py-2 border-b border-border/20 bg-gradient-to-r from-background to-accent/5 flex-shrink-0">
-        <AccordionItem value="personalize" className="border-b-0">
-          <AccordionTrigger className="text-xs sm:text-sm text-muted-foreground hover:no-underline py-2.5 hover:text-foreground transition-colors duration-200">
-            <div className='flex items-center gap-2'>
+    <div className="flex flex-col h-full w-full bg-transparent min-h-0">
+      <style jsx>{`
+        @keyframes fadeInUp {
+          from {
+            opacity: 0;
+            transform: translateY(10px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+      `}</style>
+      {/* Profile Configuration */}
+      <Accordion type="single" collapsible className="flex-shrink-0 px-4 py-3 border-b border-border/10 bg-gradient-to-r from-background to-accent/5">
+        <AccordionItem value="personalize" className="border-0">
+          <AccordionTrigger className="text-sm text-muted-foreground hover:text-foreground hover:no-underline py-3 transition-colors duration-200">
+            <div className="flex items-center gap-2">
               <div className="relative">
-                <Sparkles className="h-3.5 w-3.5 text-primary animate-pulse" />
-                <div className="absolute inset-0 h-3.5 w-3.5 text-primary/30 animate-ping" />
+                <Sparkles className="h-4 w-4 text-primary animate-pulse" />
+                <div className="absolute inset-0 h-4 w-4 text-primary/20 animate-ping" />
               </div>
-              <span className="font-medium text-xs">{t('personalizeAdviceLabel')}</span>
+              <span className="font-medium">{t('personalizeAdviceLabel')}</span>
             </div>
           </AccordionTrigger>
-          <AccordionContent className="pt-3 pb-1">
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              <div className="space-y-1.5">
-                <Label htmlFor="age" className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+          <AccordionContent className="pt-4 pb-2">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="age" className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
                   {t('ageLabel')}
                 </Label>
                 <Input
                   id="age"
                   type="number"
                   placeholder={t('agePlaceholder')}
-                  value={userProfile.age}
+                  value={userProfile.age || ''}
                   onChange={(e) => handleProfileChange('age', e.target.value)}
-                  className="h-9 text-sm bg-background/50 border-border/50 focus:border-primary/50 focus:bg-background transition-all duration-200"
+                  className="h-10 bg-background/50 border-border/50 focus:border-primary/50 transition-all duration-200"
                 />
               </div>
-              <div className="space-y-1.5">
-                <Label htmlFor="stressLevel" className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+              <div className="space-y-2">
+                <Label htmlFor="stressLevel" className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
                   {t('stressLevelLabel')}
                 </Label>
                 <Select
-                  value={userProfile.stressLevel}
+                  value={userProfile.stressLevel || ''}
                   onValueChange={(value) => handleProfileChange('stressLevel', value)}
                 >
-                  <SelectTrigger id="stressLevel" className="h-9 text-sm bg-background/50 border-border/50 focus:border-primary/50">
+                  <SelectTrigger id="stressLevel" className="h-10 bg-background/50 border-border/50 focus:border-primary/50">
                     <SelectValue placeholder={t('stressLevelPlaceholder')} />
                   </SelectTrigger>
                   <SelectContent>
@@ -386,16 +457,16 @@ export default function ChatAssistant() {
                   </SelectContent>
                 </Select>
               </div>
-              <div className="space-y-1.5">
-                <Label htmlFor="lifestyle" className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+              <div className="space-y-2">
+                <Label htmlFor="lifestyle" className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
                   {t('lifestyleLabel')}
                 </Label>
                 <Input
                   id="lifestyle"
                   placeholder={t('lifestylePlaceholder')}
-                  value={userProfile.lifestyle}
+                  value={userProfile.lifestyle || ''}
                   onChange={(e) => handleProfileChange('lifestyle', e.target.value)}
-                  className="h-9 text-sm bg-background/50 border-border/50 focus:border-primary/50 focus:bg-background transition-all duration-200"
+                  className="h-10 bg-background/50 border-border/50 focus:border-primary/50 transition-all duration-200"
                 />
               </div>
             </div>
@@ -403,125 +474,125 @@ export default function ChatAssistant() {
         </AccordionItem>
       </Accordion>
 
-      <ScrollArea className="flex-grow p-4 space-y-5 min-h-0"> {/* Added min-h-0 */}
-        {messages.map((msg) => (
-          <div
-            key={msg.id}
-            className={cn(
-              'flex items-end gap-2.5 w-full',
-              msg.role === 'user' ? 'justify-end animate-in slide-in-from-right-3 fade-in duration-200' : 'justify-start'
-            )}
-          >
-            {msg.role === 'assistant' && (
-              <Avatar className={cn(
-                "h-7 w-7 self-end shrink-0 ring-1 ring-primary/20 transition-all duration-150 hover:ring-primary/30",
-                (isLoading && currentlyTypingMessageId !== msg.id) && "animate-pulse"
-              )}>
-                <AvatarImage src="/bot-avatar.png" alt="SlumberAI" data-ai-hint="robot face" />
-                <AvatarFallback className="bg-gradient-to-br from-primary to-primary/80 text-primary-foreground">
-                  <Bot className="h-3.5 w-3.5" />
-                </AvatarFallback>
-              </Avatar>
-            )}
-            
+      {/* Messages Area */}
+      <ScrollArea className="flex-grow p-4 min-h-0">
+        <div className="space-y-6">
+          {messages.map((msg) => (
             <div
+              key={msg.id}
               className={cn(
-                'relative p-3 rounded-xl max-w-[85%] shadow-md group transition-all duration-200 hover:shadow-lg',
-                msg.role === 'user'
-                  ? 'bg-gradient-to-br from-primary to-primary/80 text-primary-foreground rounded-br-md transform hover:scale-[1.01]'
-                  : 'bg-gradient-to-br from-card to-card/70 text-card-foreground border border-border/20 rounded-bl-md backdrop-blur-sm'
+                'flex items-end gap-3 w-full',
+                msg.role === 'user' 
+                  ? 'justify-end animate-in slide-in-from-right-4 fade-in duration-300' 
+                  : 'justify-start'
               )}
             >
-              <div className="flex-1 min-w-0">
-                {msg.role === 'assistant' ? (
-                  <>
-                    {renderMarkdownMessage(msg.content)}
-                    {msg.isTyping && <span className="animate-blink">▌</span>}
-                  </>
-                ) : (
-                  <p className="whitespace-pre-line leading-relaxed">{msg.content}</p>
+              {msg.role === 'assistant' && (
+                <Avatar className="h-8 w-8 ring-2 ring-primary/20 transition-all duration-200 hover:ring-primary/30">
+                  <AvatarImage src="/bot-avatar.png" alt="SlumberAI" />
+                  <AvatarFallback className="bg-gradient-to-br from-primary to-primary/80 text-primary-foreground">
+                    <Bot className="h-4 w-4" />
+                  </AvatarFallback>
+                </Avatar>
+              )}
+              
+              <div
+                className={cn(
+                  'relative group max-w-[85%] transition-all duration-200',
+                  msg.role === 'user'
+                    ? 'bg-gradient-to-br from-primary to-primary/80 text-primary-foreground p-4 rounded-2xl rounded-br-md shadow-lg hover:shadow-xl transform hover:scale-[1.01]'
+                    : 'bg-gradient-to-br from-card/90 to-card text-card-foreground p-4 rounded-2xl rounded-bl-md border border-border/30 shadow-md hover:shadow-lg backdrop-blur-md'
+                )}
+              >
+                <div className="min-w-0">
+                  {msg.role === 'assistant' ? (
+                    <>
+                      <MarkdownRenderer text={msg.content || ''} isTyping={msg.isTyping} />
+                      {msg.isTyping && (
+                        <span className="inline-block w-3 h-5 bg-current animate-pulse ml-1 align-bottom">|</span>
+                      )}
+                    </>
+                  ) : (
+                    <p className="whitespace-pre-line leading-relaxed text-current">{msg.content}</p>
+                  )}
+                </div>
+
+                {msg.role === 'assistant' && !msg.isTyping && !msg.isGreeting && (
+                  <CopyButton text={msg.fullText} onCopy={handleCopyMessage} />
+                )}
+
+                {msg.role === 'assistant' && msg.followUpQuestions && msg.followUpQuestions.length > 0 && !msg.isTyping && (
+                  <div className="mt-4 pt-4 border-t border-border/10">
+                    <p className="text-xs text-muted-foreground font-medium mb-3">Suggested questions:</p>
+                    <div className="flex flex-wrap gap-2">
+                      {msg.followUpQuestions.map((question, index) => (
+                        <Button
+                          key={index}
+                          variant="outline"
+                          size="sm"
+                          className={cn(
+                            "text-xs h-auto py-2 px-3 rounded-full border-primary/30 text-primary/80",
+                            "hover:bg-primary/10 hover:text-primary hover:border-primary/50",
+                            "transition-all duration-200 transform hover:scale-105",
+                            "animate-in slide-in-from-bottom-2 fade-in"
+                          )}
+                          style={{ animationDelay: `${index * 100}ms` }}
+                          onClick={() => handleFollowUpClick(question)}
+                        >
+                          {question}
+                        </Button>
+                      ))}
+                    </div>
+                  </div>
                 )}
               </div>
 
-              {msg.role === 'assistant' && !msg.isTyping && !msg.isGreeting && (
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => handleCopyMessage(msg.fullText)}
-                  className="absolute -top-1.5 -right-1.5 h-6 w-6 text-muted-foreground opacity-0 group-hover:opacity-100 transition-all duration-150 bg-background hover:bg-accent rounded-full shadow-sm hover:shadow-md transform hover:scale-105"
-                  aria-label={t('copyMessageAriaLabel')}
-                >
-                  <Copy className="h-3 w-3" />
-                </Button>
-              )}
-
-              {msg.role === 'assistant' && msg.followUpQuestions && msg.followUpQuestions.length > 0 && !msg.isTyping && (
-                <div className="mt-3 pt-3 border-t border-border/20 space-y-1.5">
-                  <p className="text-xs text-muted-foreground font-medium mb-1">Suggested:</p>
-                  <div className="flex flex-wrap gap-1.5">
-                    {msg.followUpQuestions.map((q, i) => (
-                      <Button
-                        key={i}
-                        variant="outline"
-                        size="sm"
-                        className={cn(
-                          "text-xs h-auto py-1 px-2.5 rounded-full border-primary/30 text-primary/80",
-                          "hover:bg-primary/10 hover:text-primary hover:border-primary/40",
-                          "transition-all duration-150 transform hover:scale-105 hover:shadow-xs",
-                          "animate-in slide-in-from-bottom-1.5 fade-in"
-                        )}
-                        style={{ animationDelay: `${i * 70 + (msg.content?.length || 0) * 3}ms` }}
-                        onClick={() => handleFollowUpClick(q)}
-                      >
-                        {q}
-                      </Button>
-                    ))}
-                  </div>
-                </div>
+              {msg.role === 'user' && (
+                <Avatar className="h-8 w-8 ring-2 ring-accent/20 transition-all duration-200 hover:ring-accent/30">
+                  <AvatarImage src="/user-avatar.png" alt="User" />
+                  <AvatarFallback className="bg-gradient-to-br from-accent to-accent/70 text-accent-foreground">
+                    U
+                  </AvatarFallback>
+                </Avatar>
               )}
             </div>
-
-            {msg.role === 'user' && (
-              <Avatar className="h-7 w-7 self-end shrink-0 ring-1 ring-accent/20 transition-all duration-150 hover:ring-accent/30">
-                <AvatarImage src="/user-avatar.png" alt="User" data-ai-hint="person silhouette" />
-                <AvatarFallback className="bg-gradient-to-br from-accent to-accent/70 text-accent-foreground">
-                  U
-                </AvatarFallback>
-              </Avatar>
-            )}
-          </div>
-        ))}
-        {isLoading && <TypingIndicator />}
-        <div ref={messagesEndRef} />
+          ))}
+          
+          {isLoading && <TypingIndicator />}
+          <div ref={messagesEndRef} />
+        </div>
       </ScrollArea>
 
+      {/* Input Form */}
       <form
         onSubmit={handleSubmit}
-        className="flex items-center gap-2.5 p-3 border-t border-border/20 bg-background flex-shrink-0"
+        className="flex items-center gap-3 p-4 border-t border-border/20 bg-background/80 backdrop-blur-md flex-shrink-0"
       >
-        <div className="relative flex-grow">
-          <Input
-            value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
-            placeholder={t('inputPlaceholder')}
-            className="h-11 pl-3.5 pr-10 rounded-lg bg-input/70 border-border/40 focus:border-primary/60 focus:bg-background transition-all duration-150 text-sm shadow-sm focus:shadow-md"
-            disabled={isLoading || !!currentlyTypingMessageId}
-          />
-        </div>
+        <Input
+          value={inputValue}
+          onChange={(e) => setInputValue(e.target.value)}
+          placeholder={t('inputPlaceholder')}
+          className="flex-grow h-12 px-4 rounded-xl bg-background/80 border border-border/50 focus:border-primary/60 focus:bg-background transition-all duration-200 shadow-sm focus:shadow-md placeholder:text-muted-foreground/60"
+          disabled={isLoading || !!currentlyTypingMessageId}
+        />
         
         <Button 
           type="submit" 
           size="icon" 
           className={cn(
-            "h-11 w-11 rounded-lg bg-gradient-to-br from-primary to-primary/80 shrink-0",
-            "text-primary-foreground hover:from-primary/90 hover:to-primary/95",
-            "transition-all duration-150 transform hover:scale-105 hover:shadow-lg",
-            "disabled:opacity-50 disabled:transform-none disabled:shadow-none disabled:hover:from-primary disabled:hover:to-primary/80"
+            "h-12 w-12 rounded-xl bg-gradient-to-br from-primary to-primary/80 shrink-0",
+            "hover:from-primary/90 hover:to-primary/95 transition-all duration-200",
+            "transform hover:scale-105 hover:shadow-lg shadow-md",
+            "disabled:opacity-50 disabled:transform-none disabled:shadow-sm"
           )}
           disabled={isLoading || !inputValue.trim() || !!currentlyTypingMessageId}
           aria-label={t('sendMessageAriaLabel')}
         >
-          <SendHorizonal className="h-4.5 w-4.5" />
+          {isLoading ? (
+            <Loader2 className="h-5 w-5 animate-spin" />
+          ) : (
+            <SendHorizontal className="h-5 w-5" />
+          )}
         </Button>
       </form>
     </div>

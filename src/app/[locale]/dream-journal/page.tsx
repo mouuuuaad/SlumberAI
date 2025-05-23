@@ -34,9 +34,9 @@ export default function DreamJournalPage() {
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground">
       <Header />
-      <main className="flex-grow container mx-auto px-4 py-10 md:py-16 flex flex-col items-center space-y-12 md:space-y-16">
+      <main className="flex-grow mx-auto px-4 py-10 md:py-16 flex flex-col items-center space-y-12 md:space-y-16">
         <AnimatedSection 
-          delay="100ms"
+          delay="20ms"
           className="w-full max-w-2xl lg:max-w-3xl glassmorphic rounded-xl shadow-2xl p-6 md:p-8"
         >
           <div className="flex items-center mb-6">
