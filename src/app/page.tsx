@@ -83,7 +83,7 @@ export default function HomePage() {
 
       </main>
       <footer className="py-8 text-center text-xs sm:text-sm text-muted-foreground border-t border-border/30">
-        <p>&copy; {new Date().getFullYear()} SlumberAI. All rights reserved. Crafted with 💜</p>
+        <p>&copy; {new Date().getFullYear()} SlumberAI. All rights reserved. Created by Mouaad Idoufkir.</p>
       </footer>
     </div>
   );
