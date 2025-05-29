@@ -509,7 +509,7 @@ export default function ChatAssistant() {
                     <>
                       <MarkdownRenderer text={msg.content || ''} isTyping={msg.isTyping} />
                       {msg.isTyping && (
-                        <span className="inline-block w-3 h-5 bg-current animate-pulse ml-1 align-bottom">|</span>
+                        <span className="inline-block w-3 h-3 bg-current animate-pulse ml-1 align-bottom">|</span>
                       )}
                     </>
                   ) : (

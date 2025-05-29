@@ -82,7 +82,6 @@ export default function Header() {
     { href: '/nap-optimizer', labelKey: 'navNapOptimizer', icon: Coffee, isPageLink: true },
     { href: '/ai-coach', labelKey: 'navAiCoach', icon: MessageSquare, isPageLink: true },
     { href: '/dream-journal', labelKey: 'navDreamJournal', icon: BookOpen, isPageLink: true },
-    { href: '/sleep-game', labelKey: 'navSleepGame', icon: Gamepad2, isPageLink: true },
   ];
 
   // Check if current page matches nav item
@@ -92,7 +91,7 @@ export default function Header() {
   };
 
   return (
-    <header className="sticky top-0 z-50 py-2 sm:py-4 px-4 md:px-8 border-b border-border/30 shadow-sm bg-background/95 backdrop-blur-md">
+    <header className="sticky top-0 z-50 py-4 sm:py-4 px-4 md:px-8 border-b border-border/30 shadow-sm bg-background/95 backdrop-blur-md">
       <div className="container mx-auto">
         <div className="flex justify-between items-center">
           <NextLink href="/" passHref legacyBehavior>
@@ -174,7 +173,7 @@ export default function Header() {
           </div>
         </div>
         
-        <nav className="mt-4 overflow-x-auto custom-scrollbar-thin pb-2">
+        <nav className="mt-4 py-2 overflow-x-auto custom-scrollbar-thin pb-2">
           <ul className="flex items-center justify-start sm:justify-center gap-x-2 sm:gap-x-4 text-sm">
             {navItems.map((item) => {
               const IconComponent = item.icon;

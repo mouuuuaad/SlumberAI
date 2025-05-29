@@ -2,9 +2,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import NextLink from 'next/link';
 import Header from '@/components/slumber/Header';
-import AnimatedSection from '@/components/slumber/AnimatedSection';
 // Removed Brain icon as the section is being removed
 import { useTranslations } from 'next-intl';
 

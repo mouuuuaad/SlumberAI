@@ -29,7 +29,6 @@ export default function HomePage() {
   };
   
   if (!isClient) {
-    // Render nothing or a loading indicator on the server to avoid hydration mismatch for Tabs
     return null; 
   }
   
@@ -52,20 +51,6 @@ export default function HomePage() {
             <TabsTrigger value="dreamJournal" className="text-xs sm:text-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md"> {/* New Dream Journal Tab */}
               <BookOpen className="h-4 w-4 mr-1.5 sm:mr-2" /> Dream Journal
             </TabsTrigger>
-            <Link href="/sleep-science" legacyBehavior passHref>
-              <TabsTrigger 
-                value="science" 
-                className="text-xs sm:text-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md"
-                onClick={(e) => {
-                  // Prevent Tabs component from trying to manage state for this link
-                  e.preventDefault(); 
-                  window.location.href = '/sleep-science'; // Or use Next router if preferred for SPA transition
-                }}
-                asChild={false} // Ensure TabsTrigger renders its own button for styling
-              >
-                <Brain className="h-4 w-4 mr-1.5 sm:mr-2" /> Sleep Science
-              </TabsTrigger>
-            </Link>
           </TabsList>
 
           <TabsContent value="calculator">
